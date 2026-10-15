@@ -1,0 +1,310 @@
+import { LearningError } from "../errors.mjs"
+import { PRODUCER, SCHEMA_VERSIONS } from "../records.mjs"
+
+export const DEFAULT_RECURRENCE_OPTIONS = Object.freeze({
+  minEpisodes: 2,
+  minPrototypes: 2,
+  minReviewers: 2,
+  signals: Object.freeze(["visual_quality", "accessibility"]),
+  observations: Object.freeze(["observed"]),
+})
+
+const SIGNALS = [
+  "visual_quality",
+  "accessibility",
+  "usability",
+  "content",
+  "interaction",
+  "performance",
+  "agreement",
+  "replica_workflow",
+  "other",
+]
+const OBSERVATIONS = ["observed", "preference", "question", "praise", "other"]
+
+/**
+ * Proposes a learning for each labeled theme that recurs across distinct threads, prototypes,
+ * and reviewers within the window. It is deterministic: the same evidence and labels always
+ * give the same proposals.
+ *
+ * It reads annotation events, not raw text. A labeler, a person or a model, writes those with
+ * a theme key, a prototype-independent statement, a signal, an observation kind, and a stance.
+ * Only observed problems count by default; questions, preferences, and praise do not. A theme
+ * is contested, and not proposed, when as many reviewers contradict it as support it. Themes
+ * with an accepted learning still in effect are skipped; an accepted learning that no longer
+ * applies, because its evidence was withdrawn or it expired, is offered for replacement.
+ * Rejected themes return only with more support than before.
+ *
+ * @param {Partial<typeof DEFAULT_RECURRENCE_OPTIONS>} [options]
+ */
+export function createRecurrenceConsolidator(options = {}) {
+  const settings = { ...DEFAULT_RECURRENCE_OPTIONS, ...options }
+  for (const key of ["minEpisodes", "minPrototypes", "minReviewers"])
+    if (!Number.isSafeInteger(settings[key]) || settings[key] < 1)
+      throw new LearningError("invalid_input", `${key} must be a positive whole number.`)
+  if (!settings.signals.length || settings.signals.some((signal) => !SIGNALS.includes(signal)))
+    throw new LearningError("invalid_input", `signals must come from ${SIGNALS.join(", ")}.`)
+  if (
+    !settings.observations.length ||
+    settings.observations.some((kind) => !OBSERVATIONS.includes(kind))
+  )
+    throw new LearningError(
+      "invalid_input",
+      `observations must come from ${OBSERVATIONS.join(", ")}.`,
+    )
+
+  return {
+    manifest: {
+      id: "recurrence",
+      version: PRODUCER.version,
+      description:
+        "Proposes labeled themes that recur across distinct threads, prototypes, and reviewers.",
+      settings: structuredClone(settings),
+    },
+
+    async consolidate({ window }, view) {
+      const episodes = new Map(view.episodes.map((episode) => [episode.id, episode]))
+      const events = new Map(view.events.map((event) => [event.id, event]))
+      const superseded = new Set(
+        view.events.filter((event) => event.supersedes).map((event) => event.supersedes),
+      )
+      const latestLabels = new Map()
+      for (const event of view.events)
+        if (event.type === "annotation")
+          latestLabels.set(`${event.payload.target.eventId}\u0000${event.actor.id}`, event)
+
+      const diagnostics = []
+      const themes = new Map()
+      let edited = 0
+      for (const label of latestLabels.values()) {
+        const target = events.get(label.payload.target.eventId)
+        if (!target || target.type !== "human_comment" || target.payload.body === null) continue
+        if (superseded.has(target.id)) {
+          edited++
+          continue
+        }
+        if (target.at < window.from || target.at >= window.to) continue
+        const key = label.payload.theme.key
+        if (!themes.has(key)) themes.set(key, { key, supports: new Map(), contradicts: new Map() })
+        const bucket =
+          themes.get(key)[label.payload.stance === "contradicts" ? "contradicts" : "supports"]
+        if (!bucket.has(target.id)) bucket.set(target.id, { target, labels: [] })
+        bucket.get(target.id).labels.push(label)
+      }
+      if (edited)
+        diagnostics.push({
+          code: "target_edited",
+          message: `${edited} label(s) point at comments edited since labeling. Label the new versions to count them.`,
+        })
+
+      const proposals = []
+      for (const theme of [...themes.values()].sort((left, right) =>
+        compare(left.key, right.key),
+      )) {
+        const supporting = [...theme.supports.values()].filter(({ labels }) =>
+          labels.some((label) => settings.observations.includes(label.payload.observation)),
+        )
+        if (!supporting.length) {
+          diagnostics.push({
+            code: "not_observed",
+            themeKey: theme.key,
+            message: "Only questions, preferences, or praise.",
+          })
+          continue
+        }
+        const labels = supporting.flatMap((item) => item.labels)
+        const signal = mostCommon(labels.map((label) => label.payload.signal))
+        if (!settings.signals.includes(signal)) {
+          diagnostics.push({
+            code: "signal_not_enabled",
+            themeKey: theme.key,
+            message: `Signal ${signal} is not enabled.`,
+          })
+          continue
+        }
+        const support = supportOf(
+          supporting.map((item) => item.target),
+          episodes,
+        )
+        const short = [
+          ["threads", support.distinctEpisodes, settings.minEpisodes],
+          ["prototypes", support.distinctPrototypes, settings.minPrototypes],
+          ["reviewers", support.distinctReviewers, settings.minReviewers],
+        ].filter(([, have, need]) => have < need)
+        if (short.length) {
+          diagnostics.push({
+            code: "below_threshold",
+            themeKey: theme.key,
+            message: `Needs ${short.map(([name, have, need]) => `${need} ${name} (has ${have})`).join(", ")}.`,
+            support,
+          })
+          continue
+        }
+        const dissent = new Set(
+          [...theme.contradicts.values()].map(({ target }) => target.actor.id),
+        )
+        if (dissent.size >= support.distinctReviewers) {
+          diagnostics.push({
+            code: "contested",
+            themeKey: theme.key,
+            message: `${dissent.size} reviewer(s) disagree and ${support.distinctReviewers} agree.`,
+          })
+          continue
+        }
+        const prior = view.memories.filter((memory) => memory.themeKey === theme.key)
+        const current = prior.find((memory) => memory.state === "accepted" && memory.effective)
+        if (current) {
+          diagnostics.push({
+            code: "already_accepted",
+            themeKey: theme.key,
+            message: `Already accepted as ${current.id}.`,
+          })
+          continue
+        }
+        const stale = prior
+          .filter((memory) => memory.state === "accepted" && !memory.superseded)
+          .map((memory) => memory.id)
+          .sort()
+        if (stale.length)
+          diagnostics.push({
+            code: "replaces_stale",
+            themeKey: theme.key,
+            message: `${stale.join(", ")} no longer applies; accepting this proposal replaces it.`,
+          })
+        const rejected = prior.filter((memory) => memory.state === "rejected")
+        if (
+          rejected.some(
+            (memory) => (memory.support?.distinctEpisodes ?? 0) >= support.distinctEpisodes,
+          )
+        ) {
+          diagnostics.push({
+            code: "previously_rejected",
+            themeKey: theme.key,
+            message: "Rejected before, with no new support.",
+          })
+          continue
+        }
+        const statements = labels.map((label) => label.payload.theme.statement)
+        const statement = mostCommon(statements)
+        const alternatives = [...new Set(statements)].filter((item) => item !== statement)
+        if (alternatives.length)
+          diagnostics.push({
+            code: "alternative_wording",
+            themeKey: theme.key,
+            message: `Other wordings: ${alternatives.map((item) => JSON.stringify(item)).join("; ")}`,
+          })
+        const traces = new Map()
+        for (const label of labels)
+          if (label.payload.trace)
+            traces.set(
+              `${label.payload.trace.kind}\u0000${label.payload.trace.ref}`,
+              label.payload.trace,
+            )
+        const contradictions = [...theme.contradicts.values()].map(({ target }) =>
+          evidence(target, episodes),
+        )
+        proposals.push({
+          schemaVersion: SCHEMA_VERSIONS.memoryProposal,
+          kind: mostCommon(labels.map((label) => label.payload.proposedKind ?? "rule")),
+          content: statement,
+          themeKey: theme.key,
+          ...(traces.size
+            ? {
+                appliesTo: [...traces.values()]
+                  .sort((a, b) => compare(`${a.kind} ${a.ref}`, `${b.kind} ${b.ref}`))
+                  .slice(0, 20),
+              }
+            : {}),
+          evidence: supporting
+            .map(({ target }) => evidence(target, episodes))
+            .sort(
+              (a, b) => compare(a.episodeId, b.episodeId) || compare(a.eventIds[0], b.eventIds[0]),
+            ),
+          ...(contradictions.length ? { contradictions } : {}),
+          support,
+          rationale: {
+            recurrence: `Reported in ${support.distinctEpisodes} threads on ${support.distinctPrototypes} prototypes by ${support.distinctReviewers} reviewers, across ${support.distinctBuilds} Builds.`,
+            ...(dissent.size
+              ? { contradictions: `${dissent.size} reviewer(s) disagreed; see contradictions.` }
+              : {}),
+            expectedBenefit: `Prototypes built with this learning should stop drawing comments about ${theme.key}.`,
+            falsification: `Revisit it if new Builds that follow it still draw comments about ${theme.key}, or if reviewers push back on it.`,
+          },
+          lifecycle: stale.length ? { action: "supersede", targets: stale } : { action: "new" },
+          consolidator: { id: "recurrence", version: PRODUCER.version },
+        })
+      }
+      proposals.sort(
+        (a, b) =>
+          b.support.distinctPrototypes - a.support.distinctPrototypes ||
+          b.support.distinctReviewers - a.support.distinctReviewers ||
+          b.support.distinctEpisodes - a.support.distinctEpisodes ||
+          compare(a.themeKey, b.themeKey),
+      )
+      return { proposals, diagnostics }
+    },
+  }
+}
+
+function supportOf(targets, episodes) {
+  const episodeIds = new Set()
+  const prototypes = new Set()
+  const reviewers = new Set()
+  const builds = new Set()
+  for (const target of targets) {
+    const source = episodes.get(target.episodeId)?.source ?? {}
+    episodeIds.add(target.episodeId)
+    prototypes.add(
+      source.prototypeId === undefined
+        ? `episode:${target.episodeId}`
+        : `${source.hubOrigin}#${source.prototypeId}`,
+    )
+    reviewers.add(target.actor.id)
+    builds.add(
+      `${source.hubOrigin}#${source.prototypeId}#${source.buildNumber ?? target.episodeId}`,
+    )
+  }
+  return {
+    distinctEpisodes: episodeIds.size,
+    distinctPrototypes: prototypes.size,
+    distinctReviewers: reviewers.size,
+    distinctBuilds: builds.size,
+  }
+}
+
+function evidence(target, episodes) {
+  const source = episodes.get(target.episodeId)?.source
+  const pin = {}
+  if (source)
+    for (const key of [
+      "kind",
+      "hubOrigin",
+      "repository",
+      "repositoryId",
+      "prototypeId",
+      "branch",
+      "buildNumber",
+      "buildId",
+      "commitSha",
+      "threadId",
+    ])
+      if (source[key] !== undefined) pin[key] = source[key]
+  if (target.payload?.commentId) pin.commentId = target.payload.commentId
+  return {
+    episodeId: target.episodeId,
+    eventIds: [target.id],
+    ...(pin.kind ? { source: pin } : {}),
+    observedAt: target.at,
+    author: { kind: target.actor.kind, id: target.actor.id },
+  }
+}
+
+function mostCommon(values) {
+  const counts = new Map()
+  for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1)
+  return [...counts].sort((a, b) => b[1] - a[1] || compare(a[0], b[0]))[0][0]
+}
+
+function compare(left, right) {
+  return left < right ? -1 : left > right ? 1 : 0
+}

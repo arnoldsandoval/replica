@@ -1,0 +1,9 @@
+.page {
+  width: min(100% - 2rem, 64rem);
+  margin-inline: auto;
+  padding-block: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}

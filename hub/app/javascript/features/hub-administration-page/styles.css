@@ -1,0 +1,17 @@
+.hub-administration-page {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 60rem;
+  margin-inline: auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.hub-administration-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}

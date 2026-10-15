@@ -1,0 +1,69 @@
+import type { Meta, StoryObj } from "@storybook/react-vite"
+
+import { repliedReviewThread } from "@/storybook/fixtures/review/comments"
+import { reviewCommentsCopy } from "@utils/review-comment/en"
+
+import { CanvasReviewOverlays } from "."
+
+function noop() {}
+
+function unchanged() {
+  return Promise.resolve(false)
+}
+
+const meta = {
+  title: "Components/Prototype canvas/Review overlays",
+  component: CanvasReviewOverlays,
+  parameters: { layout: "fullscreen" },
+  decorators: [
+    (Story) => (
+      <div style={{ height: "100vh", position: "relative", width: "100%" }}>
+        <iframe
+          title="Synthetic prototype preview"
+          src="/prototype-preview/index.html"
+          style={{ height: "100%", width: "100%", border: 0 }}
+        />
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    selectionNotice: null,
+    rateLimitNotice: "Too many requests. No changes were made. Wait 60 seconds, then try again.",
+    composer: null,
+    conversation: {
+      thread: repliedReviewThread,
+      anchorPoint: { x: 520, y: 220 },
+      bodyMaximumBytes: 10_000,
+      mutation: null,
+      copy: reviewCommentsCopy,
+      onClose: noop,
+      onDraftStateChange: noop,
+      onReply: unchanged,
+      onEdit: unchanged,
+      onDelete: unchanged,
+      onResolve: unchanged,
+      onReopen: unchanged,
+      onAddReaction: unchanged,
+      onRemoveReaction: unchanged,
+      onMarkRead: unchanged,
+    },
+  },
+} satisfies Meta<typeof CanvasReviewOverlays>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const RateLimitedWithHubClosed: Story = {
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.type(
+      canvas.getByRole("textbox", { name: reviewCommentsCopy.replyLabel }),
+      "Please keep this unsent reply while I wait to retry.",
+    )
+  },
+}
+
+export const RateLimitedWithSelectionFailure: Story = {
+  args: { selectionNotice: reviewCommentsCopy.areaTooSmallLabel },
+  play: RateLimitedWithHubClosed.play,
+}

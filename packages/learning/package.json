@@ -1,0 +1,39 @@
+{
+  "name": "@github/replica-learning",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Replica learning contracts, the memory provider interface, reference providers and consolidators, a conformance suite, and the replica-learning CLI.",
+  "license": "MIT",
+  "type": "module",
+  "types": "./index.d.mts",
+  "bin": {
+    "replica-learning": "./bin/replica-learning.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./index.d.mts",
+      "import": "./index.mjs"
+    },
+    "./conformance": {
+      "types": "./conformance/index.d.mts",
+      "import": "./conformance/index.mjs"
+    },
+    "./contracts/v1/*": "./contracts/v1/*"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "schema:generate": "node generate-validators.mjs",
+    "schema:check": "node generate-validators.mjs --check",
+    "demo": "node examples/demo.mjs",
+    "demo:agent-memory-repo": "node examples/agent-memory-repo/demo.mjs"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0"
+  },
+  "optionalDependencies": {
+    "@github/copilot-sdk": "1.0.16"
+  }
+}

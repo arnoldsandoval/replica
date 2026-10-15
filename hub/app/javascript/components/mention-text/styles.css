@@ -1,0 +1,7 @@
+.mention-text {
+  border-radius: var(--hub-radius-small);
+  background: var(--hub-canvas-subtle);
+  color: var(--hub-fg-default);
+  font-weight: 600;
+  padding-inline: 0.15em;
+}

@@ -1,0 +1,69 @@
+name: Replica build
+description: Build a Replica prototype, capture screenshots, and upload its package
+
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js 24
+      uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      with:
+        node-version: 24
+
+    - name: Check required npm files and build script
+      run: node "$GITHUB_ACTION_PATH/scripts/validate-repository/index.mjs" --root "$GITHUB_WORKSPACE"
+      shell: bash
+
+    - name: Install browser-check dependencies
+      run: npm ci --ignore-scripts --omit=dev
+      shell: bash
+      working-directory: ${{ github.action_path }}
+
+    - name: Build prototype as a non-root user in a Node container
+      run: |
+        docker run --rm \
+          --cap-drop=ALL \
+          --security-opt=no-new-privileges \
+          --pids-limit=512 \
+          --user "$(id -u):$(id -g)" \
+          --env HOME=/tmp \
+          --mount "type=bind,source=$GITHUB_WORKSPACE,target=/workspace" \
+          --workdir /workspace \
+          node:24-bookworm@sha256:6dac556d980b7f0e5498d08f08cee0ca67798b4ad6c23964a9214920e67758d0 \
+          sh -lc 'npm ci && npm run build'
+      shell: bash
+
+    - name: Check dist paths and size limits
+      run: node "$GITHUB_ACTION_PATH/scripts/validate-build-output/index.mjs" --root "$GITHUB_WORKSPACE"
+      shell: bash
+
+    - name: Copy dist to runner temporary storage
+      run: |
+        rm -rf "$RUNNER_TEMP/replica-build-root"
+        mkdir -p "$RUNNER_TEMP/replica-build-root"
+        cp -RP -- "$GITHUB_WORKSPACE/dist" "$RUNNER_TEMP/replica-build-root/dist"
+      shell: bash
+
+    - name: Check copied dist paths and size limits
+      run: node "$GITHUB_ACTION_PATH/scripts/validate-build-output/index.mjs" --root "$RUNNER_TEMP/replica-build-root"
+      shell: bash
+
+    - name: Install Chromium
+      run: '"$GITHUB_ACTION_PATH/node_modules/.bin/playwright" install --with-deps chromium'
+      shell: bash
+
+    - name: Capture screenshots
+      run: node "$GITHUB_ACTION_PATH/scripts/capture-screenshots/index.mjs" --root "$RUNNER_TEMP/replica-build-root" --config-root "$GITHUB_WORKSPACE" --screenshots "$RUNNER_TEMP/replica-screenshots"
+      shell: bash
+
+    - name: Create Replica package
+      run: node "$GITHUB_ACTION_PATH/scripts/create-package/index.mjs" --root "$RUNNER_TEMP/replica-build-root" --screenshots "$RUNNER_TEMP/replica-screenshots" --output "$RUNNER_TEMP/replica-build-v1"
+      shell: bash
+
+    - name: Upload Replica package
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: replica-build-v1
+        path: ${{ runner.temp }}/replica-build-v1/
+        if-no-files-found: error
+        retention-days: 3
+        include-hidden-files: true

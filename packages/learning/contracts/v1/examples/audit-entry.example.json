@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "replica.audit/v1",
+  "id": "audit_5613b81ab1c927a4c99da427",
+  "at": "2026-10-09T13:00:00.000000Z",
+  "actor": {
+    "kind": "human",
+    "id": "github:ana-designer",
+    "asserted": true
+  },
+  "operation": "memory.accept",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "purpose": "instruction",
+  "subjects": [
+    {
+      "kind": "memory",
+      "id": "mem_7eb35ba21bbe6c45a9a296b4",
+      "digest": "sha256:440c46855e988e97add2baa9db4efd3a644267de18d65ea6af4fd84bdf2e6736"
+    }
+  ],
+  "outcome": "ok",
+  "reason": "Accepted with edits.",
+  "provider": {
+    "id": "in-memory",
+    "version": "0.0.0"
+  },
+  "digest": "sha256:30afab41b011402f75c34d8cf84d99373a16dab174dcca86e8f0412c3b1672b4"
+}

@@ -1,0 +1,126 @@
+.analytics-page {
+  min-height: 100%;
+}
+
+.analytics-page__header {
+  display: flex;
+  align-items: center;
+}
+
+.analytics-page__content {
+  display: grid;
+  gap: var(--base-size-24);
+  max-width: 60rem;
+  margin-inline: auto;
+  padding: var(--base-size-24);
+}
+
+.analytics-page__description,
+.analytics-page__privacy {
+  margin: 0;
+}
+
+.analytics-page__description {
+  color: var(--hub-fg-muted);
+}
+
+.analytics-page__card {
+  container-type: inline-size;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--hub-border-default);
+  border-radius: 0.75rem;
+  background: var(--hub-canvas-default);
+}
+
+.analytics-page__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.analytics-page__section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.analytics-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.analytics-page__disconnect {
+  border-color: var(--hub-danger-emphasis);
+  background: var(--hub-danger-emphasis);
+  color: var(--hub-fg-on-danger);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .analytics-page__disconnect:not(:disabled):hover {
+    border-color: color-mix(in srgb, var(--hub-danger-emphasis) 85%, var(--hub-fg-default));
+    background: color-mix(in srgb, var(--hub-danger-emphasis) 85%, var(--hub-fg-default));
+  }
+}
+
+.analytics-page__status {
+  justify-self: start;
+}
+
+.analytics-page__events {
+  display: grid;
+  gap: 0.75rem;
+  border: 0;
+  padding: 0;
+}
+
+.analytics-page__events legend {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.analytics-page__hint {
+  margin-block: -0.5rem 0;
+  color: var(--hub-fg-muted);
+}
+
+.analytics-page__preview {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.analytics-page__preview p {
+  margin: 0;
+}
+
+.analytics-page__preview pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--hub-border-muted);
+  border-radius: 0.5rem;
+  background: var(--hub-canvas-muted);
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.analytics-page__secret {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--hub-border-muted);
+  border-radius: 0.5rem;
+}
+
+@container (min-width: 36rem) {
+  .analytics-page__secret {
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+  }
+}

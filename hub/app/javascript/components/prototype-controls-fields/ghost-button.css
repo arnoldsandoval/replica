@@ -1,0 +1,20 @@
+.controls-ghost-button {
+  --controls-ghost-background: transparent;
+  --brand-button-subtle-bgColor-rest: var(--controls-ghost-background);
+  --brand-button-subtle-bgColor-hover: var(--controls-ghost-background);
+  --brand-button-subtle-bgColor-active: var(--controls-ghost-background);
+  --brand-button-subtle-borderColor-rest: transparent;
+  --brand-button-subtle-borderColor-hover: transparent;
+  --brand-button-subtle-borderColor-active: transparent;
+}
+
+.controls-ghost-button.controls-ghost-button:is(button) {
+  background: var(--controls-ghost-background);
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.controls-ghost-button:not(:disabled):hover {
+  --controls-ghost-background: var(--hub-canvas-muted);
+}

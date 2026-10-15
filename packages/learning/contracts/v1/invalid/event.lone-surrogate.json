@@ -1,0 +1,45 @@
+{
+  "kind": "event",
+  "reason": "A lone surrogate cannot be written as UTF-8 or canonical JSON.",
+  "expect": "lone surrogate",
+  "record": {
+    "schemaVersion": "replica.event/v1",
+    "id": "ev_a10a4cb43fbc2fd53d6d3c55",
+    "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "type": "human_comment",
+    "at": "2026-09-30T10:00:00.000000Z",
+    "actor": {
+      "kind": "human",
+      "id": "github:ana-designer",
+      "role": "reviewer"
+    },
+    "payload": {
+      "source": "hub_review_comment",
+      "commentId": 101,
+      "threadId": 101,
+      "role": "root",
+      "body": "Broken \ud800 text",
+      "createdAt": "2026-09-30T10:00:00.000000Z",
+      "editedAt": null,
+      "deletedAt": null,
+      "buildNumber": 3,
+      "context": {
+        "kind": "element",
+        "route": {
+          "pathname": "/checkout",
+          "search": "",
+          "hash": ""
+        },
+        "accessibleName": "Email",
+        "tagName": "input",
+        "selectedText": ""
+      }
+    },
+    "payloadDigest": "sha256:d11d28e2b1b3bad50f420ad2e9794f36a29857ae51d2fc087047d82b04f78abb",
+    "digest": "sha256:6b8ae43bc648c7122d453966b2292da588a2070bce23bc9c2cf4102505d6f4a4"
+  }
+}

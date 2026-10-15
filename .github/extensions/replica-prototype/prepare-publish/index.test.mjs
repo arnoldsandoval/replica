@@ -1,0 +1,61 @@
+import assert from "node:assert/strict"
+import { execFileSync } from "node:child_process"
+import { writeFile } from "node:fs/promises"
+import path from "node:path"
+import { it } from "node:test"
+
+import { createPublishPreferences } from "../publish-preferences/index.mjs"
+import { withContext } from "../test-support/with-context/index.mjs"
+import { preparePublish } from "./index.mjs"
+
+it("checks fresh staged, unstaged and untracked changes without touching Git or dispatching", async () => {
+  await withContext(async (context) => {
+    const preferences = createPublishPreferences(path.join(context.sessionWorkspacePath, "prefs"))
+    await writeFile(
+      path.join(context.repositoryPath, ".git/info/exclude"),
+      "replica-prototype/\nprefs/\n",
+    )
+    function git(...args) {
+      return execFileSync("git", args, {
+        cwd: context.repositoryPath,
+        encoding: "utf8",
+      })
+    }
+    git("config", "user.name", "Test")
+    git("config", "user.email", "test@example.com")
+    git("config", "commit.gpgsign", "false")
+    const file = path.join(context.repositoryPath, "tracked.txt")
+    await writeFile(file, "initial")
+    git("add", "tracked.txt")
+    git("commit", "-qm", "Fixture")
+    git("config", "status.showUntrackedFiles", "no")
+    assert.equal((await preparePublish(context, preferences)).workingTree, "clean")
+    await writeFile(file, "unstaged")
+    assert.equal((await preparePublish(context, preferences)).workingTree, "changed")
+    git("add", "tracked.txt")
+    const staged = git("diff", "--cached")
+    const head = git("rev-parse", "HEAD").trim()
+    await preferences.write({ repository: "github/replica", branch: "prototype" }, true)
+    const preparation = await preparePublish(context, preferences)
+    assert.equal(preparation.target.commitSha, head)
+    assert.equal(preparation.workingTree, "changed")
+    assert.equal(preparation.remember, true)
+    assert.equal(git("diff", "--cached"), staged)
+    git("commit", "-qm", "Staged fixture")
+    await writeFile(path.join(context.repositoryPath, "untracked.txt"), "new")
+    assert.equal((await preparePublish(context, preferences)).workingTree, "changed")
+    git("switch", "-qc", "another-prototype")
+    assert.equal(
+      (
+        await preparePublish(
+          {
+            ...context,
+            target: { ...context.target, branch: "another-prototype" },
+          },
+          preferences,
+        )
+      ).remember,
+      false,
+    )
+  })
+})

@@ -1,0 +1,239 @@
+name: Hub CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: hub
+
+jobs:
+  rails_test:
+    name: Rails tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: |
+            hub/package-lock.json
+            actions/build/package-lock.json
+      - run: npm ci
+      - run: npm ci --ignore-scripts --omit=dev
+        working-directory: actions/build
+      - run: ../actions/build/node_modules/.bin/playwright install --with-deps chromium
+      - run: bundle exec vite build
+        env:
+          RAILS_ENV: test
+      - run: bin/rails db:prepare
+        env:
+          RAILS_ENV: test
+      - run: bin/rails test
+        env:
+          RAILS_ENV: test
+
+  development_queue:
+    name: Development queue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - run: bin/rails db:prepare
+      - run: bin/check-development-queue
+
+  ruby_lint:
+    name: Ruby lint
+    runs-on: ubuntu-latest
+    env:
+      RUBOCOP_CACHE_ROOT: tmp/rubocop
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - run: bin/rubocop -f github
+
+  zeitwerk:
+    name: Zeitwerk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - run: bin/rails db:prepare
+      - run: bin/rails zeitwerk:check
+
+  annotations:
+    name: Annotations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - run: bin/rails db:prepare
+      - run: bin/check-annotations
+
+  bundler_audit:
+    name: Bundler audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - run: bin/bundler-audit check --update
+
+  typecheck:
+    name: TypeScript types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+
+  frontend_lint:
+    name: Frontend lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+
+  frontend_test_shard:
+    name: Frontend tests shard ${{ matrix.shard }}/4
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+      - run: npm ci
+      - run: npm test -- --shard=${{ matrix.shard }}/4
+
+  frontend_integration_test:
+    name: Controls and extension tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+      - run: npm ci
+      - run: npm ci --ignore-scripts --omit=dev
+        working-directory: actions/build
+      - run: ../actions/build/node_modules/.bin/playwright install --with-deps chromium
+      - run: npm run controls:test
+      - name: Test extension with pinned Chromium
+        run: |
+          REPLICA_CHROMIUM_PATH="$(node -p 'require("../actions/build/node_modules/playwright").chromium.executablePath()')"
+          export REPLICA_CHROMIUM_PATH
+          npm run extension:test
+
+  frontend_test:
+    name: Frontend tests
+    needs: [frontend_test_shard, frontend_integration_test]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all frontend suites to pass
+        working-directory: .
+        env:
+          SHARD_RESULT: ${{ needs.frontend_test_shard.result }}
+          INTEGRATION_RESULT: ${{ needs.frontend_integration_test.result }}
+        run: test "$SHARD_RESULT" = success && test "$INTEGRATION_RESULT" = success
+
+  frontend_build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm run controls:assets:check
+      - run: npm run extension:assets:check
+
+  storybook_build:
+    name: Storybook build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: hub/package.json
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+      - run: npm ci
+      - run: npm run storybook:build
+
+  production_database:
+    name: Production database
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          bundler-cache: true
+          working-directory: hub
+      - run: bin/rails db:prepare
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: "1"
+
+  production_image:
+    name: Production image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: docker build --build-context learning=../packages/learning --tag replica-hub:ci .
+      - name: Check build-time secret cleanup
+        run: docker run --rm --entrypoint /bin/sh replica-hub:ci -c 'test ! -e /rails/tmp/local_secret.txt'
+      - name: Check deployment configuration
+        run: |
+          docker run --rm replica-hub:ci \
+            bin/replica-deployment-config generate \
+            --host hub.example.com \
+            --format dotenv > deploy/.env
+          docker compose --file deploy/compose.yml --project-directory deploy config --quiet

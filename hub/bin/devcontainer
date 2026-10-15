@@ -1,0 +1,102 @@
+#!/bin/sh
+set -eu
+
+APP_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+CLI_IMAGE="replica-hub-devcontainer-cli:0.89.0"
+
+usage() {
+  printf '%s\n' \
+    "Usage: bin/devcontainer COMMAND [arguments]" \
+    "" \
+    "Commands:" \
+    "  up                 Create or start the development container" \
+    "  rebuild            Rebuild the development container" \
+    "  dev                Start Hub, Vite, and Solid Queue" \
+    "  storybook          Start the interface workbench" \
+    "  stop               Stop the development container" \
+    "  exec COMMAND...    Run a command in the container" \
+    "  shell              Open a shell in the container" \
+    "  down               Remove the development container"
+}
+
+ensure_cli_image() {
+  if ! docker image inspect "$CLI_IMAGE" >/dev/null 2>&1; then
+    docker build --tag "$CLI_IMAGE" --file "$APP_ROOT/.devcontainer/cli.Dockerfile" "$APP_ROOT/.devcontainer"
+  fi
+}
+
+run_cli() {
+  tty_flag=""
+  if [ -t 0 ] && [ -t 1 ]; then tty_flag="-t"; fi
+  docker run --rm -i $tty_flag \
+    --mount "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock" \
+    --mount "type=bind,source=$APP_ROOT,target=$APP_ROOT" \
+    --workdir / \
+    "$CLI_IMAGE" "$@"
+}
+
+up() { run_cli up --workspace-folder "$APP_ROOT"; }
+
+exec_in_container() {
+  if [ "${REPLICA_LOCAL_MODE+x}" = x ]; then
+    set -- "REPLICA_LOCAL_MODE=$REPLICA_LOCAL_MODE" "$@"
+  fi
+  if [ "${REPLICA_BOOTSTRAP_SECRET+x}" = x ]; then
+    set -- "REPLICA_BOOTSTRAP_SECRET=$REPLICA_BOOTSTRAP_SECRET" "$@"
+  fi
+  if [ "${REPLICA_LOCAL_MODE+x}" = x ] || [ "${REPLICA_BOOTSTRAP_SECRET+x}" = x ]; then
+    set -- env "$@"
+  fi
+  run_cli exec --workspace-folder "$APP_ROOT" "$@"
+}
+
+container_ids() {
+  docker ps --all --quiet --filter "label=devcontainer.local_folder=$APP_ROOT"
+}
+
+clear_server_pid() {
+  rm -f "$APP_ROOT/tmp/pids/server.pid"
+}
+
+command=${1:-help}
+[ "$#" -eq 0 ] || shift
+ensure_cli_image
+
+case "$command" in
+  up) up ;;
+  rebuild)
+    run_cli up --workspace-folder "$APP_ROOT" --remove-existing-container
+    clear_server_pid
+    ;;
+  dev)
+    case "${REPLICA_LOCAL_MODE-1}" in
+      1|true) REPLICA_LOCAL_MODE=1 ;;
+      0|false) REPLICA_LOCAL_MODE=0 ;;
+      *)
+        printf '%s\n' "REPLICA_LOCAL_MODE must be 1, true, 0, or false" >&2
+        exit 2
+        ;;
+    esac
+    up >/dev/null
+    if [ "$REPLICA_LOCAL_MODE" = 1 ]; then
+      exec_in_container bin/rails db:prepare
+      exec_in_container bin/rails runner 'LocalDevelopment.seed_example!'
+    fi
+    exec_in_container bin/dev
+    ;;
+  storybook) up >/dev/null; exec_in_container npm run storybook ;;
+  exec) [ "$#" -gt 0 ] || { usage >&2; exit 2; }; up >/dev/null; exec_in_container "$@" ;;
+  shell) up >/dev/null; exec_in_container bash ;;
+  stop)
+    ids=$(container_ids)
+    [ -z "$ids" ] || docker stop $ids
+    clear_server_pid
+    ;;
+  down)
+    ids=$(container_ids)
+    [ -z "$ids" ] || docker rm --force $ids
+    clear_server_pid
+    ;;
+  help|-h|--help) usage ;;
+  *) usage >&2; exit 2 ;;
+esac

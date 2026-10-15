@@ -1,0 +1,94 @@
+.review-comment-markers {
+  overflow: hidden;
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  pointer-events: none;
+}
+
+.review-comment-marker {
+  background: transparent;
+  width: auto;
+  min-width: var(--hub-space-32);
+  height: var(--hub-space-32);
+  padding: 0.125rem 0.875rem 0.125rem 0.125rem;
+  border: 0;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(calc(-1 * var(--hub-space-16) + var(--review-marker-offset-x, 0px)), -50%);
+  box-shadow: none;
+  pointer-events: auto;
+  color: var(--hub-fg-muted);
+}
+
+.review-comment-marker--resolved {
+  opacity: 0.65;
+}
+
+.review-comment-marker .review-participant-stack__avatar:first-child {
+  box-shadow: var(--hub-shadow-review-marker);
+}
+
+.review-comment-marker--unread .review-participant-stack__avatar:first-child {
+  border-color: var(--hub-accent);
+}
+
+.review-comment-marker--unread::after {
+  background: var(--hub-accent);
+  width: var(--hub-space-8);
+  height: var(--hub-space-8);
+  border: 1px solid var(--hub-canvas-default);
+  border-radius: 50%;
+  position: absolute;
+  top: -0.125rem;
+  right: -0.125rem;
+  content: "";
+}
+
+.review-comment-marker--blocked {
+  cursor: not-allowed;
+}
+
+.review-comment-area {
+  overflow: visible;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.review-comment-area__path {
+  fill: none;
+  stroke: var(--hub-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2px;
+}
+
+.review-comment-area__path--selected {
+  stroke: var(--hub-focus);
+  stroke-width: 4px;
+}
+
+.review-comment-marker--selected,
+.review-comment-marker:focus-visible {
+  outline: 0;
+}
+
+.review-comment-marker--selected .review-participant-stack__avatar:first-child,
+.review-comment-marker:focus-visible .review-participant-stack__avatar:first-child {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 0.125rem;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .review-comment-marker:hover:not(:disabled) .review-participant-stack__avatar {
+    --review-avatar-spread: 0.1875rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .review-comment-marker:focus-visible .review-participant-stack__avatar {
+    --review-avatar-spread: 0.1875rem;
+    transition: none;
+  }
+}

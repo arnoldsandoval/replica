@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "replica.event/v1",
+  "id": "ev_1cb19a035dae9087785474c3",
+  "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "type": "annotation",
+  "at": "2026-10-09T12:00:00.000000Z",
+  "actor": {
+    "kind": "agent",
+    "id": "agent:copilot",
+    "model": "example-model"
+  },
+  "parentEventId": "ev_a10a4cb43fbc2fd53d6d3c55",
+  "payload": {
+    "target": {
+      "eventId": "ev_a10a4cb43fbc2fd53d6d3c55"
+    },
+    "theme": {
+      "key": "visible-form-labels",
+      "statement": "Show a visible label above every form field; never use placeholder text as the only label."
+    },
+    "signal": "accessibility",
+    "observation": "observed",
+    "stance": "supports",
+    "proposedKind": "rule",
+    "trace": {
+      "kind": "skill",
+      "ref": ".agents/skills/create-prototype/SKILL.md"
+    }
+  },
+  "payloadDigest": "sha256:ed5442411bdd3a88bf4f121a55b5217f4772c4662b6a785cc3be683ff552ec35",
+  "digest": "sha256:b2cfbec074b3478466db2eb697d2f08e4ac6d721bb2ff549cf6ec572f8e5df51"
+}

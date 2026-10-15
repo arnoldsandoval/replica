@@ -1,0 +1,7 @@
+.setup__access {
+  padding-top: 1rem;
+  border-top: 1px solid var(--hub-border-default);
+  margin: 0;
+  line-height: 1.5;
+  color: var(--hub-fg-muted);
+}

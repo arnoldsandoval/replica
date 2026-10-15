@@ -1,0 +1,29 @@
+{
+  "kind": "event",
+  "reason": "A retraction names its target in parentEventId, which the digest covers, so a redaction never loses it.",
+  "expect": "must have required property 'parentEventId'",
+  "record": {
+    "schemaVersion": "replica.event/v1",
+    "id": "ev_d6e44114bd7e68439a33d013",
+    "episodeId": "ep_e7b4ecb49d4ee02d0ea5d872",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "type": "retraction",
+    "at": "2026-10-07T09:00:00.000000Z",
+    "actor": {
+      "kind": "system",
+      "id": "system:hub_review_comments"
+    },
+    "payload": {
+      "target": {
+        "eventId": "ev_4b51c718949eac8155a59d75"
+      },
+      "reason": "deleted_at_source",
+      "at": "2026-10-07T09:00:00.000000Z"
+    },
+    "payloadDigest": "sha256:0f8613687653e227ea9055f25e0940a54a80eef6e2ecd34bf66cac9f30b67194",
+    "digest": "sha256:ab6e872df2b1333e159697a5f17a790b78f76abd3035d7bcf2b7d13cf6a63fb7"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "kind": "episode",
+  "reason": "Stored times are UTC with six fractional digits.",
+  "expect": "/startedAt must match pattern",
+  "record": {
+    "schemaVersion": "replica.episode/v1",
+    "id": "ep_de190b9a6dc64fbad2f7d662",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "source": {
+      "kind": "hub_review_comments",
+      "hubOrigin": "https://replica.example.com",
+      "repository": "acme/checkout-prototypes",
+      "repositoryId": 42,
+      "prototypeId": 11,
+      "prototypeName": "Checkout redesign",
+      "branch": "checkout-redesign",
+      "buildNumber": 3,
+      "threadId": 101
+    },
+    "actors": [
+      {
+        "kind": "human",
+        "id": "github:ana-designer",
+        "role": "reviewer"
+      }
+    ],
+    "grants": ["grant_48803813d3bd224333fe1b5a"],
+    "contentTrust": {
+      "untrusted": true,
+      "treatAs": "data",
+      "source": "hub_review_comments"
+    },
+    "provenance": {
+      "producer": {
+        "name": "@github/replica-learning",
+        "version": "0.0.0"
+      },
+      "method": "import:hub_review_comments",
+      "createdAt": "2026-10-09T12:00:00.000000Z",
+      "createdBy": {
+        "kind": "agent",
+        "id": "agent:copilot",
+        "model": "example-model"
+      }
+    },
+    "startedAt": "2026-09-30T12:00:00+02:00",
+    "digest": "sha256:ba00dd0cbf45396eb1caeef56ea539a6cf165f09d964d1aef1af175da6a3e645"
+  }
+}

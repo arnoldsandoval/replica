@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/common.schema.json",
+  "title": "Replica learning v1 shared definitions",
+  "$defs": {
+    "id": {
+      "description": "A record ID: a short lowercase prefix, an underscore, and 8 to 128 URL-safe characters.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]{1,15}_[A-Za-z0-9_-]{8,128}$"
+    },
+    "digest": {
+      "description": "SHA-256 of the RFC 8785 canonical JSON of a value.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "description": "UTC time with exactly six fractional digits, so text order is time order.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6}Z$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "sourceKind": {
+      "description": "Where evidence came from, such as hub_review_comments.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,63}$"
+    },
+    "purpose": {
+      "description": "What a record may be used for. Permission for one purpose never implies another.",
+      "enum": ["review", "instruction", "evaluation", "analytics", "training", "publication"]
+    },
+    "purposes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/purpose"
+      }
+    },
+    "scope": {
+      "description": "Who a record belongs to. Hosts derive it from the caller's access, never from agent input.",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "host": {
+          "description": "The Git or Hub host, such as github.com, when the scope comes from a repository URL. The same owner/name on two hosts never shares records.",
+          "type": "string",
+          "maxLength": 261,
+          "pattern": "^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?(?::[0-9]{1,5})?$"
+        },
+        "organization": {
+          "$ref": "#/$defs/scopeName"
+        },
+        "team": {
+          "$ref": "#/$defs/scopeName"
+        },
+        "repository": {
+          "description": "owner/name in lowercase.",
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]{1,100}/[a-z0-9_.-]{1,100}$"
+        },
+        "product": {
+          "$ref": "#/$defs/scopeName"
+        }
+      }
+    },
+    "scopeName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "actor": {
+      "description": "A person, agent, or system. asserted marks an identity the host could not authenticate.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": {
+          "enum": ["human", "agent", "system", "service"]
+        },
+        "id": {
+          "description": "A prefix such as github: and a name. The name has no whitespace, control characters, Unicode format characters, or code points from the tag block, U+E0000 to U+E007F, because each can make an ID read as another.",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 300,
+          "pattern": "^[a-z][a-z0-9-]*:[^\\s\\p{Cc}\\p{Cf}\\u{E0000}-\\u{E007F}]+$"
+        },
+        "role": {
+          "$ref": "#/$defs/slug"
+        },
+        "login": {
+          "description": "The login shown at import time, for display only. Stable actor IDs, not this mutable login, identify reviewers.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,256}$"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "asserted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "humanActor": {
+      "description": "A person. Consent, approval, rejection, retirement, and export decisions need one.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/actor"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "human"
+            }
+          }
+        }
+      ]
+    },
+    "origin": {
+      "description": "An HTTP or HTTPS origin without credentials, path, query, or fragment.",
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https?://[A-Za-z0-9.-]+(?::[0-9]{1,5})?$"
+    },
+    "commitSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source": {
+      "description": "Where an episode or a piece of evidence came from, pinned to the exact Build when there is one.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/sourceKind"
+        },
+        "hubOrigin": {
+          "$ref": "#/$defs/origin"
+        },
+        "repository": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]{1,100}/[a-z0-9_.-]{1,100}$"
+        },
+        "repositoryId": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "prototypeId": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "prototypeName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "buildNumber": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "buildId": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "commitSha": {
+          "$ref": "#/$defs/commitSha"
+        },
+        "threadId": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "commentId": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "sessionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "provenance": {
+      "description": "Which code made a record, how, when, for whom, and from which inputs.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer", "method", "createdAt", "createdBy"],
+      "properties": {
+        "producer": {
+          "$ref": "#/$defs/producer"
+        },
+        "method": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-z]+:[a-z0-9_.-]+$"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "createdBy": {
+          "$ref": "#/$defs/actor"
+        },
+        "inputs": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/digest"
+          }
+        }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/slug"
+        },
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "mediaType": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        }
+      }
+    },
+    "memoryKind": {
+      "enum": [
+        "fact",
+        "preference",
+        "rule",
+        "procedure",
+        "example",
+        "anti_pattern",
+        "design_principle"
+      ]
+    },
+    "trace": {
+      "description": "The rule, skill, component, context, or token that should have prevented a problem.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": {
+          "enum": ["rule", "skill", "component", "context", "token", "other"]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "by", "reason"],
+      "properties": {
+        "at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "by": {
+          "$ref": "#/$defs/actor"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "commentId": {
+          "$ref": "#/$defs/positiveInteger",
+          "description": "For a review comment, the Hub comment this event was a version of. Its text is gone, so this is how the comment's other versions are still found."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "kind": "evidenceRef",
+  "reason": "Evidence names at least one event.",
+  "expect": "must NOT have fewer than 1 items",
+  "record": {
+    "episodeId": "ep_0674c585aa647cf9cbf49835",
+    "eventIds": [],
+    "source": {
+      "kind": "hub_review_comments",
+      "hubOrigin": "https://replica.example.com",
+      "repository": "acme/checkout-prototypes",
+      "repositoryId": 42,
+      "prototypeId": 13,
+      "branch": "onboarding-v2",
+      "buildNumber": 5,
+      "threadId": 104,
+      "commentId": 104
+    },
+    "observedAt": "2026-10-02T14:00:00.000000Z",
+    "author": {
+      "kind": "human",
+      "id": "github:cy-engineer"
+    }
+  }
+}

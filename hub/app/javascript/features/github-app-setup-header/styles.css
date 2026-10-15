@@ -1,0 +1,28 @@
+.setup__heading {
+  font-size: 2rem;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.setup__description {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--hub-fg-muted);
+}
+
+@media (min-width: 48rem) {
+  .setup__heading {
+    font-size: 3.5rem;
+  }
+}
+.setup-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.setup-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

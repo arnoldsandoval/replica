@@ -1,0 +1,122 @@
+.review-thread-message {
+  display: flex;
+  padding: 0.5rem 1rem 1rem;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: var(--brand-text-size-100);
+  line-height: var(--brand-text-lineHeight-100);
+}
+
+.review-thread-message + .review-thread-message {
+  padding-top: 0.5rem;
+}
+
+.review-thread-message__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-thread-message__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-thread-message__byline {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 0.5rem;
+  line-height: 1.25rem;
+}
+
+.review-thread-message__byline time,
+.review-thread-message__byline > span:not(.review-thread-message__identity) {
+  font-size: 0.75rem;
+  color: var(--hub-fg-muted);
+}
+
+.review-thread-message__actions {
+  justify-content: flex-end;
+}
+
+.review-thread-message__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.review-thread-message__identity {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.review-thread-message__body {
+  margin: 0 0 0 2.25rem;
+  font-size: var(--brand-text-size-100);
+  line-height: var(--brand-text-lineHeight-100);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.review-thread-message__edit,
+.review-thread-message > .review-comment-reactions__layout {
+  margin-inline-start: 2.25rem;
+}
+
+.review-thread-message > .review-comment-reactions__layout {
+  margin-block-start: 0.5rem;
+}
+
+.review-thread-message__body--deleted {
+  font-style: italic;
+  color: var(--hub-fg-muted);
+}
+
+.review-thread-message__error {
+  color: var(--hub-fg-danger);
+}
+
+.review-thread-message__menu-trigger {
+  width: var(--brand-control-small-size);
+  min-width: var(--brand-control-small-size);
+  height: var(--brand-control-small-size);
+  min-height: var(--brand-control-small-size);
+  padding: 0;
+  gap: 0;
+  border-color: transparent;
+  background: transparent;
+}
+
+.review-thread-message [role="menu"] li {
+  column-gap: var(--brand-control-medium-gap);
+}
+
+.review-thread-message__menu-trigger > [data-testid="Button-trailing-visual"],
+.review-thread-message__menu-trigger > span:nth-child(2) {
+  display: none;
+}
+
+.review-thread-message__header:has(.review-thread-message__menu-trigger[aria-expanded="true"])
+  > [role="tooltip"] {
+  display: none;
+}
+
+.review-thread-message__delete-item {
+  color: var(--hub-fg-danger);
+}
+
+.review-thread-message__delete-item span {
+  color: var(--hub-fg-danger);
+}
+.review-thread-message[data-notification-target="true"] {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: -2px;
+  border-radius: var(--hub-radius-medium);
+}

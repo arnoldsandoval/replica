@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "replica.event/v1",
+  "id": "ev_28b520ab7e8a46f55a931a20",
+  "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "type": "no_annotation",
+  "at": "2026-10-09T12:00:00.000000Z",
+  "actor": {
+    "kind": "agent",
+    "id": "agent:design-triage",
+    "model": "example-model"
+  },
+  "parentEventId": "ev_a10a4cb43fbc2fd53d6d3c55",
+  "payload": {
+    "target": {
+      "eventId": "ev_a10a4cb43fbc2fd53d6d3c55"
+    }
+  },
+  "payloadDigest": "sha256:1da707aef6a5b0f913d816273e02b4249468ab8d757864d91cf6e95c814e10a1",
+  "digest": "sha256:1ed4d22d29e05949525e3490f37343b27a0e1752970405bd484206d242cafdfd"
+}

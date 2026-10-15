@@ -1,0 +1,23 @@
+.hub-user-avatar.hub-user-avatar {
+  display: block;
+  width: var(--hub-avatar-size);
+  height: var(--hub-avatar-size);
+  flex: none;
+  object-fit: cover;
+}
+
+.hub-user-avatar--20 {
+  --hub-avatar-size: 1.25rem;
+}
+
+.hub-user-avatar--24 {
+  --hub-avatar-size: 1.5rem;
+}
+
+.hub-user-avatar--28 {
+  --hub-avatar-size: 1.75rem;
+}
+
+.hub-user-avatar--32 {
+  --hub-avatar-size: 2rem;
+}

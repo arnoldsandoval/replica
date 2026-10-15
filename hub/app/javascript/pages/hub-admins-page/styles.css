@@ -1,0 +1,31 @@
+.hub-admins-page__list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hub-admins-page__users {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.hub-admins-page__user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--hub-border-default);
+  border-radius: 0.5rem;
+  background: var(--hub-canvas-default);
+}
+
+.hub-admins-page__user > div {
+  min-width: 0;
+}

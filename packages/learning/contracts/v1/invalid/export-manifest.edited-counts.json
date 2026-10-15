@@ -1,0 +1,65 @@
+{
+  "kind": "exportManifest",
+  "reason": "An export manifest cannot be edited after it is sealed.",
+  "expect": "digest does not match the record",
+  "record": {
+    "schemaVersion": "replica.export/v1",
+    "id": "export_fcb0a171284cd0186a12f456",
+    "purpose": "instruction",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "createdAt": "2026-10-09T14:00:00.000000Z",
+    "createdBy": {
+      "kind": "human",
+      "id": "github:ana-designer",
+      "asserted": true
+    },
+    "provider": {
+      "id": "in-memory",
+      "version": "0.0.0"
+    },
+    "destination": "/path/to/prototype/.replica/learning/exports/instruction.json",
+    "contents": "all",
+    "counts": {
+      "episodes": 10,
+      "events": 25,
+      "memories": 99,
+      "grants": 1
+    },
+    "excluded": [
+      {
+        "reason": "event-retracted",
+        "count": 1
+      },
+      {
+        "reason": "event-not-permitted",
+        "count": 1
+      }
+    ],
+    "records": [
+      {
+        "kind": "grant",
+        "id": "grant_8575c35aea2466a66983b909",
+        "digest": "sha256:16019fad57d501b5532c2d1e449a133d473d4b60e09b864b3354f304ac86e005"
+      },
+      {
+        "kind": "episode",
+        "id": "ep_de190b9a6dc64fbad2f7d662",
+        "digest": "sha256:a91f50bdc88a904f987e2a600c7d0274666b965b526488d0f3e81b202175c32a"
+      },
+      {
+        "kind": "episode",
+        "id": "ep_1f2f1501c88bf130701e2e2d",
+        "digest": "sha256:d8ae1e4a0cdba904a4833888d646c889cbbc9b122d83a796ebb7b17bdf06482d"
+      },
+      {
+        "kind": "episode",
+        "id": "ep_0674c585aa647cf9cbf49835",
+        "digest": "sha256:7ff70c11cab2a82298f91e58bac002dc2ec48688d1b1aa97c95976a4b8beb44e"
+      }
+    ],
+    "digest": "sha256:d8420b3bd2b1c9b3b018271efaabaff523757b53bff78cceb041dcf5296d06a2"
+  }
+}

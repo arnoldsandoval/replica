@@ -1,0 +1,23 @@
+{
+  "kind": "consentGrant",
+  "reason": "An actor ID cannot hide control or format characters, such as this zero-width space, which make it read as another identity.",
+  "expect": "/grantedBy/id must match pattern",
+  "record": {
+    "schemaVersion": "replica.consent-grant/v1",
+    "id": "grant_7c41e0a95d2b38f6e1a4c09d",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "purposes": ["review"],
+    "sources": ["hub_review_comments"],
+    "grantedBy": {
+      "kind": "human",
+      "id": "github:ana\u200b-designer",
+      "asserted": true
+    },
+    "grantedAt": "2026-10-09T12:00:00.000000Z",
+    "basis": "The design team agreed on 2026-10-09 that Hub review comments may be reviewed.",
+    "digest": "sha256:74f98fce6452564ce94be221aa4d37d8f5df8be69996a291578091e8c5e45d16"
+  }
+}

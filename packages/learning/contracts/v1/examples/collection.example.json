@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "replica.collection/v1",
+  "id": "col_14aafa63fd33b8b25414ba18",
+  "source": {
+    "kind": "hub_review_comments",
+    "hubOrigin": "https://replica.example.com",
+    "repository": "acme/checkout-prototypes",
+    "repositoryId": 42
+  },
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "snapshotId": "3f2c8a10-5b7e-4c1d-9a2f-6e8b7c9d0a11",
+  "snapshotDigest": "sha256:a5ced3b31ec0509a305f8e32686bc6d2d812bb0940e582734e34d5f1cba2b6c1",
+  "capturedAt": "2026-10-05T18:00:00.000000Z",
+  "filters": {
+    "resolution": "all",
+    "read": "all",
+    "from": null,
+    "to": null
+  },
+  "complete": true,
+  "problems": [],
+  "counts": {
+    "threads": 9,
+    "messages": 12,
+    "episodes": 9,
+    "events": 13
+  },
+  "importedAt": "2026-10-09T12:00:00.000000Z",
+  "importedBy": {
+    "kind": "agent",
+    "id": "agent:copilot",
+    "model": "example-model"
+  },
+  "digest": "sha256:4cb823ebdb376823fafb54464ac20311545332133757ab71c6b88b71bcb7675b"
+}

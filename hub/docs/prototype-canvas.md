@@ -1,0 +1,434 @@
+# Prototype canvas
+
+## Local prototype controls
+
+The source canvas lets prototype authors change ordinary app state without editing files. The sliders icon in the toolbar opens a slim, canvas-owned panel over the left of the preview, separate from Hub review UI. It supports boolean, number, select, radio, segmented, slider, checkboxGroup, text, textarea, color and button fields, plus one-level groups. Conditions are declarative JSON; neither schemas nor host messages select arbitrary components or executable URLs.
+
+Authors put version-1 definitions in `public/controls.replica.json`, served at `/controls.replica.json`. Each control includes a binding to native fields/buttons, styles, query/hash settings or optional app-owned APIs. The Copilot plugin and [Hub Build previews](preview-serving.md#prototype-controls) supply one shared injected adapter. Each Build retains its own definitions. The [authoring reference](../../starter/.agents/skills/prototype-controls/references/authoring.md) owns the JSON and binding contract.
+
+### Connection and state
+
+The adapter fetches static definitions once per preview page. Definition edits take effect on page reload; there is no Replica file watcher or mid-session schema replacement. Missing definitions mean no Controls. Invalid/unsupported definitions show a local Controls error without taking down the ordinary app, and reject publication when present in the actual retained asset. There is no legacy app-side connection or bundled-runtime compatibility layer.
+
+The document accepts one declaration or `{ "version": 1, "sets": [...] }`, with unique scopes. Every control contains its own binding. Native target safeguards are shared with existing preview clicks; API bindings use author-chosen objects and methods with bounded async readback, notifications or polling. No eval, framework internals, router detection or argument expressions are supported.
+
+Each set may specify an existing page `container` selector instead of app mount hooks. It appears while that container matches; sets without it can stay mounted. Values survive ordinary unmount/return. Missing, ambiguous, unsupported or stale binding targets disable only the affected control with a reason and reconnect when valid. App rejection/clamping shows actual valid readback. Actions are not persisted or replayed.
+
+Sets retain `label`, shared/page `role` and optional `panel.width`; widths range from 160 to 4096, default 288, capped to the viewport. Role affects ordering and width priority, not lifecycle. Field IDs may repeat across sets, and conditions refer within their own set.
+
+Shared and page controls render together in one panel. Active page sets determine its width, taking priority over shared widths; if multiple page sets are active, the widest wins. Without page sets, the widest shared set wins. Switching to a wider set triggers bounds reclamping. Shared fields always render first, with 16px above the first fields in the healthy panel. Scope labels remain accessible names, not visible headings; one divider separates each pair of scopes with visible fields or group headings. Empty scopes and scopes whose fields and groups are all hidden have no section or divider. Collapsed groups retain their visible heading and scope boundary. Groups render at their first occurrence in the controls array, so ungrouped fields can appear before, between or after groups. Keep each group's fields adjacent when authoring to make this order clear. Group headings are bold 12px ghost buttons, extending 4px beyond each side while their text stays aligned with the fields. Adjacent groups share one divider; a group followed by an ungrouped field has a divider below, and the final group has no trailing divider. A scope divider does not add another group-heading border. The toolbar Controls icon and panel title are unoutlined ghost buttons with a hover-only background, independent of expanded or pressed state; keyboard focus remains visible.
+
+The separate `replica:controls` protocol v1 preserves review protocol v1. Controls status requests and replies use `replica:controls:status` and `replica:controls:status-result`, so the shared Controls bundle does not include canvas-only messages. Both ends check the exact origin and actual frame identity. Commands carry a connection epoch, unique request ID, exact declaration fingerprint and snapshot revision. Replies report authoritative settled state, not callback results. Reload and reconnection reject pending requests with an unknown-outcome message; actions are never automatically replayed. Ordinary Builds without definitions remain usable, with no Controls connection. Legacy app-side Controls connections and bundled runtimes are not supported.
+
+The renderer and bridge use Hub's shared engine, bindings adapter, DOM safeguards and types under [`app/javascript/utils/prototype-controls/`](../app/javascript/utils/prototype-controls/). The precompiled canonical validator includes its runtime helpers and needs no `unsafe-eval`; the canvas CSP stays unchanged. The same source is bundled into the Copilot plugin, Hub bridge and screenshot driver. See [Controls development](prototype-controls.md) for schema generation and freshness checks.
+
+Agents can read diagnostics with `get_controls_status` on the exact open canvas instance. `controls` is projected from the Controls panel's accepted state, the same snapshot used to render binding errors; `runtime` reports the current in-frame adapter snapshot so a stale panel/bridge mismatch is visible instead of silently choosing one. Results identify the current original prototype URL, origin and route; control values and callback results are omitted. Error text is untrusted app data. Optional `timeoutMs` waits up to 10000 milliseconds for frame initialization and panel readiness; unfinished work returns `pending`. The action does not edit values or invoke actions. A `?rc=1` query marker is internal Controls URL state and does not indicate a different route or worktree. `validate_controls` reports the definitions URL and origin separately. Before repair, agents verify server ownership against the worktree and can repoint the panel with `connect_prototype`; failed replacement leaves the existing working connection intact. Runtime status does not replace rendered effect and reset checks.
+
+Live actions run through a per-panel queue. `get_action_diagnostics` reads its last 20 requests directly from the extension, even when the renderer is unresponsive. It returns request IDs, opaque renderer IDs, outcomes and elapsed stages: **queued**, **delivered**, **handler started**, **status collected** for Controls reads, and **reply received**. No control values, app errors, routes or capability URLs enter this trace. A timeout names the request ID and last stage. Only the renderer that dequeued a command can advance it or complete it; another poller cannot take the same command. Reconnect or close cancels outstanding work. Effect cleanup reports cancellation instead of abandoning a delivered request, and an HTTP-rejected reply becomes an explicit failure without replaying the command. The HTTP result contract accepts both runtime-only diagnostics and the panel-plus-runtime status shape.
+
+Opening or closing Controls never replaces the preview URL or reloads the iframe. Controls do not require a Hub connection, review credentials, or an open comments pane. Existing route reporting, navigation and appearance messaging remain unchanged. The controls protocol has no access to Hub grants or privileged canvas capabilities.
+
+| State                               | What the panel shows                                          |
+| ----------------------------------- | ------------------------------------------------------------- |
+| Connecting                          | Loading until discovery and compatible saved overrides settle |
+| No declaration or no mounted scopes | No active controls; no fabricated success or failure          |
+| Missing or unsupported runtime      | An explicit explanation and Retry connection                  |
+| Invalid configuration               | Fix definitions, then reload the preview page                  |
+| Missing action handler              | A disabled button and explanation                             |
+| Pending or failed action            | Busy button or explicit error, without automatic retry        |
+| Failed or corrupt storage           | A visible error; in-memory controls remain usable             |
+
+During startup the panel shows loading until discovery and saved overrides settle, rather than transient binding errors. Persistent failures show a short message beside the affected control, such as **Show search is unavailable**; a rejected value that can be retried says it could not be applied. **Technical details** expands a Primer Brand Accordion containing the exact binding errors. Those errors also remain available through `get_controls_status` regardless of disclosure state. A failed startup restore does not retain a separate aggregate error after the live binding recovers; field messages, diagnostics and status all clear from the recovered snapshot.
+
+Control failures offer one panel-level **Fix with Copilot** action, not one action per field. Connection and storage failures offer **Diagnose with Copilot** alongside the existing retry action. Both reuse the explicit diagnosis request in the current chat, not automatic repair, and send only the panel's connection status, failure-presence flags and current same-origin preview URL with reserved controls parameters removed. Raw app errors and control values are not sent; the agent reads exact errors through the status action. Opening the panel, expanding diagnostics, and detecting failures never dispatch a chat turn. Ordinary action exceptions alone do not offer connection diagnosis. Recovery, changed failure evidence or a changed route clears the request acknowledgment and dispatch error; responses from an earlier failure are ignored. Identical requests are briefly suppressed, while different failure evidence or routes can request a new diagnosis. Copilot must distinguish missing integration, incompatible versions, connection failures and storage failures using available evidence, and state uncertainty rather than assuming an outdated plugin. Build panels use the same field summaries and diagnostics but do not offer this local diagnosis action.
+
+After read-only investigation, Copilot proposes a specific repair with the likely cause, intended file changes, exact commands and risks, including dependency lifecycle hooks, repository script execution and server starts or restarts. The user must explicitly confirm that proposal before any repair or mutating operation. Declined or unavailable confirmation ends the flow with diagnosis and recommendations. This chat instruction does not enforce command isolation or replace host permission checks.
+
+The panel is nonmodal: it has no backdrop, focus trap or close button, and the preview remains interactive. The toolbar icon dismisses and reopens it. Drag the grab handle beside **Controls** to move it within the preview, or focus that handle and use arrow keys (10 pixels, or 1 pixel with Shift). The handle retains its accessible name and visually hidden movement instructions without a tooltip. Pointer cancellation or Escape during dragging restores the starting position. Resizing or expanding the panel keeps it within the preview bounds. Its title is one full-width disclosure button beside the handle, with **Controls** at the left and the expand/collapse chevron at the right, each inset 8px. Click anywhere in that button to collapse the panel to a single header row.
+
+Every schema group is automatically collapsible and initially expanded. Folding a group only hides its presentation; fields stay mounted, values and saved overrides stay unchanged, and schema visibility conditions still apply normally. Position, panel folding and group folding survive toolbar dismissal while the canvas stays open, but reset on canvas reload. They are not stored alongside ordinary control values. Agents only author the existing flat groups and controls JSON; they do not supply custom UI, folding flags or CSS.
+
+Every group heading has 8px top and bottom padding around a minimum 24px label row, regardless of its position, visibility of siblings or folded state. Collapsed hover areas reach the next visible divider or the content edge without overlapping another hit target. Only dividers depend on adjacent visible content; final groups have no trailing divider. A recovery footer appears only when diagnosis or Retry is available and keeps its own border.
+
+When a group is the panel's first item, its hover area starts directly at the list's top edge without extra outer padding. An ungrouped first field retains 8px of outer top padding. Connection notices and errors retain their normal padding.
+
+The renderer owns compact typography, field spacing and padded, separated recovery buttons. **Retry connection** appears for a disconnected error or an exhausted connection command budget; **Retry saving** appears for a storage failure. After 2,000 commands, the bridge stops accepting commands and explicitly requests reconnection. Fields and Reset are disabled until Retry reconnects the runtime with a new epoch; rejected or interrupted actions are never replayed. Text, number, textarea, select, checkbox, radio, validation and action controls use Primer Brand components. Brand does not provide slider, color-picker or segmented primitives: range and color inputs use Hub semantic tokens, and the segmented control composes Brand radios with an accessible, token-styled Hub surface. The renderer inherits the current Brand theme without overriding its light/dark selection. When a focused conditional field disappears and leaves focus on the document body, focus moves to the controls region; existing toolbar or preview focus is preserved. Hub shares these renderers and the connection state machine without using the canvas's disk API.
+
+Field drafts allow intermediate empty or short text and number edits without sending invalid values to the app. Invalid drafts show a local explanation and revert on blur. Valid edits are ordered before applying current snapshot revisions; only authoritative effective values are saved.
+
+### URL-backed values
+
+Canvas and Hub share `rc.<scope>.<controlId>` settings in prototype URLs. Absent overrides use JSON defaults. Ordinary edits use `replaceState`, preserving router state without reload or extra history entries; Back/Forward restores the navigated settings. Invalid/duplicate entries are reported and discarded, and the 8 KB URL limit produces a visible saving error while keeping values in memory. A direct app-owned query/hash binding is separate and explicitly chooses in-place updates or navigation.
+
+Canvas settings update the displayed original prototype address, not the private renderer URL or proxy capabilities. Controls never request project metadata or read/write private value files. Existing files are not migrated or deleted. Review routes and return paths exclude reserved Controls keys.
+
+Hidden fields return to defaults and lose overrides. **Reset all controls** restores all definitions, including inactive and unvisited sets, and removes overrides. It stays in the panel header, needs no confirmation and shows no success message. Pending actions prevent reset; actions/results are never serialized or replayed. URL errors remain explicit while other controls stay usable. The panel waits for restoration, but the ordinary app may paint before injected defaults arrive.
+
+### Verification
+
+Run shared adapter/schema tests, renderer/iframe tests and type checks, then rebuild/check committed assets in the devcontainer. `controls:test` exercises all eleven types through separate jsdom frames with an ordinary app and static definitions. This verifies integration, not real-browser isolation or visual fidelity. The existing screenshot driver separately proves injected defaults in captured pixels.
+
+`bin/setup` restores Hub's locked dependencies, including the validator generator. `controls:build` generates the minified screenshot adapter, Hub bridge and Storybook fixture; `controls:assets:check` checks freshness in CI. The screenshot driver reads its committed adapter without a compiler. No prototype package installation or compatibility preparation is needed.
+
+## Branch publication status
+
+The sidebar and toolbar use the same branch publication state. The extension checks the
+**exact current branch in the verified GitHub origin**, not the configured upstream:
+renaming a branch can leave it tracking a different branch. Only a successful GitHub
+matching-refs response without that exact ref confirms an unpublished branch. Authentication,
+network, malformed-response, and access errors remain unknown and offer **Retry status**.
+
+When Hub verification is unavailable or denied, the sidebar shows one compact warning
+banner with the returned error and one **Retry status** button, separated by the standard
+16px spacing token, rather than a second branch status message and **Retry connection**
+button. Retry rechecks both Hub and GitHub
+branch status and stays disabled while those checks run. Once Hub verification
+recovers, any remaining branch failure appears in the branch publication section.
+
+For an unpublished branch, the panel shows one sentence above **Publish**:
+"This branch won't appear in the hub until you publish." The panel does not display a
+separate dirty-file notice. The Publish-click dialog below controls permission for new commits
+without altering the existing non-force-push restrictions.
+
+While the requested commit is not on the remote, the panel shows only
+"Pushing branch to repository." above the existing disabled, loading **Publish**
+or **Publish changes** action. Once remote evidence matches the commit, it shows the
+actual workflow or Hub import phase instead of continuing to claim a push is underway.
+Separators belong to the following populated section; empty Hub settings are not mounted.
+
+**Publish** asks Copilot to publish the current branch through the existing push workflow. If uncommitted changes exist and no saved commit preference applies, clicking Publish first opens the publishing-choice dialog described below; opening the canvas alone does not. The extension itself does not commit, push, or manually dispatch Actions. Duplicate requests are suppressed for ten minutes.
+
+After the branch is pushed, the canvas distinguishes no matching run, queued/running,
+completed unsuccessful, and workflow-success-awaiting-import states. Workflow evidence
+must match the branch and current commit. A successful workflow is **not** publication:
+Hub must import a successful Build of this commit, and the prototype must be registered.
+Older successful Builds remain available for reviews but do not mark the current commit
+published. Hub also reports the current Build's commit and state to distinguish import failures.
+
+Local uncommitted edits keep the matching published Build URL available and do not block publication status updates. Publish checks the freshly captured commit against that Build before skipping a redundant request, so a newer local commit is published instead of relying on stale status.
+
+**View workflow run** uses Brand's normal InlineLink with the shared green Hub accent.
+It opens the matching GitHub workflow URL in a new tab with `noopener noreferrer`.
+
+The connected canvas automatically registers an eligible prototype when Hub has imported the current checkout's successful Build. Hub uses the branch name as the initial title, preserves any saved metadata, and rechecks write access and branch eligibility. Background registration does not extend connection inactivity limits. Authors can change the title and description with **Edit details** afterward. Failed registration remains visible and is retried by status polling.
+
+Branch status resolves the active Prototype, not a retired history with the same name. Retained Build and review links keep referring to their original Prototype. A genuinely new history must import its own successful Build before automatic registration; see [Build discovery](build-discovery.md#matching-builds) for retirement and ancestry-based resumption.
+
+Build and registration progress update automatically without a **Refresh publication** button or registration form. Once ready, the sidebar hides the branch publication section; the existing Published badge is sufficient.
+
+Clicking **Publish** or **Publish changes** starts the button's loading state. After Hub imports and registers the successful Build, the canvas shows a **Published** status without opening a dialog or leaving the preview. It retains its normal button appearance and keyboard focusability, with the tooltip **Latest changes already published** on hover or focus. It cannot dispatch publication. New local changes retain the existing **Publish changes** action. Publishing from the sharing-readiness dialog keeps that flow open, so authors can explicitly choose **Share prototype** when ready. The published Hub URL is available under **Internal prototype link** on that page.
+
+If registration fails after Hub returns a readable prototype, the canvas keeps its Builds and reviews available and shows the shared compact `HubAlert` with `variant="critical"`. Revoked credentials and generic denied access still use the connection error flow.
+
+Eligibility banners use the headline **Branch not eligible for Hub registration** and a
+separate description of the reason. Shared `HubAlert` titles use Brand's bold text weight;
+descriptions retain regular weight. A missing remote branch shows **The branch no longer
+exists on the remote repository.** Other registration and verification failures also
+separate their headline from their description, without labeling a delayed Build or an
+unknown failure as branch ineligibility.
+
+The Hub prototype API returns nullable `registrationReason` alongside `canRegister`.
+Registration error responses can also include this code. Eligibility codes are
+`write_access_required`, `repository_mismatch`, `already_registered`,
+`branch_not_reviewable`, `remote_branch_missing`, and `branch_authorship_required`.
+`successful_build_required` is a separate automatic-registration failure, not an
+eligibility rule. Display polls cache the eligibility result for one minute; writes
+recheck it fresh. This adds no new automatic registration requests or activity assertions.
+
+The extension preserves the reason on the prototype and current Hub status. Unknown
+codes and older Hubs retain a generic error banner. With an older Hub, a false `canEdit`
+can establish missing write access, and an independently verified absent remote ref
+can explain a false `canRegister`. An excluded default branch is never inferred to
+have been deleted. Reasons from a different checkout are not reused. Specific
+server-side reasons require deployment of the updated Hub API; updating canvas assets
+alone cannot make an older Hub report authorship or exclusion reasons.
+
+Remote checks are cached for one minute during the existing 15-second display polling.
+Explicit refresh and window focus refresh the evidence; checkout changes invalidate it.
+Detached checkouts cannot request publication. Expired or revoked connections require
+browser approval again; connecting never pushes a branch.
+
+### Deterministic publication example
+
+The Storybook **Components / Prototype canvas / Publication example / Playground** reuses
+the existing `starter/` welcome prototype in an iframe and runs the real canvas renderer
+against story-only fixtures. It needs no GitHub credentials or Hub and makes no real
+publication, approval, or registration requests. Production detection has no demo mode.
+
+In the devcontainer, run the existing starter from the repository root:
+
+```sh
+cd starter
+npm run dev -- --host 0.0.0.0 --port 38763
+```
+
+In another devcontainer terminal, run `cd hub && npm run storybook` (forward ports
+38763 and 6006). Open
+`http://localhost:6006/?path=/story/components-prototype-canvas-publication-example--playground`,
+then select **Edit details** in the toolbar. Use Storybook Controls to switch scenarios; set `prototypeUrl` if
+the forwarded starter URL differs from `http://127.0.0.1:38763/`.
+
+The fixtures cover an absent branch with a different upstream and dirty files, unpushed
+commits, awaiting/queued/running/failed Builds, import pending, registration, readiness,
+remote-check failure, disconnected/expired approval, detached HEAD, and loading.
+Clicking Publish simulates only the disabled pending request; choosing another
+scenario resets the example. Retry reads the same deterministic fixture.
+
+**Share management** shows the full canvas with the Publish/Share button group, without a demo banner above it. The share button opens management with sample links; the icon-only X restores the same preview. Creating and deleting links changes only the story's in-memory fixtures, and Open does not launch a browser. Set `prototypeUrl` in Storybook Controls or `VITE_STORYBOOK_PROTOTYPE_URL` when starting or building Storybook to use an authorized local example server. It defaults to `http://localhost:5173/`; the story never contacts a real Hub.
+
+Prototype authors can keep a running local preview in a Copilot canvas while checking the checkout and requesting a publish. The canvas is a Copilot extension, not another Hub preview or publishing service. See the [extension README](../../.github/extensions/replica-prototype/README.md#install) for Copilot CLI installation and updates.
+
+## Processes and ownership
+
+```text
+Copilot session -> SDK over stdio -> Node extension
+                                     |
+                                     +-> loopback HTTP servers for open panels
+                                     |     -> canvas controls -> iframe -> independently running prototype dev server
+                                     |
+                                     +-> session-workspace JSON state
+                                     +-> private repository-scoped Hub grant -> Hub Builds and review APIs
+                                     +-> git and gh status reads
+                                     +-> session.send end-to-end publish request -> Copilot chat
+
+Copilot branch push -> existing GitHub Actions workflow -> artifact -> Hub import -> Build preview
+```
+
+Copilot loads the extension through its SDK and communicates with the Node process over stdio. The `.mjs` entrypoint uses the SDK's automatic resolution; prototype repositories do not install SDK packages. The plugin entrypoint imports the shared implementation.
+
+Opening a panel starts a server on an ephemeral `127.0.0.1` port. Without `prototypeUrl` or a saved connection for the current session and checkout, the panel scans for running HTTP servers. It uses `lsof` to match listening processes to this exact checkout directory or its descendants, excludes other worktrees and Copilot providers, and checks loopback URLs for an HTML response. Results show URLs, process names, and PIDs; selecting **Connect** rechecks that server and connects the same panel. The setup server protects scans, selections, and startup with a per-server token. Opening a panel never executes repository scripts or sends a setup request to chat.
+
+For an empty scan, **Start dev server** is the primary action beside **Scan again** when the current directory has a supported `dev`, `start`, or `serve` script. The panel shows the package-manager command, working directory, script body, and lifecycle hooks; several candidates require a script selection. Only a user click executes the displayed repository code. The manifest and lockfiles are fingerprinted and checked again before execution. Package-manager selection uses `packageManager`, then a lockfile, then npm; conflicts stop startup. Direct Vite, Next.js, Astro, webpack dev-server, Vue CLI, and Create React App scripts are supported. Workspace traversal, custom wrappers, compound commands, and automatic dependency/runtime installation are out of scope. Corepack network downloads are disabled.
+
+Startup is supported on macOS and Linux on the extension host. A private canonical-checkout lock prevents concurrent launches across providers and remains held until failed-start teardown completes; panels within a provider share one owned process. Replacement panels wait for an old checkout lease to finish teardown before rediscovering servers. Readiness matches an HTML listener to the spawned process group, with bounded output and an approximately 30-second timeout. Failed attempts remain retryable. A single existing listener found after package-manager preflight and immediately before launch is reused; several require an explicit selection. Closing the last owning panel or shutting down/reloading the extension process terminates its owned process groups, never manually started servers. Foreground-session hooks do not tear down panels between chat turns. Startup lease acquisition is optional and cannot prevent an explicit prototype URL from opening when the checkout is unavailable. Only intentional user-facing startup errors are displayed; unexpected exceptions use a fixed fallback, separate from the captured server output. The [extension README](../../.github/extensions/replica-prototype/README.md#start-a-dev-server) describes the user-facing boundary.
+
+**Scan again**, **Start dev server**, and script selection are disabled while scanning or starting and are available again after success or failure as appropriate. Missing tools and failed HTTP checks appear in the panel. Discovery only sees processes visible to `lsof` on the extension host; container-hosted servers, HTTPS-only servers, and servers that require a non-root route may need an explicit URL. Probes have a two-second timeout and do not follow redirects. A listener cannot reveal a hash route.
+
+The connected server serves the canvas HTML, its committed renderer assets, and saved JSON state through GET requests. The controls live on that loopback origin. The iframe loads `prototypeUrl`, including its path and hash route, directly from the independently running HTTP or HTTPS dev server. When that URL is the bare root, the canvas uses the initial Hub start page if Hub owns a setting; otherwise it reads `startPage` from the local checkout's `.prototype`, including uncommitted changes. An explicit Hub clear means `/` and prevents reading the file. Older Hubs that return the `startPage` field are treated as authoritative too.
+
+The browser bar above the canvas toolbar has back, forward, reload, an editable address, open-in-browser, and light/dark appearance controls. Addresses stay on the connected prototype's origin. Back and forward use the routes reported by the local commenting bridge; without a responding bridge, navigation inside the iframe cannot update the address or history across origins. Open-in-browser asks the extension host to open the current address in the system browser, since the canvas iframe cannot create an app tab. Two independent themes apply: the URL bar and its appearance buttons follow the Copilot app theme, while the framed page, lower toolbar, controls, Hub panel, dialogs, and share management follow the selected prototype appearance. Outside Copilot, the URL bar falls back to the system theme. The initial prototype appearance follows the system preference; after selection, it is independent of the Copilot app theme. Changing appearance does not reload the preview. A prototype's own theme settings can still override the framed preference; the canvas cannot observe that cross-origin override.
+
+Reload replaces the preview iframe with a fresh document at the current address, including its path, query, and hash. Submitting the current address does the same. Canvas navigation history and appearance are preserved; the commenting bridge reconnects to the new frame before its route can be used for agent clicks.
+
+Live-action polling continues across frame replacement, so a command already dequeued by the server still receives a result. Reloading while a prototype click awaits confirmation returns an explicit cancellation error instead of dropping the command or blocking subsequent actions until the server timeout.
+
+The compact browser bar uses the documented Copilot app tokens for its surfaces, text, borders, focus, errors, hover, and shadows, with its own system-themed Brand tokens as fallbacks. Its native inputs also follow the app's mirrored light/dark attributes. The address field and appearance toggle share a surface mixed from the app background and text colors instead of a fixed gray. Unselected icon buttons use a translucent theme-text hover background. Canvas buttons change colors immediately for appearance and hover changes, without Primer's background and border transitions or backdrop blur; loading spinners remain animated. The blur is unnecessary on solid canvas surfaces and can delay visible background repainting in the embedded browser even when computed colors have already changed. The active appearance button sits flush inside the toggle, with no surrounding padding. The external-browser button has equal spacing from the address field and appearance toggle, including at narrow widths.
+
+Copyable sharing URLs use the shared noncompact input's current theme surface for the copy button and long-URL fade, with opaque hover and pressed backgrounds so the URL never shows through the button. Compact copy controls keep their button beside the input without a fade. Slider thumbs and selection, comment-overlay, and marker shadows use light/dark semantic tokens. The renderer sends only its accent color to the local commenting bridge on appearance changes, frame loads, and bridge readiness. Element and area selection highlights, including an existing selection, follow that accent without reloading the prototype or changing its own styles. The bridge accepts theme messages only from its registered parent and validates the color. Avatar images, chosen color swatches, and the modal backdrop remain unchanged.
+
+The **Open internal prototype link** control on the sharing page opens a new browser tab. It does not reuse a named browsing target or navigate the canvas.
+
+The `inspect_live` canvas action reads the open panel's current address, unsaved address draft, selected appearance, back/forward availability, history position, and most recently confirmed prototype route. It does not inspect the page DOM or capture a screenshot. `click_prototype` requires a CSS selector, an `expectedLabel` matched against an explicit label attribute or literal element text (not the full accessible-name algorithm), and that confirmed route. The local bridge clicks only a unique, visible, unobscured interactive element on the current page; it rejects changed routes, effectively disabled controls, hidden ancestors, transparent controls, forms, external links, and links that open another tab. The action does not submit forms or run agent-supplied JavaScript. A missing or incompatible bridge produces an error rather than reporting a click. Actions run against the open canvas instance through its token-protected loopback server; closing or changing the panel cancels pending commands.
+
+When the prototype rejects a click, the action returns a trusted local failure message. Error text supplied by the prototype is not forwarded to the agent.
+
+`validate_controls` fetches the open prototype's served `/controls.replica.json` from the extension process and checks it with the bundled Controls validator, the same JSON syntax, schema and semantic rules the panel and Build action apply. It returns `valid`, `missing`, or `invalid` with up to 50 JSON-path issues. `reload_preview` reloads the preview frame at its current address, like the toolbar's reload button, and returns that address. The `prototype-controls` skill runs validation until it passes, then reloads, after every definition edit.
+
+The local file must be a regular JSON file, not a symlink, of at most 16 KiB. It contains a local route such as `{"startPage": "/#/activity"}`. A missing file keeps the supplied URL; invalid files report an error and keep the preview usable. An explicit URL path, query, or fragment takes precedence. Later status refreshes and metadata edits do not move the preview. The canvas UI server is separate from the proxy that forwards prototype files. A working canvas UI server does not mean the prototype dev server is reachable.
+
+The server requires a per-server request token for preview health, Hub, refresh, and publish requests. This token protects local canvas controls; it is not Hub authentication and does not grant access to Hub Builds or comments on its own. Hub credentials remain in Node. The renderer, iframe, and URLs never receive the grant. The loopback server refuses requests with an unexpected Host header.
+
+### Local canvas boundary evidence
+
+The local canvas is not a Hub-served Build. Its [runtime tests](../app/javascript/application/prototype-preview-bridge/index.test.ts) check the registered parent origin and window, malformed anchors and safe-click guards. They also check that the local review runtime does not activate when Hub's injected review bridge is present. The [renderer tests](../app/javascript/features/prototype-canvas-hub-panel/bridge-health.test.tsx) reject ready messages from the wrong origin or window and incompatible protocols. The renderer sends commands only to the selected prototype origin and checks the current request nonce on replies.
+
+These source-level and jsdom checks do not prove isolation in an installed canvas or browser. The preview-proxy tests check injected delivery without a server plugin; they do not verify Hub Session/public-share access, the deployed Hub CSP or canvas visual fidelity. Record the extension source/assets revision and the exact local preview route when collecting live canvas evidence. [Hub policy and deployment evidence](security.md#evidence-and-deployment-checks) remain separate.
+
+## State and refresh
+
+The extension stores JSON under the Copilot session workspace, separate from the prototype checkout. Its state key derives from the session workspace, normalized prototype URL without the fragment, repository, branch, and commit SHA. This key is distinct from the panel's transient instance ID. Closing a panel stops its HTTP servers but leaves state on disk; reopening can load the same state. Opening the same instance again reuses its servers and updates the active context when the prototype changes. State belongs to that session workspace, not to every Copilot session for the repository.
+
+Connected URLs and the panel's input hints are saved separately by session workspace and checkout path, not by panel ID. A fresh panel or provider restart can restore that connection. Explicit URL input overrides the saved connection. Opening a saved or explicit URL checks that its server responds before displaying the preview; it never starts the server.
+
+The connected preview checks its server through a protected endpoint every five seconds, with a two-second connection timeout. A failed connection returns the same panel to server selection, with restart instructions below the headline when no servers are found. Users can restart and reconnect the server or choose another one; the saved connection remains available for future opens. HTTP error responses and redirects count as reachable so the iframe can show dev-server diagnostics or follow the page's normal navigation. The setup and renderer servers stay alive until the panel closes, and reconnecting to the same target reuses the renderer server without revoking Hub authorization.
+
+The initial renderer load, window focus, and `refresh_status` canvas action read git and GitHub again. A lightweight Hub status refresh checks the current checkout every 15 seconds; the branch shown and Hub prototype change when the checkout changes. State reads, refreshes, and publish requests select a separate state file when the checkout switches branches. The renderer reads cached state every 15 seconds when idle, but refreshes git and GitHub workflow status while a publish is pending. Periodic polls wait for the preceding request to finish rather than discarding slow responses. Hub status refreshes independently, so a newly imported Build updates the open canvas even without window focus. A prior successful Build remains in the Hub panel but does not complete a new publish: the matching Build must advance beyond the Build number captured at request time, without comparing timestamps across machines.
+
+The left toolbar button shows the Hub prototype title, or the current branch when no title is set. It opens **Build details** with the current checkout branch, Copilot session ID, and the number of commits behind its upstream. With no upstream, it compares the local `main` branch and labels that comparison as local. When Hub detects a checkout change before the Git stats refresh finishes, the dialog withholds the old comparison and requests fresh stats. If the refresh fails, the comparison remains unavailable rather than showing the previous count. If neither ref exists or Git cannot compare them, the dialog shows the failure instead of a guessed count. Branch and session ID can be copied from the dialog.
+
+All canvas dialogs (Build details, publishing choices, sharing readiness, Hub connection, and commenting recovery) use the shared `CanvasDialog` component. It owns the header, compact `HubIconButton` close control, surface styling, Escape and backdrop dismissal, and focus restoration. Each dialog supplies its content and can retain a content-specific width. Share prototype uses a full-page view rather than a dialog.
+
+### Sharing a prototype
+
+The toolbar groups Publish on the left with an icon-only link button on the right, labeled **Share prototype**. Publish retains its existing workflow and status but no longer opens a Published dialog. The Share button remains available when sharing is blocked so the readiness dialog can explain the connection, permission, or Build requirement. It uses `HubIconButton` for its label and hover/focus tooltip. Primer Brand's `ButtonGroup` only renders direct Brand Button or ActionMenu children, so this pair uses a local semantic group wrapper rather than dropping the Hub icon button or creating another shared primitive.
+
+**Share prototype** replaces the visible preview with a full-page view using Hub's shared content body and complete `ShareLinksContent` presentation, including `ShareLinksForm` and `ShareLinkRow`. Its background, content width, padding, form alignment, list, and empty states follow Hub rather than canvas-specific substitutes. The canvas omits the prototype header, avatar, and version badge. An icon-only X beside the heading returns to the preview, with an accessible **Back to preview** label and tooltip. **Internal prototype link** comes first and offers the normal Hub URL with copy and open actions, explicitly requiring GitHub sign-in and repository access. Repository readers can use it even without public-sharing permission. **Public share links** follows with the existing permission checks; without confirmed permission, it shows an explanation instead of public links or a creation form. The form shows the latest successful published Build's number, commit, and publication time, without a historical Build picker. That target stays fixed until the user leaves the view. A newer Build or local edits do not change the link being created. Sharing an older successful Build remains possible while a new publication is pending or failed. The page does not share the current preview route or local server.
+
+The page requires a label and offers one-day, seven-day (default), thirty-day, and never-expiring links. Creation is an explicit action, not a side effect of opening, loading, copying, or connecting. New links appear as ordinary list rows, without a creation success message or outline. Below the form, it automatically retrieves all active links across the Prototype's Builds, with Copy, Open, and confirmed Delete; API pagination needs no user action. **Refresh links** reloads the entire active list without publishing or creating links. There is no historical Build picker for new links, expired history, or existing-link editing. Hub's wrapper retains native Rails form actions and CSRF tokens; the canvas wrapper supplies controlled values and Node callbacks. See [Share links](share-links.md) for permissions and the JSON contracts.
+
+The extension's focused sharing module holds an opaque management target bound to the selected Hub, repository, branch, Prototype, and connection. Token-protected loopback routes forward reads and mutations through the existing Node Hub client; the renderer never receives Hub bearer credentials. Context reads do not call automatic registration. Each mutation rechecks the target before dispatch and uses Hub's current sharing permission checks. A changed checkout, Hub, or connection requires reopening the page.
+
+The renderer keeps requests and outcomes at app level so leaving the page does not pretend to cancel an already-dispatched mutation. Unknown outcomes require an authoritative list refresh, never automatic POST replay. Loading and failures are explicit; clipboard failures preserve a selectable URL. The page enters over the preview with a 300ms fade and a 400ms upward slide from 8rem below its resting position, starting together. The fade uses Primer Brand's fast duration token; both animations use its glide easing token. Reduced-motion preferences disable both animations. Entry focuses the page heading. The X button returns focus to the share button immediately. The inactive preview remains mounted at its existing dimensions, preserving its route and runtime state, but is covered by the management page, inert, and unavailable to keyboard or assistive-technology navigation. The grouped controls stay together at narrow widths while the toolbar wraps preceding controls; management content scrolls and the shared form and row actions adapt to available width.
+
+The preview grid sizes its toolbar row to the content. A resize observer keeps the Hub and controls panels' preview offset aligned with the toolbar's actual height when controls wrap or the canvas widens again.
+
+The extension reads the current branch, working tree, and origin with git. It checks for `.github/workflows/replica.yml`, uses `gh` to list workflow runs for the target branch, and reads the workflow actor for a successful run. Missing working-directory or session-workspace information prevents opening the canvas. Missing git or `gh` data produces an unavailable status rather than proof of publication. Invalid stored JSON fails to load instead of silently discarding saved state.
+
+## Publishing boundary
+
+The Publish click, or the publishing choice when a dialog is required, sends a request to Copilot chat through `session.send`. The extension does not open a separate confirmation prompt or instruct Copilot to ask again before committing or pushing. Copilot carries out the request under the host's existing tool permissions. Those settings determine whether a tool call needs approval; an additional prompt is not guaranteed. The publishing choices below control whether local edits may be committed, not a separate approval for each Git command.
+
+Each Publish click checks fresh Git status, including staged, unstaged, and nonignored untracked files, rather than relying on the periodically refreshed status. With uncommitted changes and no saved commit preference, **Publish uncommitted changes?** offers **Commit changes & publish** and **Publish committed version only**. Above the checkbox it says: "Do you want to commit changes before publishing? Publishing the committed version only excludes your local uncommitted edits." Copilot selects task-related changes; there is no file-selection UI. The close icon and Escape dispatch nothing and do not save permission; there is no Cancel button. Clean checkouts continue without this dialog.
+
+**Always commit changes before publishing for this prototype** is unchecked by default in the publishing-choice dialog, without helper text below it. Choosing **Commit changes & publish** with that checkbox saves an opt-in. It is an owner-only local preference keyed by verified GitHub repository and exact branch, shared across this user's worktrees, sessions, and panels for that branch on this computer, not committed or shared with collaborators. Other branches do not inherit permission; earlier repository-wide preferences are not reused. Later Publish clicks with local changes on the same branch skip the choice and use the saved permission.
+
+After connection and the prototype's first registered, published Build, the bottom of the **Edit details** sidebar shows **Settings** with an **Always commit changes before publishing** toggle. It saves each change immediately without a separate button, dialog, or publication. The setting remains available when newer local changes are unpublished. Loading, saving, and publication disable the toggle; failed saves retain the previous value and show an error with **Retry settings**. All Publish actions are disabled until a pending preference save finishes. Reopening Settings waits for a pending save before reading the current checkout's permission, and mismatched checkout and Hub targets cannot show an editable cached preference. Refreshing settings reads the current checkout again rather than replaying a write. There is no **Publishing preferences** button. Storage errors stop the operation rather than silently enabling permission.
+
+**Commit changes & publish** asks Copilot to select and commit only changes related to the prototype task, preserving unrelated staged and unstaged edits and untracked files. It must not stage everything or include unrelated staged changes. If related changes cannot be confidently separated, Copilot asks before committing. No task-related changes or a commit failure stops publication instead of falling back to an older version. Normal host tool permissions still apply. **Publish committed version only** forbids creating or amending commits, staging, unstaging, stashing, or discarding edits; HEAD must remain at the captured commit. When that commit already has a registered, published Hub Build, the canvas dismisses the choice without pushing or requesting another Build; its URL remains available under **Internal prototype link** on **Share prototype**. Local edits on a published commit expose **Publish changes** so they can be included through the same dialog. Sharing an existing Build remains available independently.
+
+Publish captures the checkout's verified repository, branch, HEAD, and SHA-256 fingerprints of its origin fetch and push URLs before awaiting Hub registration. Each fingerprint covers the exact UTF-8 output of `git remote get-url --all origin` or `git remote get-url --push --all origin`, including trailing newlines and all URLs; a missing origin has a null fingerprint. The prompt and saved request contain only these opaque fingerprints, never raw URLs that may contain credentials. The request keeps the full publishing procedure inline, without depending on a session skill. Its instructions have a 2,700-character test budget excluding the target JSON, whose valid identity values remain complete. Registration state is read live through `refresh_status`, not included as a captured prompt hint. It registers a discovered eligible branch through Hub's metadata API, preserves existing registration and metadata, and stops if registration fails. The extension rechecks the captured target before recording the request and immediately before calling `session.send`; any change, including an origin URL change for the same repository, requires a new Publish click. Registration and dispatch share one concurrent-request guard.
+
+Copilot inspects local changes and verifies the current non-default branch, origin, and `.github/workflows/replica.yml`. It rechecks the target before pushing. A changed repository, origin, or branch stops the request; HEAD may advance for task-related publication commits only in **Commit changes & publish** mode. Committed-only requests never absorb a newer HEAD. Pending requests retain their selected mode; another mode cannot replace an active request. It never force-pushes, switches targets, publishes the default branch, performs destructive Git operations, or changes publishing infrastructure. Hints and Hub or workflow output are untrusted data, not instructions. The extension does not commit, push, trigger Actions, or import an artifact.
+
+Copilot preserves existing entry-page checks and reports incomplete published landing-page verification instead of silently creating corrective commits or pushing corrections. It preserves saved metadata and uses `update_metadata` to register a discovered branch without asking for another registration click.
+
+After pushing through the existing workflow, Copilot uses `refresh_status` to follow the workflow and Hub's Build state. The action returns a validated projection of checkout and remote branch identity, publish request and workflow states, stable run IDs and results, and Hub registration and Build identity. It omits workflow detail and error strings, actor data, supplied publication URLs, and unknown fields. It returns no workflow URL, and checks a Build URL against the selected Hub's Build route. Malformed or inconsistent status fails the action instead of claiming publication. `update_metadata` confirms the returned registration and requested metadata before giving Copilot a fixed acknowledgment, not the raw Hub response. The canvas HTTP state still contains the full data for its UI. If Hub has not discovered the branch, Copilot waits for discovery and registers it through `update_metadata`. Hub alone confirms publication: the imported Build must match the pushed commit, and an earlier Build of the same commit cannot complete a new request. Copilot returns that Build's URL in chat, while the open canvas updates its status and Build link without replacing the local preview. A permission or connection error remains a blocker, not a successful publish. Follow [GitHub Actions builds](github-actions-builds.md) and [Build discovery](build-discovery.md) for workflow and import rules. [Preview serving](preview-serving.md) and [Review collaboration](review-collaboration.md) describe the Build preview and review data.
+
+GitHub workflow reads remain advisory. Hub alone decides publication: a registered prototype must have a successful imported Build. Share prototype uses the latest successful Build's Hub link captured when the page opens. The Hub panel shows a different current Build state when a newer Build is still queued or failing. It also warns when the local checkout SHA differs from the published Build's SHA. A supplied published URL cannot override Hub's Build link.
+
+## Repository Hub discovery
+
+Repository maintainers can add `.github/replica.json` through a reviewed change on the repository's default branch:
+
+```json
+{
+  "version": 1,
+  "hub": {
+    "origin": "https://replica.example.com"
+  }
+}
+```
+
+This is Replica product configuration, not Copilot app configuration. Leave `.github/github-app.yml` and its instructions, scripts, and automation unchanged; its documented schema does not provide extension data. Replica accepts only the fields above and a JSON file of at most 4096 bytes. Remote Hub origins require HTTPS. Origins cannot include credentials, paths, queries, or fragments; the existing explicit loopback HTTP allowances remain available for development.
+
+Canvas resolves the GitHub `origin` remote, not a caller's repository hint or a fork's `upstream`. Bounded `gh api` calls to GitHub resolve the actual default branch and read configuration at its immutable commit SHA. Prototype-branch edits cannot redirect discovery. The extension records that revision and never extracts a GitHub token or sends one to Hub. GitHub Enterprise origins are not supported by the current repository resolver. Explicit `local/<name>` development checkouts skip GitHub discovery.
+
+Discovery runs on initial open and focus. Results are cached privately per repository for five minutes across processes, including absent, invalid, and unavailable results. The **Reset to repository Hub URL** icon beside the editable URL bypasses that cache and fills the field from valid configuration; **Save Hub** is still required to switch. Missing or invalid configuration leaves the draft unchanged and reports an error. Editing a URL does not change the selected Hub until it is saved. Periodic status and review polling never refresh discovery. A failed recheck cannot use an older configured URL to establish a new selection; it preserves an existing selection and reports the failure instead. Invalid JSON is not treated as missing configuration.
+
+Selection precedence is the current panel's choice, the saved repository selection, an explicit `REPLICA_HUB_ORIGIN`, then valid discovered configuration. With no prior choice or development override, the configured origin is saved automatically and the canvas offers **Connect to the hub**. A mismatch leaves the current Hub, grant, and reviews unchanged. **Disconnect Hub** revokes the current connection; the shared connection dialog lets you select another URL or reset its draft to repository configuration. **Save Hub** selects the origin; **Connect to the hub** approves a new connection. Changes to a default-branch configuration are reported, not silently applied over a saved selection.
+
+Successful disconnection reopens the shared dialog without starting browser approval, including after approving a connection in the same canvas session. Each new connection attempt clears local save/reset errors so current connection failures remain visible.
+
+The **Connect to the hub** dialog shows the selected Hub URL as a link with an
+**Edit Hub URL** pencil button. Edit replaces the link with a focused input;
+**Save Hub** validates and saves the selection before Connect is available again.
+Status refreshes do not overwrite an open URL draft, and a failed save keeps the
+draft and reports the error. Without a selected URL, the dialog shows the input
+immediately; Connect saves that initial URL before requesting browser approval.
+The reset icon fills the draft from repository configuration without saving it.
+
+The sidebar shows a **Hub** heading even before the branch is pushed or discovered. The prototype title uses Primer's `subhead-large` typography, with 16px above it when no settings notice is present. Empty settings do not add spacing. Hub and Latest Build section headings use `subhead-medium`, one step below the prototype title. The panel header is unchanged. Its URL link keeps the selected origin as its label and opens the current prototype's existing Hub route once Hub returns its identity, including before registration completes. Until discovery returns a prototype, it opens the Hub root.
+
+Hub is the last sidebar section and contains **Disconnect Hub**. **Edit details** uses the same small, subtle button style, with the 16px spacing token between it and the start page.
+
+The canvas's Hub and comments panels use the shared `HubSidebar` component. It owns the frame, header, ghost close button, opening and closing animation, reduced-motion behavior, and closed-state accessibility. Header accessories and content are supplied by each panel; the comments panel keeps its counter, fixed filters, scrollable threads, shortcut, and blocked-close behavior. Closing keeps content mounted so drafts survive reopening. The docked comments sidebar elsewhere in Hub retains its existing layout.
+
+Latest Build uses the plain panel background, without a card or version count. It shows the imported Build's title and commit SHA together, with the commit author below and no visible author prefix. This is the commit author, not the Build creator or workflow actor. The author's display name falls back to their GitHub login and links to their GitHub profile only when a valid login is available. The author link looks like normal text until hover, when it uses the Hub accent color and an underline. A name without an associated account stays plain text; missing author data shows **Unknown**. **Show build history** opens `/repositories/{repositoryId}/prototypes/{prototypeId}/builds` on the selected Hub, using the current prototype identity. The link appears only when the prototype has a successful imported Build, using the same Build data as Latest Build rather than an attempt count.
+
+A failed remote revocation opens URL selection with a warning that the previous connection may still be active; **Save Hub** then switches only this canvas's selected origin, without claiming revocation or deleting the old credentials. Users can retry disconnection or revoke the old connection in that Hub. Failed URL saves preserve the attempted value, including during the temporary loading state, so it can be corrected.
+
+## Pairing and review
+
+Without repository configuration or a saved selection, the connection dialog asks for a Hub URL. Development extensions may explicitly set `REPLICA_HUB_ORIGIN=http://replica.localhost:19500`. The extension remembers the selection per repository in an owner-only file under `~/.config/replica/canvas/`, separate from session state. An open canvas keeps its selected Hub until its user changes it, even if another session selects a different Hub. Grants and pending approvals remain isolated by origin and repository. Switching Hubs clears displayed approval and review data without revoking the earlier connection.
+
+Manual entry in the connection dialog accepts a full Hub URL. Entering `https://hub.example.com/repositories/123` selects `https://hub.example.com`. The extension discards the path, query, and fragment, preserves the host and port, and saves only the origin. Remote Hubs still require HTTPS; supported loopback HTTP URLs remain available for development. The extension rejects invalid URLs, other schemes, and embedded usernames or passwords without changing the previous selection. Repository configuration and `REPLICA_HUB_ORIGIN` still require an origin-only URL.
+
+A canvas without a usable connection offers a dismissible **Connect to the hub** dialog once per opening. Dismissing it keeps the preview usable and does not reopen the dialog on focus or status refresh. The disconnected sidebar shows only **Connect to the hub before publishing this prototype.** in primary text color and a **Connect to the hub** button. That button reopens the shared dialog and launches browser approval immediately when a Hub URL is saved. Without a saved URL, it opens the URL-entry dialog first; approval needs a valid origin.
+
+Select **Connect to the hub** to create or reuse a pending approval and open the selected Hub in the system browser. Only this explicit action launches the browser; initial rendering and polling do not. While opening the browser or awaiting approval, the dialog hides Hub configuration fields. Pending approval shows **Make sure your browser shows the same code**, the code, and a joined split-button group: **Connect to the hub** opens the existing approval URL, while its trailing copy icon copies that URL without navigating or starting another pairing. No read-only approval URL input is shown. Approval, copying feedback, browser failures, and retries live only in this dialog, never inline in the sidebar. Closing and reopening it from the sidebar reopens the browser and reuses an unexpired pairing. Approval polling continues after dismissal, and successful approval closes an open dialog. The connection appears on Hub's **Canvas connections** page after Copilot consumes the approval. The repository must already be installed and active in Hub, but the prototype does not need a commit, push, discovered branch, registration, or Build. An approved repository connection remains usable when the current branch is not yet discovered.
+
+Pairing failures identify the selected Hub and repository. In particular, a local-demo Hub cannot pair the `github/replica` source checkout: open its configured `local/<name>` prototype session instead. A GitHub repository requires a Hub where that repository is installed and active; the canvas never changes repository identity to work around a missing repository.
+
+Approvals expire after ten minutes. Pending proofs are shared privately across panels and processes, so repeated opens and concurrent Connect clicks reuse an existing request. Polls are serialized and spaced at least three seconds apart. Polling sends the private device proof in a filtered POST body, never in a URL. Hub stores only credential digests; Node keeps the plaintext in owner-only files outside Git and frontend state. The extension contacts only the selected Hub origin and refuses HTTP redirects.
+
+New connections have seven-day access tokens and a stable, separately generated refresh secret. Hub enforces a 30-day deadline after the last eligible interactive use. Focus and user-initiated Hub actions record activity; approval sets the initial deadline. Renderer initialization, provider rehydration, polling, automatic refresh, renewal, and live review traffic do not record activity. The SDK does not distinguish every restored panel from an explicit open, so a load alone is deliberately not an activity assertion. These assertions express trusted-client interaction, not working time or proof of human presence.
+
+Public sharing follows the Hub's [share-link permissions and maximum lifetime](share-links.md). New never-expiring links are rejected, even with fresh identity proof. Approval and token renewal are not fresh GitHub identity verification; see [Fresh GitHub authorization](fresh-authorization.md) for protected operations.
+
+Connections are reused on the same machine across branches, checkouts, panels, and sessions for the repository and Hub origin. Credential writes are atomic, and cross-process locks serialize refresh and revocation. A lost refresh response can be retried with the same refresh secret; a lost approval-consumption response can also recover the approved connection with that secret. Failed renewal and approval checks have a shared 30-second retry delay. A confirmed expired or revoked connection requires approval again; temporary verification failures retain the saved credentials. Preview remains independent and usable. Older grants continue until their original expiry, then require one approval for renewable credentials; disconnecting and reconnecting upgrades sooner.
+
+The grant can be revoked in the canvas or Hub's **Canvas connections** page. Each API request checks grant validity and repository access: reads may cache permission for up to one minute, while activity, mutations, and renewal check GitHub immediately. Cleanup retains renewable connections after access-token expiry and removes them only after inactivity or revocation. See [Authentication and repository access](authentication-and-repository-authorization.md) for the durable connection lifecycle.
+
+A Hub administrator's [End all Hub sessions](session-revocation.md) also revokes saved access and refresh credentials and cancels approved but unconsumed pairings immediately. The canvas reports a disconnected, expired-or-revoked connection and requires explicit browser approval again. Another person's sign-in cannot automatically renew those credentials. Live review connections stop, but the independently running local preview and prototype controls remain usable.
+
+The toolbar's **Edit details** button opens the Hub sidebar, which overlays the canvas from top to bottom. Connecting, publishing, and status refreshes preserve whether the sidebar is open or closed, including when repository configuration names a different Hub. These operations do not navigate to Hub or a Build automatically. Its close button or Escape dismisses it and returns focus to **Edit details**.
+
+During status polling, the canvas registers discovered eligible branches automatically after a successful Build of the current checkout is imported. Automatic registration preserves any saved name, description, and start page. Read-only or ineligible accounts cannot register a prototype.
+
+Authors can use **Edit details** to change the required name, optional description, and optional **Start page**. Hub stores those fields and remains their source of truth. The start-page field accepts routes and this prototype's Hub preview URLs. It also accepts URLs on the current canvas preview's origin; Node removes that origin before sending the route to Hub for validation. Readers can see the setting, but only people who can edit the prototype can change it. Clearing it restores `/`. See [Gallery](gallery.md) for the shared metadata rules. Branches not yet discovered are not registered from the canvas.
+
+To test without a GitHub App in local mode, open the example checkout under Hub's `.local/prototypes/` and pass `repository: "local/example"` as a canvas input; the extension accepts that hint only when the directory name matches and Hub uses a loopback origin.
+
+The canvas header reuses Hub's **Add a comment** control and comment-count button. The count opens a dedicated comments sidebar with Hub's search, build/page/participant/read/resolved filters, unread state, pin visibility, rows, and conversation UI; comments are not duplicated in the Hub metadata sidebar. The renderer reads all pages of Hub's canonical conversations. Preview markers reuse Hub's participant avatars, overflow, unread, resolved, focus, and accessible-label behavior, and follow the active sidebar filters. Selecting a marker or row opens the thread beside its resolved target, with a docked fallback when no marker is available. Posting an anchored comment or selecting a marker preserves the sidebar's current open or closed state. Starting element or region selection also preserves it. When the sidebar is closed, only the individual conversation opens at its pin. The count explicitly toggles the sidebar. When the local checkout SHA exactly matches the selected successful Build, root comments can target an element or highlighted area and are saved to that Build in Hub. Replies, edits, deletes, reactions, read marks, and resolution actions use the same Hub model operations as the browser review page. A small Action Cable invalidation asks the canvas to reload comments, without sending comment content over the channel. The extension exchanges its grant for a short-lived signed WebSocket ticket and relays change notices to the renderer through its protected loopback server. When the live channel is down, the renderer retries and refreshes every 30 seconds. See [Review collaboration](review-collaboration.md).
+
+Agents should default to `list_repository_comment_summaries` for listing, browsing or triaging comments across prototypes, including requests such as "list all comments from all prototypes". Fetch selected conversations with `get_repository_thread` when replies are needed. Use `list_repository_comments` when the request requires every thread's replies, read-state filtering or snapshot-based retrieval, then retrieve remaining replies with `get_repository_comment_thread`. These actions cover every reviewable prototype and all Builds in the checkout's repository. Open the canvas and use an approved Hub connection; no running or connected local preview is required for comment actions. Without a preview connection, each action resolves the current checkout and saved Hub selection afresh; targets from a different Hub or branch are rejected. Preview interactions and publishing still require a connected local preview. Retrieval does not change the sidebar, switch the checkout, mark comments read or authorize mutations. It works before the current branch has a Hub prototype. The existing repository grant and read permission protect `GET /api/canvas/repositories/:repository_github_id/review_comments`; connection metadata supplies the repository ID and reviewer without loading a prototype. Default-branch and internal Build owners remain excluded, while unregistered reviewable branches remain eligible.
+
+Full-detail `list_repository_comments` pages include replies and deleted placeholders, using canonical comment serialization and signed creation-time/ID pagination across prototypes. Cursors are bound to the repository and reviewer. Each message includes prototype ID, nullable name and branch; roots retain their original Build number. The extension shares the prototype action's filters, bounded two-pass collection and private snapshot storage, but repository targets are distinct and read-only. Creation filters match a root or any reply; read-state filters apply to whole conversations. Completed list responses return up to ten full-detail threads within a 64 KiB serialized UTF-8 JSON budget. Large pages return fewer threads, and large threads paginate replies without truncating root text, anchors or messages. Thread retrieval uses the same budget; cursors advance by the actual returned count. A root or root-plus-next-reply envelope that cannot fit returns an explicit error. An authorized empty repository returns an empty page. Snapshot thread reads recheck current thread activity; a changed thread, denied request or incomplete scan must not be presented as complete. See [Agent access to Hub comments](../../.github/extensions/replica-prototype/README.md#agent-access-to-hub-comments) for filters and scan, list and reply continuations.
+
+For compact triage, `list_repository_comment_summaries` reads `GET /api/canvas/repositories/:repository_github_id/review_comment_summaries`. Hub selects nondeleted roots across the authorized repository's reviewable prototypes before pagination and counts nondeleted replies in one grouped query. Records include the complete starting text, author login, creation/edit timestamps, prototype/branch, original Build number/path, resolution timestamp, `replyCount`, compact route/element context and nullable `screenshotReference`. No reply bodies, reactions, unread state, selectors, anchor geometry or image bytes are loaded into this response. Comment screenshot capture is separate work; the reference is currently null, never a substituted Build screenshot.
+
+Summary pages default to 200 records and accept `pageSize` from 1 to 200. Optional `resolution` (`all`, `unresolved`, `resolved`) and inclusive-`from`/exclusive-`to` ISO-8601 filters apply to root creation only. Summaries do not support read-state filtering. Signed newest-first creation-time/ID cursors bind the repository, viewer and filters. Hub fits complete records into 60 KiB of serialized JSON, leaving 4 KiB for the canvas target and trust envelope; the canvas enforces the full 64 KiB UTF-8 budget. A page may contain fewer records even for short comments, and oversized individual records fail explicitly. Continuations advance by the last record actually returned. These live reads need no two-pass scan or private snapshot and never mark comments read; deleted roots are excluded and resolved roots are included by default.
+
+`get_repository_thread` reads `GET /api/canvas/repositories/:repository_github_id/prototypes/:prototype_id/review_comments/:id/thread` directly using a summary's repository target, prototype ID and thread ID. Hub loads the root through the authorized repository's reviewable prototypes and returns its canonical details with an oldest-first page of nondeleted replies, `replyCount`, `nextCursor` and `hasMore`. Defaults and byte limits match the compact feed. An empty thread is a successful empty reply page; a deleted root remains a tombstone for retained replies. Signed reply cursors bind the thread, viewer and activity version. A changed version returns a conflict, including changes observed during the page read, rather than a success-shaped partial result. Restart only that thread read. Both endpoints preserve repository approval, current access checks, no-store responses and read state; they add no schema migration, classification, training export or screenshot storage.
+
+### Self-contained local preview
+
+Open an already-running unauthenticated loopback prototype, such as `http://localhost:5173/settings?q=1#form`. The extension connects static HTML and ordinary Vite dev/preview servers. Optional Controls come from the page's static `controls.replica.json`; the shared injected adapter connects its bindings to ordinary app state. Local readiness never grants Hub access.
+
+Each panel owns a reverse proxy bound to `127.0.0.1` on an OS-assigned port, separate from its privileged canvas server. The proxy accepts `localhost`, `127.0.0.1` and `[::1]`, with one fixed, DNS-pinned loopback upstream. It forwards assets and streaming responses, relays origin-checked WebSockets for ordinary Vite HMR, and adds the bundled bridge loader to UTF-8 HTML responses. Runtime code comes only from the installed Copilot plugin.
+
+Multiple panels, including servers in one checkout, have independent proxies. Reopening the same panel with the same upstream reuses its proxy. Changing the selected server replaces only that proxy; closing the panel closes its proxy and WebSocket tunnels, never the user's server or another preview. Provider restart creates fresh proxy ports and restores saved Controls values using the original upstream identity.
+
+The iframe uses the proxy origin, but the address bar, external-browser action, stored preview connection, metadata and review routes retain the original upstream address and route. Paths, queries and hashes are preserved. App storage sees a different origin and is not copied from the original server; proxy ports are ephemeral. Hardcoded upstream asset or WebSocket URLs and origin-dependent CORS behavior may need app-specific support. Custom HMR ports, remote sites and authenticated previews are not promised compatible.
+
+The proxy rejects requests marked cross-site by the browser, even without an `Origin` header. It rejects credentials and redirects outside the selected upstream. It never forwards browser cookies, authorization or Replica capabilities; responses that set cookies or request authentication fail explicitly. Hub credentials, comment bodies, canvas document capabilities and action tokens never reach the prototype. The bridge sees only the fixed canvas parent origin and existing bounded review/Controls messages.
+
+CSP, framing protections and HTTPS certificate verification are preserved. Policies that block framing or same-origin module scripts remain blockers; the extension does not copy script nonces or relax protections. HTML is limited to 8 MiB after decompression. Buffered HTML keeps the upstream's 30-second inactivity timeout; pass-through streaming responses do not. Unsupported encoding, delivery and upstream failures return explicit proxy errors. This is not a general or authenticated reverse proxy.
+
+The canvas periodically checks the exact proxy iframe source, origin, nonce, protocol version and route. Reloads reset readiness; missing or incompatible responses disable targeting, not existing conversations. **Fix with Copilot** requests scoped, read-only connection diagnosis first, with separate approval before repairs or repository commands. **Dismiss** keeps the preview usable, and recovery is detected automatically. See the starter's [connection troubleshooting](../../starter/SETUP.md#canvas-commenting).
+
+The full runtime remains in `hub/app/javascript/application/prototype-preview-bridge/`. Plain static servers now support local selection, markers, route reporting and agent clicks when opened through the proxy. Standalone pages and published Hub commenting are unchanged. Updating the installed extension and reopening the canvas selects its current runtime without prototype-file changes.
+
+Local readiness is not published-build readiness. Existing exact-HEAD eligibility checks remain, but uncommitted plugin or application changes can differ from that Build. After committing, the HEAD mismatch remains until the existing push-based workflow imports a matching Build. This distinction does not add informational copy above the sidebar's publication action. Saved anchors still require matching route and content; uncertain targets remain in the comments sidebar without an estimated marker.
+
+Captured names, selected text, roles, and region excerpts are bounded by their
+UTF-8 byte limits without splitting Unicode code points. If the renderer rejects
+a selection anchor, it cancels selection, removes the highlight, and shows the
+existing element or region failure notice so the author can select again.
+
+## Contributor workflow
+
+Prototype authors install and update the released Copilot plugin through the [CLI installation guide](../../.github/extensions/replica-prototype/README.md#install). Contributors use a local Replica checkout to test uncommitted changes instead.
+
+Rebuild the plugin's assets from `hub/` with the `extension:build` command below, then launch Copilot from a separate prototype checkout:
+
+```sh
+copilot --plugin-dir /absolute/path/to/replica/.github/extensions/replica-prototype
+```
+
+This loads the local source and built assets without installing or publishing the plugin. Restart that Copilot session after changing source or rebuilding assets. Keep only one Replica provider active while testing; disable any installed plugin or user/project copy that would register alongside the local plugin.
+
+Browser integration tests use the devcontainer's Chromium by default. Set `REPLICA_CHROMIUM_PATH` for another executable; an explicit path must launch successfully. Hub CI installs Chromium through the build action's pinned Playwright dependency.
+
+The only plugin distribution is the `replica` Copilot marketplace catalog with a relative source for `replica-prototype`. Follow main or pin an approved immutable `hub-v*` release containing the catalog. See the [canonical installation and update instructions](../../.github/extensions/replica-prototype/README.md#install), including CLI installations and manual extension copies.
+
+Plugin releases, the Controls definition format and the Canvas interface are versioned independently. Hub compatibility uses the supported interface, not equal release numbers. Older Hubs without the `X-Replica-Canvas-Version` response header can still connect; an explicitly unsupported interface is rejected. This preserves the existing Canvas API connection, not static-JSON Controls support in older Hub-served Build previews.
+
+Canvas frontend source follows Hub's normal layers under `hub/app/javascript/`. `application/prototype-canvas/` composes the interface; `application/start-prototype-canvas/` starts it, and `application/prototype-preview-bridge/` owns the injected preview entry point. Workflow panels belong in `features/`, reusable fields and dialogs in `components/`, and stateful browser behavior in `hooks/`. Shared contracts, locale copy, protocols and URL helpers live in `utils/`; the Controls engine and definition schema live in `utils/prototype-controls/`. Extension registration and server operations remain in `.github/extensions/replica-prototype/`.
+
+Hub builds renderer files, Brand fonts and browser runtime into the plugin's `assets/`; commit them so installed users need no Node packages. Build configuration lives in `hub/vite.prototype-canvas.config.mjs` and `hub/script/`. Generated assets are excluded from formatting checks; do not edit them manually. There is no Vite/npm distribution or release preparation.
+
+For example, a preview reload must cancel an unconfirmed click without losing a command already dequeued by the agent. Test each hook's public behavior beside its implementation, using fake timers for polling and timeouts. Keep cross-feature checks under `application/prototype-canvas/tests/`, including iframe preservation, focus restoration and explicit publication or sharing actions. Keep `index.test.tsx` beside the application component and test-only orchestration helpers under its `tests/`. Shared publication fixtures stay with the publication utility so lower-layer tests do not import application code. Create fresh fixtures inside each case without suite-level reset hooks. Shared jsdom setup supplies stateless browser shims and restores real timers; Vitest configuration resets mocks and stubbed globals before each case.
+
+Run these commands from `hub/`:
+
+```sh
+bin/devcontainer exec npm run typecheck
+bin/devcontainer exec npm run extension:test
+bin/devcontainer exec npm test
+bin/devcontainer exec npm run lint
+bin/devcontainer exec npm run extension:build
+bin/devcontainer exec npm run extension:assets:check
+```
+
+`extension:test` runs the root plugin's Node `.mjs` tests, including a real-browser delivery check when `/usr/bin/chromium` is available (as in the devcontainer). It covers cross-origin frames, `script-src 'self'`, HTTPS, runtime replacement, and late registration recovery. Hub's `npm test` discovers runtime and renderer Vitest tests; `npm test -- PATH` selects a test path. `npm run lint` checks authored source with ESLint and Prettier. `extension:assets:check` rebuilds and compares root plugin assets, failing for changed, missing, or unexpected generated files and files over the installer's 1,000,000-byte per-file limit. Run `extension:build` before that check, then include generated files with source changes. Both local `bin/ci` and GitHub CI run the extension checks. See [Development](development.md) and [Testing and operations](testing-and-operations.md).

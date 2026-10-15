@@ -1,0 +1,11 @@
+{
+  "title": "Activity",
+  "description": "Replace this description with the prototype scenario.",
+  "items": [
+    {
+      "id": "example-item",
+      "title": "First prototype item",
+      "summary": "Replace this raw seed record with authored prototype input."
+    }
+  ]
+}

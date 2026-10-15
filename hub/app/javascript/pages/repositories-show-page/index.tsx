@@ -1,0 +1,219 @@
+import { useState } from "react"
+
+import { GearIcon, GitBranchIcon, SearchIcon } from "@primer/octicons-react"
+import { Button, Text } from "@primer/react-brand"
+
+import { HubAlert } from "@components/hub-alert"
+import { HubEmptyState } from "@components/hub-empty-state"
+import { HubIconButton } from "@components/hub-icon-button"
+import { PrototypeCard } from "@components/prototype-card"
+import { PrototypeViewModeControl } from "@components/prototype-view-mode-control"
+import type { PrototypeViewMode } from "@components/prototype-view-mode-control/types"
+import { PrototypeIndexHeader } from "@features/prototype-index-header"
+import { RepositoryWorkspace } from "@features/repository-workspace"
+import { WorkflowInstallation } from "@features/workflow-installation"
+
+import type { RepositoriesShowPageData } from "./types"
+
+import "./styles.css"
+
+/** Shows branches after the server confirms repository access. */
+export function RepositoriesShowPage({
+  data,
+  managingPrototypes = false,
+}: {
+  data: RepositoriesShowPageData
+  managingPrototypes?: boolean
+}) {
+  const [view, setView] = useState<PrototypeViewMode>("gallery")
+  const [searchQuery, setSearchQuery] = useState("")
+  const normalizedQuery = searchQuery.trim().toLowerCase()
+  const visiblePrototypes = data.prototypes.filter((prototype) =>
+    `${prototype.name} ${prototype.description ?? ""} ${prototype.author.ownerLabel} ${prototype.branchName}`
+      .toLowerCase()
+      .includes(normalizedQuery),
+  )
+  const countLabel = normalizedQuery
+    ? `${visiblePrototypes.length} ${
+        visiblePrototypes.length === 1 ? data.prototypeCountUnitOne : data.prototypeCountUnitOther
+      }`
+    : data.prototypesCountLabel
+  const managePrototypesLabelIndex = data.managePrototypesLabel
+    ? data.emptyLabel.indexOf(data.managePrototypesLabel)
+    : -1
+  const emptyState = {
+    className: "repository-detail__empty",
+    visual: <GitBranchIcon size={48} />,
+    heading: data.emptyHeading,
+    description:
+      managePrototypesLabelIndex >= 0 && data.managePrototypesLabel ? (
+        <>
+          {data.emptyLabel.slice(0, managePrototypesLabelIndex)}
+          <span className="repository-detail__manage-label">
+            <GearIcon size={16} aria-hidden="true" />
+            <span>{data.managePrototypesLabel}</span>
+          </span>
+          {data.emptyLabel.slice(managePrototypesLabelIndex + data.managePrototypesLabel.length)}
+        </>
+      ) : (
+        data.emptyLabel
+      ),
+  }
+
+  return (
+    <RepositoryWorkspace data={data}>
+      <div className="repository-detail">
+        <PrototypeIndexHeader
+          action={
+            data.managePrototypesPath ? (
+              <HubIconButton
+                as="a"
+                href={data.managePrototypesPath}
+                data-sg-visit="true"
+                icon={GearIcon}
+                variant="invisible"
+                size="small"
+                loading={managingPrototypes}
+                aria-label={data.managePrototypesLabel ?? ""}
+                description={data.managePrototypesLabel}
+              />
+            ) : null
+          }
+          clearSearchLabel={data.clearSearchLabel}
+          heading={data.prototypesHeading}
+          onSearchChange={setSearchQuery}
+          searchLabel={data.searchLabel}
+          searchQuery={searchQuery}
+          tools={
+            <div className="repository-detail__toolbar" data-view={view}>
+              <Text size="100" className="repository-detail__count" aria-live="polite">
+                {countLabel}
+              </Text>
+
+              <PrototypeViewModeControl
+                ariaLabel={data.viewLabel}
+                galleryLabel={data.galleryViewLabel}
+                listLabel={data.listViewLabel}
+                onChange={setView}
+                value={view}
+              />
+            </div>
+          }
+        />
+
+        <div className="repository-detail__body">
+          {data.alert ? <HubAlert title={data.alert} variant="critical" layout="compact" /> : null}
+          {data.notice ? <HubAlert title={data.notice} variant="info" layout="compact" /> : null}
+
+          {data.candidateCheckFailed ? (
+            <HubAlert title={data.candidateCheckFailed} variant="warning" />
+          ) : null}
+
+          {data.recentBranches?.length ? (
+            <div className="repository-detail__recent-branches">
+              {data.recentBranches.map((branch) => (
+                <HubAlert
+                  key={branch.id}
+                  title={branch.title}
+                  variant="info"
+                  action={
+                    <div className="repository-detail__branch-actions">
+                      <form action={branch.dismissalPath} method="post">
+                        <input
+                          type="hidden"
+                          name="authenticity_token"
+                          value={data.authenticityToken}
+                        />
+
+                        <Button type="submit" variant="subtle" size="small">
+                          {data.declineBranchLabel}
+                        </Button>
+                      </form>
+
+                      <form action={branch.registrationPath} method="post">
+                        <input
+                          type="hidden"
+                          name="authenticity_token"
+                          value={data.authenticityToken}
+                        />
+                        <input type="hidden" name="_method" value="patch" />
+                        <input type="hidden" name="intent" value="register_only" />
+                        <input type="hidden" name="return_to" value="repository" />
+                        <input type="hidden" name="prototype[name]" value={branch.branchName} />
+
+                        <Button type="submit" variant="secondary" size="small">
+                          {data.addToHubLabel}
+                        </Button>
+                      </form>
+                    </div>
+                  }
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {data.workflowInstallation ? (
+            <WorkflowInstallation
+              authenticityToken={data.authenticityToken}
+              data={data.workflowInstallation}
+            />
+          ) : null}
+
+          {normalizedQuery && visiblePrototypes.length === 0 ? (
+            <HubEmptyState
+              visual={<SearchIcon size={24} />}
+              heading={data.noSearchResultsHeading}
+              description={data.noSearchResultsDescription}
+              actionLabel={data.clearSearchLabel}
+              onAction={() => setSearchQuery("")}
+            />
+          ) : data.prototypes.length === 0 ? (
+            data.newPrototypePath ? (
+              <HubEmptyState
+                {...emptyState}
+                actionLabel={data.buildPrototypeLabel}
+                actionHref={data.newPrototypePath}
+              />
+            ) : (
+              <HubEmptyState {...emptyState} />
+            )
+          ) : view === "gallery" ? (
+            <div className="repository-detail__prototypes" data-view={view}>
+              {visiblePrototypes.map((prototype) => (
+                <PrototypeCard
+                  key={prototype.id}
+                  prototype={prototype}
+                  passingLabel={data.passingLabel}
+                  notPassingLabel={data.notPassingLabel}
+                  noBuildLabel={data.noBuildLabel}
+                />
+              ))}
+            </div>
+          ) : (
+            <table className="repository-detail__list">
+              <thead>
+                <tr>
+                  <th scope="col">{data.prototypeColumnLabel}</th>
+                  <th scope="col">{data.ownerColumnLabel}</th>
+                  <th scope="col">{data.buildColumnLabel}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visiblePrototypes.map((prototype) => (
+                  <PrototypeCard
+                    key={prototype.id}
+                    layout="list"
+                    prototype={prototype}
+                    passingLabel={data.passingLabel}
+                    notPassingLabel={data.notPassingLabel}
+                    noBuildLabel={data.noBuildLabel}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </RepositoryWorkspace>
+  )
+}

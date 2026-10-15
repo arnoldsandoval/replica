@@ -1,0 +1,113 @@
+.repository-selector > div {
+  width: 100%;
+}
+
+.repository-selector .repository-selector__trigger {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  height: var(--base-size-40);
+  min-height: var(--base-size-40);
+  padding: 0 var(--base-size-12);
+  border-radius: var(--base-size-8);
+  background: transparent;
+  color: var(--brand-color-text-default);
+  font-size: var(--brand-text-size-100);
+  font-weight: var(--brand-text-weight-regular);
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--base-size-12);
+  text-align: left;
+  transition: none;
+}
+
+.repository-selector__trigger > [data-testid="Button-leading-visual"],
+.repository-selector__trigger > [data-testid="Button-trailing-visual"] {
+  flex: none;
+}
+
+.repository-selector__trigger > span:has(.repository-selector__name) {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.repository-selector__trigger > span:has(.repository-selector__name) span {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repository-selector--collapsed .repository-selector__trigger {
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+}
+
+.repository-selector--collapsed
+  .repository-selector__trigger
+  > span:has(.repository-selector__sr-only) {
+  display: none;
+}
+
+.repository-selector--collapsed
+  .repository-selector__trigger
+  [data-testid="Button-trailing-visual"] {
+  display: none;
+}
+
+.repository-selector__trigger .repository-selector__name {
+  min-width: 0;
+  width: 100%;
+  flex: none;
+}
+
+.repository-selector__name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.repository-selector__trigger:focus-visible {
+  outline: var(--brand-borderWidth-thick) solid var(--brand-color-focus);
+  outline-offset: var(--base-size-2);
+}
+
+.repository-selector__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.repository-selector [role="menu"] {
+  width: min(
+    var(--hub-repository-control-width),
+    calc(100vw - var(--hub-repository-sidebar-inset) - var(--hub-repository-sidebar-inset))
+  );
+  min-width: 0;
+}
+
+.repository-selector [role="menu"]::before {
+  display: block;
+  padding: var(--base-size-8) var(--base-size-12) var(--base-size-4);
+  color: var(--brand-color-text-muted);
+  content: attr(data-menu-label);
+  font-size: var(--brand-text-size-100);
+  font-weight: var(--brand-text-weight-semibold);
+}
+
+.repository-selector [role="menu"] li {
+  grid-template-columns: min-content minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.repository-selector [role="menu"] li a > span {
+  width: auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

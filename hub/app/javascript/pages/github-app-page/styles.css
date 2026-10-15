@@ -1,0 +1,27 @@
+.github-app-page__form {
+  display: grid;
+  gap: 1rem;
+  max-inline-size: 44rem;
+}
+
+.github-app-page__field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.github-app-page__field input {
+  font: inherit;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.github-app-page__confirmation {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+}
+
+.github-app-page__confirmation input {
+  flex: none;
+  margin-block-start: 0.25rem;
+}

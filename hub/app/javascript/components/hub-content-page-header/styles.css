@@ -1,0 +1,22 @@
+.hub-content-page-header {
+  display: grid;
+  gap: var(--hub-space-8);
+}
+
+.hub-content-page-header__top {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--hub-space-8) var(--hub-space-16);
+}
+
+.hub-content-page-header__top h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.hub-content-page-header__description {
+  margin: 0;
+  color: var(--hub-fg-muted);
+}

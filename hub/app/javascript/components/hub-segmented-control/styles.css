@@ -1,0 +1,85 @@
+.hub-segmented-control {
+  --hub-segmented-control-size: var(--base-size-36);
+  --hub-segmented-control-inset: var(--base-size-2);
+
+  display: inline-flex;
+  max-width: 100%;
+  padding: var(--hub-segmented-control-inset);
+  border: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-muted);
+}
+
+.hub-segmented-control--small {
+  --hub-segmented-control-size: var(--base-size-28);
+}
+
+.hub-segmented-control--full-width {
+  display: flex;
+  width: 100%;
+}
+
+.hub-segmented-control__option {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: calc(
+    var(--hub-segmented-control-size) -
+      (var(--brand-borderWidth-thin) + var(--hub-segmented-control-inset)) * 2
+  );
+  padding-inline: var(--base-size-12);
+  border: var(--brand-borderWidth-thin) solid transparent;
+  border-radius: max(
+    0px,
+    calc(
+      var(--hub-radius-medium) - var(--brand-borderWidth-thin) - var(--hub-segmented-control-inset)
+    )
+  );
+  align-items: center;
+  justify-content: center;
+  color: var(--hub-fg-muted);
+  cursor: pointer;
+}
+
+.hub-segmented-control--icon .hub-segmented-control__option {
+  width: var(--base-size-32);
+  padding-inline: 0;
+  flex: none;
+}
+
+.hub-segmented-control--full-width .hub-segmented-control__option {
+  width: auto;
+  flex: 1 1 0;
+}
+
+.hub-segmented-control__label {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font-size: var(--hub-text-size-small);
+  font-weight: var(--brand-text-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hub-segmented-control__option:not(:has(input:disabled)):hover {
+  color: var(--hub-fg-default);
+}
+
+.hub-segmented-control__option:has(input:checked) {
+  border-color: var(--hub-border-muted);
+  background: var(--hub-canvas-default);
+  box-shadow: var(--hub-shadow-selection);
+  color: var(--hub-fg-default);
+}
+
+.hub-segmented-control__option:has(input:focus-visible) {
+  outline: var(--hub-border-width-thick) solid var(--hub-focus);
+  outline-offset: var(--base-size-2);
+}
+
+.hub-segmented-control__option:has(input:disabled) {
+  color: var(--hub-fg-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}

@@ -1,0 +1,11 @@
+{
+  "title": __SCAFFOLD_JSON_TITLE__,
+  "description": __SCAFFOLD_JSON_DESCRIPTION__,
+  "items": [
+    {
+      "id": "example-item",
+      "title": "First prototype item",
+      "summary": "Replace this raw seed record with authored prototype input."
+    }
+  ]
+}

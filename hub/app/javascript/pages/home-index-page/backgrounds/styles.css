@@ -1,0 +1,71 @@
+.backgrounds {
+  min-height: 100vh;
+  padding: clamp(1rem, 3vw, 3rem);
+  color: #121613;
+  background: #f2f5f3;
+}
+
+.backgrounds__header {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 44rem;
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.backgrounds__header h1,
+.backgrounds__header p {
+  margin: 0;
+}
+
+.backgrounds__header h1 {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.backgrounds__header p {
+  max-width: 38rem;
+  color: #58635b;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.backgrounds__header .backgrounds__eyebrow {
+  color: #121613;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.backgrounds__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.backgrounds__item {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.backgrounds__item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid #d2d9d4;
+}
+
+.backgrounds__item figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.backgrounds__item figcaption span {
+  color: #58635b;
+}

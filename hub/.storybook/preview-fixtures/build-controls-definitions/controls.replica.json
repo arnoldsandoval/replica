@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "sets": [
+    {
+      "version": 1,
+      "scope": "storyLayout",
+      "role": "shared",
+      "controls": [
+        {
+          "id": "enabled",
+          "label": "Show description",
+          "type": "boolean",
+          "default": true,
+          "binding": {
+            "type": "api",
+            "object": "buildPreview",
+            "read": "readEnabled",
+            "write": "writeEnabled",
+            "pollMs": 250
+          }
+        }
+      ]
+    },
+    {
+      "version": 1,
+      "scope": "storyPage",
+      "panel": { "width": 320 },
+      "groups": [{ "id": "content", "label": "Content" }],
+      "controls": [
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "text",
+          "default": "Build preview",
+          "group": "content",
+          "binding": {
+            "type": "api",
+            "object": "buildPreview",
+            "read": "readTitle",
+            "write": "writeTitle",
+            "pollMs": 250
+          }
+        },
+        {
+          "id": "items",
+          "label": "Items",
+          "type": "slider",
+          "min": 1,
+          "max": 8,
+          "default": 3,
+          "binding": {
+            "type": "api",
+            "object": "buildPreview",
+            "read": "readItems",
+            "write": "writeItems",
+            "pollMs": 250
+          }
+        },
+        {
+          "id": "add",
+          "label": "Add item",
+          "type": "button",
+          "binding": { "type": "api", "object": "buildPreview", "action": "add" }
+        }
+      ]
+    }
+  ]
+}

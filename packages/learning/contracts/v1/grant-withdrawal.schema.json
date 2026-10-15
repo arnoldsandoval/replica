@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/grant-withdrawal.schema.json",
+  "title": "Replica grant withdrawal v1",
+  "description": "Ends one or more purposes of a consent grant from withdrawnAt onward. Evidence covered only by withdrawn purposes drops out of those purposes, and learnings built on it stop being recalled.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "grantId",
+    "scope",
+    "purposes",
+    "withdrawnBy",
+    "withdrawnAt",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "replica.grant-withdrawal/v1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "grantId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "scope": {
+      "$ref": "common.schema.json#/$defs/scope"
+    },
+    "purposes": {
+      "$ref": "common.schema.json#/$defs/purposes"
+    },
+    "withdrawnBy": {
+      "$ref": "common.schema.json#/$defs/humanActor"
+    },
+    "withdrawnAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    }
+  }
+}

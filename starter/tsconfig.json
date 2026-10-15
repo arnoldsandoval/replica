@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@data/*": ["./src/data/*"]
+    },
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src", "vite-aliases.ts", "vite.config.ts", "vitest.config.ts"]
+}

@@ -1,0 +1,11 @@
+.session-revocation-page__confirmation,
+.session-revocation-page__form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.session-revocation-page__checkbox {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}

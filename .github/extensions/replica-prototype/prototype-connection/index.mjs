@@ -1,0 +1,28 @@
+import { createHash, randomBytes } from "node:crypto"
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises"
+import path from "node:path"
+
+export function prototypeConnection(sessionWorkspacePath, repositoryPath) {
+  if (!sessionWorkspacePath || !repositoryPath) {
+    throw new Error("Connecting a prototype requires a session workspace and working directory.")
+  }
+  const key = createHash("sha256").update(path.resolve(repositoryPath)).digest("hex").slice(0, 24)
+  const directory = path.join(sessionWorkspacePath, "replica-prototype")
+  const file = path.join(directory, `connection-${key}.json`)
+  return {
+    async read() {
+      try {
+        return JSON.parse(await readFile(file, "utf8"))
+      } catch (error) {
+        if (error.code === "ENOENT") return null
+        throw error
+      }
+    },
+    async save(input) {
+      await mkdir(directory, { recursive: true })
+      const temporary = `${file}.${randomBytes(8).toString("hex")}.tmp`
+      await writeFile(temporary, JSON.stringify(input), { mode: 0o600 })
+      await rename(temporary, file)
+    },
+  }
+}

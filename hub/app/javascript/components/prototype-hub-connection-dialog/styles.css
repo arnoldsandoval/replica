@@ -1,0 +1,32 @@
+.hub-connection-origin {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.hub-connection-origin a {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.hub-connection-origin a:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 2px;
+}
+
+.hub-connection-origin-field {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-items: start;
+}
+
+.hub-connection-origin-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}

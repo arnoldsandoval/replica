@@ -1,0 +1,164 @@
+.repository-user-menu {
+  display: block;
+  width: 100%;
+}
+
+.repository-user-menu > div {
+  width: 100%;
+}
+
+.repository-user-menu .repository-user-menu__trigger {
+  display: flex;
+  width: 100%;
+  height: var(--base-size-40);
+  min-height: var(--base-size-40);
+  padding: 0 var(--base-size-12);
+  border: 0;
+  border-radius: var(--base-size-8);
+  background: transparent;
+  --brand-button-subtle-bgColor-rest: transparent;
+  --brand-button-subtle-bgColor-hover: var(--brand-color-border-muted);
+  --brand-button-subtle-bgColor-active: var(--brand-color-border-muted);
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--base-size-8);
+  color: var(--brand-color-text-default);
+  font: inherit;
+  text-align: left;
+  transition: none;
+}
+
+.repository-user-menu__trigger > [data-testid="Button-leading-visual"],
+.repository-user-menu__trigger > [data-testid="Button-trailing-visual"] {
+  flex: none;
+}
+
+.repository-user-menu__trigger > [data-testid="Button-leading-visual"] {
+  translate: calc(-1 * var(--base-size-2)) 0;
+}
+
+.repository-user-menu__trigger > span:has(.repository-user-menu__identity) {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.repository-user-menu__trigger > span:has(.repository-user-menu__identity) span {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repository-user-menu--collapsed .repository-user-menu__trigger {
+  gap: 0;
+}
+
+.repository-user-menu--collapsed
+  .repository-user-menu__trigger
+  [data-testid="Button-trailing-visual"] {
+  display: none;
+}
+
+.repository-user-menu .repository-user-menu__trigger:focus-visible {
+  outline: var(--brand-borderWidth-thick) solid var(--brand-color-focus);
+  outline-offset: var(--base-size-2);
+}
+
+.repository-user-menu__identity {
+  display: grid;
+  min-width: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.repository-user-menu--collapsed .repository-user-menu__identity {
+  display: none;
+}
+
+.repository-user-menu__identity > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.repository-user-menu__name {
+  font-weight: 600;
+}
+
+.repository-user-menu__login {
+  color: var(--hub-fg-muted);
+}
+
+.repository-user-menu__item-icon {
+  margin-inline-end: var(--brand-control-medium-gap);
+}
+
+.repository-user-menu [role="menu"] {
+  width: min(
+    var(--hub-repository-control-width),
+    calc(100vw - var(--hub-repository-sidebar-inset) - var(--hub-repository-sidebar-inset))
+  );
+  min-width: 0;
+}
+
+.repository-user-menu [role="menu"]:has(.repository-user-menu__theme-control) {
+  padding: var(--base-size-8);
+}
+
+.repository-user-menu__theme-control {
+  display: block;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.repository-user-menu__theme-control::after {
+  display: block;
+  width: calc(100% + var(--base-size-16));
+  height: var(--brand-borderWidth-thin);
+  margin: var(--base-size-12) calc(-1 * var(--base-size-8)) var(--base-size-8);
+  background: var(--brand-color-border-muted);
+  content: "";
+}
+
+.repository-user-menu__theme-options {
+  display: inline-flex;
+  width: 100%;
+  overflow: hidden;
+  border: var(--brand-borderWidth-thin) solid var(--brand-color-border-subtle);
+  border-radius: var(--base-size-8);
+  background: var(--brand-color-canvas-default);
+}
+
+.repository-user-menu__theme-option {
+  display: grid;
+  width: auto;
+  height: var(--base-size-40);
+  min-width: 0;
+  flex: 1 1 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  place-items: center;
+  color: var(--brand-color-text-muted);
+  cursor: pointer;
+}
+
+.repository-user-menu__theme-option[data-selected="true"] {
+  background: var(--brand-color-border-muted);
+  color: var(--brand-color-text-default);
+}
+
+.repository-user-menu__theme-option:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: var(--brand-borderWidth-thick) solid var(--brand-color-focus);
+  outline-offset: calc(-1 * var(--brand-borderWidth-thick));
+}
+
+.repository-user-menu__sign-out {
+  margin-top: var(--base-size-8);
+}

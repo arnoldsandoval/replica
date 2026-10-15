@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/episode.schema.json",
+  "title": "Replica episode v1",
+  "description": "The unit of learning evidence: one review thread, chat session, scenario run, or similar. The digest covers the header, every field except digest and timeline, so appending events never changes it. Events carry their own digests. timeline appears only in exports.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "scope",
+    "source",
+    "actors",
+    "grants",
+    "provenance",
+    "startedAt",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "replica.episode/v1" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "scope": { "$ref": "common.schema.json#/$defs/scope" },
+    "source": { "$ref": "common.schema.json#/$defs/source" },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prompt": { "type": "string", "minLength": 1, "maxLength": 10000 },
+        "goal": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "role": { "$ref": "common.schema.json#/$defs/slug" },
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 200 }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "maxItems": 500,
+      "items": { "$ref": "common.schema.json#/$defs/actor" }
+    },
+    "versions": {
+      "description": "What produced the experience under review, so outcomes can be tied to versions.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "harness": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "designSystem": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "brandPack": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "memorySnapshot": { "$ref": "common.schema.json#/$defs/digest" }
+      }
+    },
+    "grants": {
+      "description": "The consent grants this episode was collected under, kept for provenance. Use for a purpose is decided at read time from the grants then active for the episode's scope and source.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": { "$ref": "common.schema.json#/$defs/id" }
+    },
+    "contentTrust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["untrusted", "treatAs"],
+      "properties": {
+        "untrusted": { "type": "boolean" },
+        "treatAs": { "const": "data" },
+        "source": { "$ref": "common.schema.json#/$defs/sourceKind" }
+      }
+    },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "startedAt": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "endedAt": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["success", "failure", "partial", "unknown"] },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 2000 }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": { "$ref": "event.schema.json" }
+    },
+    "digest": { "$ref": "common.schema.json#/$defs/digest" }
+  }
+}

@@ -1,0 +1,218 @@
+.prototype-card {
+  display: flex;
+  width: 100%;
+  padding: 0.6875rem;
+  border: 1px solid var(--hub-border-muted);
+  border-radius: 0.75rem;
+  background: var(--hub-canvas-default);
+  box-shadow: 0 1px 0.125rem rgb(0 0 0 / 3%);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--base-size-8) + var(--base-size-2));
+  position: relative;
+}
+
+.prototype-card:hover {
+  border-color: var(--hub-border-default);
+}
+
+.prototype-card__preview {
+  position: relative;
+  background: var(--hub-canvas-muted);
+  width: 100%;
+  aspect-ratio: 395 / 280.480255;
+  flex: none;
+  overflow: hidden;
+  border: 1px solid var(--hub-border-muted);
+  border-radius: 0.4375rem;
+  color: var(--hub-fg-muted);
+}
+
+.prototype-card__fallback {
+  display: grid;
+  height: 100%;
+  padding: 2rem;
+  gap: 0.75rem;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.prototype-card__branch-name {
+  width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--hub-fg-default);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.prototype-card__footer {
+  display: grid;
+  width: 100%;
+  min-height: 3rem;
+  padding-inline: var(--base-size-8);
+  flex: none;
+  grid-template-columns: 1.75rem minmax(0, 1fr) 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prototype-card__author-avatar-link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+}
+
+.prototype-card__metadata {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.prototype-card__review-link {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.prototype-card__review-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.prototype-card__review-link:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 0.125rem;
+}
+
+.prototype-card__author,
+.prototype-card__author-link {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  width: 100%;
+  color: var(--hub-fg-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prototype-card__author-link {
+  text-decoration: none;
+}
+
+.prototype-card__arrow {
+  color: var(--hub-fg-muted);
+}
+
+.prototype-card--list {
+  display: table-row;
+  border: 0;
+  border-bottom: 1px solid var(--hub-border-muted);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.prototype-card--list:hover {
+  background: var(--hub-canvas-muted);
+}
+
+.prototype-card--list td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+.prototype-card__list-identity,
+.prototype-card__list-owner {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.prototype-card--list .prototype-card__preview {
+  width: 5.25rem;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--hub-radius-small);
+}
+
+.prototype-card--list .prototype-card__fallback {
+  padding: 0.25rem;
+  gap: 0.125rem;
+  font-size: 0.625rem;
+}
+
+.prototype-card--list .prototype-card__fallback svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.prototype-card__list-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.prototype-card__list-title .prototype-card__review-link {
+  color: var(--hub-fg-default);
+  text-decoration: none;
+}
+
+.prototype-card--list .prototype-card__review-link:focus-visible::after {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: -2px;
+}
+
+.prototype-card__list-owner {
+  width: fit-content;
+  color: var(--hub-fg-default);
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+
+a.prototype-card__list-owner {
+  position: relative;
+  z-index: 1;
+}
+
+a.prototype-card__list-owner:hover .prototype-card__list-owner-name,
+a.prototype-card__list-owner:focus-visible .prototype-card__list-owner-name {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a.prototype-card__list-owner:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 0.125rem;
+}
+
+.prototype-card__build-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.prototype-card__no-build {
+  color: var(--hub-fg-muted);
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .prototype-card--list .scrolling-screenshot {
+    position: relative;
+    z-index: 1;
+  }
+
+  .prototype-card:not(.prototype-card--list) .prototype-card__review-link::after {
+    pointer-events: none;
+  }
+}

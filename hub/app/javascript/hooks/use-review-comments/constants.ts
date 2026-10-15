@@ -1,0 +1,1 @@
+export const REVIEW_COMMENTS_PAGE_SIZE = 200

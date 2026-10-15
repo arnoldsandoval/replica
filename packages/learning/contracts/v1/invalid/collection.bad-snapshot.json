@@ -1,0 +1,43 @@
+{
+  "kind": "collection",
+  "reason": "A collection names the Hub snapshot it came from.",
+  "expect": "/snapshotId must match pattern",
+  "record": {
+    "schemaVersion": "replica.collection/v1",
+    "id": "col_dd9c86930b1443616c328e77",
+    "source": {
+      "kind": "hub_review_comments",
+      "hubOrigin": "https://replica.example.com",
+      "repository": "acme/checkout-prototypes",
+      "repositoryId": 42
+    },
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "snapshotId": "latest",
+    "snapshotDigest": "sha256:a5ced3b31ec0509a305f8e32686bc6d2d812bb0940e582734e34d5f1cba2b6c1",
+    "capturedAt": "2026-10-05T18:00:00.000000Z",
+    "filters": {
+      "resolution": "all",
+      "read": "all",
+      "from": null,
+      "to": null
+    },
+    "complete": true,
+    "problems": [],
+    "counts": {
+      "threads": 9,
+      "messages": 12,
+      "episodes": 9,
+      "events": 13
+    },
+    "importedAt": "2026-10-09T12:00:00.000000Z",
+    "importedBy": {
+      "kind": "agent",
+      "id": "agent:copilot",
+      "model": "example-model"
+    },
+    "digest": "sha256:c8645e163ae8287375f0a2582c30432f7efbdd6a0cb952718223f6e7a5cdbe08"
+  }
+}

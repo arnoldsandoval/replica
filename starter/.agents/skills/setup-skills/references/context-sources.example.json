@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "intake": {
+    "design-system-docs": {
+      "status": "answered",
+      "answer": "User supplied https://example.com/design-system/v1/components."
+    },
+    "design-system-package": {
+      "status": "skipped",
+      "answer": "User chose to skip package/catalogue input."
+    },
+    "design-system-repository": {
+      "status": "skipped",
+      "answer": "User says no design-system repository is available."
+    },
+    "tokens": {
+      "status": "skipped",
+      "answer": "User chose to skip token sources."
+    },
+    "mcp": {
+      "status": "answered",
+      "answer": "User chose CLI only: installed executable example-design, with read-only documentation commands described at https://example.com/design-system/v1/cli. No installation or authentication changes."
+    },
+    "product": {
+      "status": "answered",
+      "answer": "User supplied docs/product-principles.md."
+    }
+  },
+  "sources": [
+    {
+      "id": "design-system-cli",
+      "kind": "cli-command",
+      "location": "example-design",
+      "owner": "design-system"
+    },
+    {
+      "id": "design-system-cli-docs",
+      "kind": "public-url",
+      "location": "https://example.com/design-system/v1/cli",
+      "owner": "design-system"
+    },
+    {
+      "id": "design-docs",
+      "kind": "public-url",
+      "location": "https://example.com/design-system/v1/components",
+      "owner": "design-system"
+    },
+    {
+      "id": "product-rules",
+      "kind": "file",
+      "location": "docs/product-principles.md",
+      "owner": "product"
+    }
+  ]
+}

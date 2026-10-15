@@ -1,0 +1,33 @@
+{
+  "kind": "event",
+  "reason": "A no_annotation event says the labeler found nothing to label, so it cannot carry a theme.",
+  "expect": "/payload must NOT have additional properties",
+  "record": {
+    "schemaVersion": "replica.event/v1",
+    "id": "ev_28b520ab7e8a46f55a931a20",
+    "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "type": "no_annotation",
+    "at": "2026-10-09T12:00:00.000000Z",
+    "actor": {
+      "kind": "agent",
+      "id": "agent:design-triage",
+      "model": "example-model"
+    },
+    "parentEventId": "ev_a10a4cb43fbc2fd53d6d3c55",
+    "payload": {
+      "target": {
+        "eventId": "ev_a10a4cb43fbc2fd53d6d3c55"
+      },
+      "theme": {
+        "key": "visible-form-labels",
+        "statement": "Show a visible label above every form field."
+      }
+    },
+    "payloadDigest": "sha256:41f36c6513268fe1429a218b9164254dc8ce84def003655faba39fac31735a74",
+    "digest": "sha256:bc88241fe0417974e081ba55ce94febe169e5092555e375955e297e59d8660ba"
+  }
+}

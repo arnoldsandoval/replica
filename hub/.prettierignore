@@ -1,0 +1,16 @@
+log
+.local
+.npm
+.storybook/instances
+.storybook/settings.json
+node_modules
+public
+storage
+storybook-static
+tmp
+**/*.md
+app/javascript/features/install-replica-controls-bridge/bridge.js
+app/javascript/utils/prototype-controls/browser.js
+app/javascript/utils/prototype-controls/controls-shape.cjs
+.storybook/preview-fixtures/build-controls/controls.js
+../.github/extensions/replica-prototype/assets/**

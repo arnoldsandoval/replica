@@ -1,0 +1,23 @@
+.prototype-management-page {
+  min-height: 100%;
+}
+
+.prototype-management-page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--hub-space-8);
+}
+
+.prototype-management-page__content {
+  display: grid;
+  width: min(100%, 60rem);
+  margin: 0 auto;
+  padding: var(--hub-space-32) var(--hub-space-24) 4rem;
+  gap: var(--hub-space-24);
+}
+
+@container (max-width: 48rem) {
+  .prototype-management-page__content {
+    padding: var(--hub-space-24) var(--hub-space-16) var(--hub-space-32);
+  }
+}

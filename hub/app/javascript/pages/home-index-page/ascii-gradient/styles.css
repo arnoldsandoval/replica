@@ -1,0 +1,46 @@
+.ascii-gradient {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--ascii-gradient-background);
+}
+
+.ascii-gradient__pixels {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.ascii-gradient__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.ascii-gradient .ascii-gradient__playback {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  color: var(--ascii-gradient-control);
+  background: var(--ascii-gradient-background);
+  border-color: var(--ascii-gradient-control-border);
+}
+
+.ascii-gradient .ascii-gradient__playback:focus-visible {
+  outline: 2px solid var(--ascii-gradient-control);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ascii-gradient__playback {
+    display: none;
+  }
+}

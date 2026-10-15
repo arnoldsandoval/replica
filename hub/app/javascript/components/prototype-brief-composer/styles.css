@@ -1,0 +1,203 @@
+.prototype-brief-composer {
+  overflow: hidden;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-large);
+  background: var(--hub-canvas-default);
+  box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 5%);
+}
+
+.prototype-brief-composer:has(.prototype-brief-composer__brief:focus) {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 2px;
+}
+
+.prototype-brief-composer:has(.template-picker) {
+  position: relative;
+  overflow: visible;
+}
+
+.prototype-brief-composer .template-picker {
+  position: static;
+}
+
+.prototype-brief-composer .template-picker__menu {
+  left: 1rem;
+  width: min(24rem, calc(100% - 2rem));
+}
+
+.prototype-brief-composer__brief {
+  display: block;
+  width: 100%;
+  min-height: 10rem;
+  padding: 1.25rem 1.5rem 0.5rem;
+  border: 0;
+  outline: 0;
+  overflow-y: hidden;
+  background: transparent;
+  color: var(--hub-fg-default);
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: none;
+}
+
+.prototype-brief-composer__brief::placeholder {
+  color: var(--hub-fg-muted);
+  opacity: 1;
+}
+
+.prototype-brief-composer__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem 0.75rem 1rem;
+  gap: 0.75rem;
+}
+
+.prototype-brief-composer__secondary {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prototype-brief-composer__add-details,
+.prototype-brief-composer__branch-source {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  gap: 0.5rem;
+}
+
+.prototype-brief-composer__add-details {
+  cursor: pointer;
+}
+
+.prototype-brief-composer__add-details:hover {
+  background: var(--hub-canvas-muted);
+}
+
+.prototype-brief-composer__branch-source {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.prototype-brief-composer__branch-source:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 2px;
+}
+
+.prototype-brief-composer__branch-source svg {
+  flex: none;
+}
+
+.prototype-brief-composer__submit {
+  display: inline-grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--hub-primary-bg);
+  color: var(--hub-primary-fg);
+  cursor: pointer;
+}
+
+.prototype-brief-composer__submit:not(:disabled):hover {
+  background: var(--hub-primary-bg-hover);
+}
+
+.prototype-brief-composer__submit:not(:disabled):active {
+  background: var(--hub-primary-bg-active);
+}
+
+.prototype-brief-composer__submit:disabled {
+  background: var(--hub-canvas-muted);
+  color: var(--hub-fg-muted);
+  cursor: not-allowed;
+}
+
+.prototype-brief-composer__add-details:focus-visible,
+.prototype-brief-composer__expand:focus-visible,
+.prototype-brief-composer__submit:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 2px;
+}
+
+.prototype-brief-composer__compact {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  transition:
+    opacity 220ms ease,
+    visibility 220ms;
+}
+
+.prototype-brief-composer__expand {
+  min-width: 0;
+  flex: 1;
+  padding: 0.5rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--hub-fg-muted);
+  font: inherit;
+  text-align: left;
+  cursor: text;
+}
+
+.prototype-brief-composer--branch {
+  position: relative;
+  display: grid;
+  grid-template-rows: 0fr;
+  min-height: 4rem;
+  transition: grid-template-rows 220ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.prototype-brief-composer--branch.prototype-brief-composer--expanded {
+  grid-template-rows: 1fr;
+}
+
+.prototype-brief-composer--expanded .prototype-brief-composer__compact {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.prototype-brief-composer--branch .prototype-brief-composer__expanded {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.prototype-brief-composer--branch.prototype-brief-composer--expanded
+  .prototype-brief-composer__expanded {
+  opacity: 1;
+}
+
+@container (max-width: 48rem) {
+  .prototype-brief-composer__brief {
+    padding-inline: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prototype-brief-composer--branch,
+  .prototype-brief-composer__compact,
+  .prototype-brief-composer--branch .prototype-brief-composer__expanded {
+    transition: none;
+  }
+}

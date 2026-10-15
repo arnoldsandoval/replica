@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/audit-entry.schema.json",
+  "title": "Replica learning audit entry v1",
+  "description": "One learning operation: who did it, in which scope, for which purpose, to which records, and with what outcome. It carries IDs and digests, never raw content.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "at",
+    "actor",
+    "operation",
+    "scope",
+    "subjects",
+    "outcome",
+    "provider",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "replica.audit/v1" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "at": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "actor": { "$ref": "common.schema.json#/$defs/actor" },
+    "operation": {
+      "enum": [
+        "grant.add",
+        "grant.withdraw",
+        "collection.import",
+        "observation.append",
+        "evidence.redact",
+        "annotation.add",
+        "consolidation.run",
+        "memory.propose",
+        "memory.accept",
+        "memory.reject",
+        "memory.retire",
+        "memory.supersede",
+        "memory.recall",
+        "export.create"
+      ]
+    },
+    "scope": { "$ref": "common.schema.json#/$defs/scope" },
+    "purpose": { "$ref": "common.schema.json#/$defs/purpose" },
+    "subjects": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "id"],
+        "properties": {
+          "kind": {
+            "enum": ["episode", "event", "memory", "grant", "withdrawal", "collection", "export"]
+          },
+          "id": { "$ref": "common.schema.json#/$defs/id" },
+          "digest": { "$ref": "common.schema.json#/$defs/digest" }
+        }
+      }
+    },
+    "outcome": { "enum": ["ok", "refused"] },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/slug" },
+        "version": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "digest": { "$ref": "common.schema.json#/$defs/digest" }
+  }
+}

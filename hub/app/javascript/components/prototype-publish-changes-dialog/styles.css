@@ -1,0 +1,9 @@
+.publish-changes-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--base-size-8);
+}
+
+.publish-changes-dialog p {
+  margin: 0;
+}

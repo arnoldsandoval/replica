@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "scope": "starterFixture",
+  "groups": [
+    { "id": "groupA", "label": "Variant A", "when": { "control": "variant", "equals": "A" } },
+    { "id": "groupB", "label": "Variant B", "when": { "control": "variant", "equals": "B" } }
+  ],
+  "controls": [
+    {
+      "id": "enabled",
+      "label": "Enabled",
+      "type": "boolean",
+      "default": true,
+      "binding": { "type": "field", "selector": "#fixture-enabled" }
+    },
+    {
+      "id": "count",
+      "binding": { "type": "field", "selector": "#fixture-count" },
+      "label": "Items",
+      "type": "number",
+      "default": 2,
+      "min": 0,
+      "max": 20,
+      "step": 1
+    },
+    {
+      "id": "layout",
+      "binding": { "type": "field", "selector": "#fixture-layout" },
+      "label": "Layout",
+      "type": "select",
+      "options": ["list", "grid"],
+      "default": "list"
+    },
+    {
+      "id": "detail",
+      "binding": { "type": "field", "selector": "#fixture-detail" },
+      "label": "Detail",
+      "type": "radio",
+      "options": ["1", "2", "3"],
+      "default": "1"
+    },
+    {
+      "id": "variant",
+      "binding": { "type": "field", "selector": "#fixture-variant" },
+      "label": "Variant",
+      "type": "segmented",
+      "options": ["A", "B"],
+      "default": "A"
+    },
+    {
+      "id": "opacity",
+      "binding": { "type": "field", "selector": "#fixture-opacity" },
+      "label": "Opacity",
+      "type": "slider",
+      "default": 1,
+      "min": 0,
+      "max": 1,
+      "step": 0.1
+    },
+    {
+      "id": "features",
+      "binding": { "type": "field", "selector": "#fixture-features" },
+      "label": "Features",
+      "type": "checkboxGroup",
+      "options": ["badges", "dates"],
+      "default": []
+    },
+    {
+      "id": "title",
+      "binding": { "type": "field", "selector": "#fixture-title" },
+      "label": "Title",
+      "type": "text",
+      "default": "Preview",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    {
+      "id": "description",
+      "binding": { "type": "field", "selector": "#fixture-description" },
+      "label": "Description",
+      "type": "textarea",
+      "default": "A working controls fixture",
+      "maxLength": 200
+    },
+    {
+      "id": "accent",
+      "label": "Accent",
+      "type": "color",
+      "default": "#336699",
+      "binding": { "type": "field", "selector": "#fixture-accent" }
+    },
+    {
+      "id": "increment",
+      "label": "Add item",
+      "type": "button",
+      "binding": { "type": "button", "selector": "#fixture-increment" }
+    },
+    {
+      "id": "A1",
+      "binding": { "type": "field", "selector": "#fixture-A1" },
+      "label": "A1 title",
+      "type": "text",
+      "default": "A1 default",
+      "group": "groupA",
+      "when": { "control": "detail", "equals": "1" }
+    },
+    {
+      "id": "B3",
+      "binding": { "type": "field", "selector": "#fixture-B3" },
+      "label": "B3 title",
+      "type": "text",
+      "default": "B3 default",
+      "group": "groupB",
+      "when": { "control": "detail", "equals": "3" }
+    },
+    {
+      "id": "cascade",
+      "binding": { "type": "field", "selector": "#fixture-cascade" },
+      "label": "Cascade",
+      "type": "text",
+      "default": "Cascade default",
+      "when": {
+        "all": [
+          { "control": "variant", "equals": "A" },
+          { "control": "A1", "equals": "open" }
+        ]
+      }
+    },
+    {
+      "id": "badgeText",
+      "binding": { "type": "field", "selector": "#fixture-badgeText" },
+      "label": "Badge text",
+      "type": "text",
+      "default": "New",
+      "when": {
+        "any": [
+          { "control": "features", "includes": "badges" },
+          { "control": "layout", "in": ["grid"] }
+        ]
+      }
+    }
+  ]
+}

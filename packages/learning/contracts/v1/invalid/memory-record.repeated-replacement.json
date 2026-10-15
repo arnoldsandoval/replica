@@ -1,0 +1,165 @@
+{
+  "kind": "memoryRecord",
+  "reason": "A learning names each learning it replaces once.",
+  "expect": "names a learning twice",
+  "record": {
+    "schemaVersion": "replica.memory/v1",
+    "id": "mem_7eb35ba21bbe6c45a9a296b4",
+    "version": 2,
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "kind": "rule",
+    "state": "accepted",
+    "content": "Put a visible label above every form field. Placeholder text never replaces the label.",
+    "themeKey": "visible-form-labels",
+    "appliesTo": [
+      {
+        "kind": "skill",
+        "ref": ".agents/skills/create-prototype/SKILL.md"
+      }
+    ],
+    "support": {
+      "distinctEpisodes": 3,
+      "distinctPrototypes": 3,
+      "distinctReviewers": 3,
+      "distinctBuilds": 3
+    },
+    "evidence": [
+      {
+        "episodeId": "ep_0674c585aa647cf9cbf49835",
+        "eventIds": ["ev_671ad9674d5da327f0be5405"],
+        "source": {
+          "kind": "hub_review_comments",
+          "hubOrigin": "https://replica.example.com",
+          "repository": "acme/checkout-prototypes",
+          "repositoryId": 42,
+          "prototypeId": 13,
+          "branch": "onboarding-v2",
+          "buildNumber": 5,
+          "threadId": 104,
+          "commentId": 104
+        },
+        "observedAt": "2026-10-02T14:00:00.000000Z",
+        "author": {
+          "kind": "human",
+          "id": "github:cy-engineer"
+        }
+      },
+      {
+        "episodeId": "ep_1f2f1501c88bf130701e2e2d",
+        "eventIds": ["ev_fdf4e1e66d09106435be7bca"],
+        "source": {
+          "kind": "hub_review_comments",
+          "hubOrigin": "https://replica.example.com",
+          "repository": "acme/checkout-prototypes",
+          "repositoryId": 42,
+          "prototypeId": 12,
+          "branch": "account-settings",
+          "buildNumber": 2,
+          "threadId": 103,
+          "commentId": 103
+        },
+        "observedAt": "2026-10-01T09:00:00.000000Z",
+        "author": {
+          "kind": "human",
+          "id": "github:ben-manager"
+        }
+      },
+      {
+        "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+        "eventIds": ["ev_948d0185093cdda91c22f15a"],
+        "source": {
+          "kind": "hub_review_comments",
+          "hubOrigin": "https://replica.example.com",
+          "repository": "acme/checkout-prototypes",
+          "repositoryId": 42,
+          "prototypeId": 11,
+          "branch": "checkout-redesign",
+          "buildNumber": 3,
+          "threadId": 101,
+          "commentId": 102
+        },
+        "observedAt": "2026-09-30T11:00:00.000000Z",
+        "author": {
+          "kind": "human",
+          "id": "github:ben-manager"
+        }
+      },
+      {
+        "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+        "eventIds": ["ev_a10a4cb43fbc2fd53d6d3c55"],
+        "source": {
+          "kind": "hub_review_comments",
+          "hubOrigin": "https://replica.example.com",
+          "repository": "acme/checkout-prototypes",
+          "repositoryId": 42,
+          "prototypeId": 11,
+          "branch": "checkout-redesign",
+          "buildNumber": 3,
+          "threadId": 101,
+          "commentId": 101
+        },
+        "observedAt": "2026-09-30T10:00:00.000000Z",
+        "author": {
+          "kind": "human",
+          "id": "github:ana-designer"
+        }
+      }
+    ],
+    "proposal": {
+      "consolidator": {
+        "id": "recurrence",
+        "version": "0.0.0"
+      },
+      "rationale": {
+        "recurrence": "Reported in 3 threads on 3 prototypes by 3 reviewers, across 3 Builds.",
+        "expectedBenefit": "Prototypes built with this learning should stop drawing comments about visible-form-labels.",
+        "falsification": "Revisit it if new Builds that follow it still draw comments about visible-form-labels, or if reviewers push back on it."
+      },
+      "lifecycle": {
+        "action": "new"
+      },
+      "proposedAt": "2026-10-09T12:00:00.000000Z",
+      "proposedBy": {
+        "kind": "agent",
+        "id": "agent:copilot",
+        "model": "example-model"
+      },
+      "proposalDigest": "sha256:2a26b6a21e1401dbd45dfdc9cfc0e5b9be699fb318d86ec4fe5af386290314d7"
+    },
+    "provenance": {
+      "producer": {
+        "name": "@github/replica-learning",
+        "version": "0.0.0"
+      },
+      "method": "propose:recurrence",
+      "createdAt": "2026-10-09T12:00:00.000000Z",
+      "createdBy": {
+        "kind": "agent",
+        "id": "agent:copilot",
+        "model": "example-model"
+      }
+    },
+    "createdAt": "2026-10-09T12:00:00.000000Z",
+    "updatedAt": "2026-10-09T13:00:00.000000Z",
+    "reviewDigest": "sha256:5cdd03081c669d0f814c42d73717a1dd7348696a3fe1dfeb0f3a91afb085a12a",
+    "previousDigest": "sha256:fb0a83d662d61f012876ed78046172c2274bf77f8dfd0b580aa6b282b16c2289",
+    "accepted": {
+      "by": {
+        "kind": "human",
+        "id": "github:ana-designer",
+        "asserted": true
+      },
+      "at": "2026-10-09T13:00:00.000000Z",
+      "contentDigest": "sha256:a367697aaff241cbcbf2d734c0ae62a38cc014e211bfd9b6cad96c180259c212",
+      "reviewedDigest": "sha256:66bdcae457d9e1d5b02d00ef931e0855ca14a5ec213e4e567f9f19a48b504cba",
+      "edited": true,
+      "note": "Tightened the wording."
+    },
+    "contentDigest": "sha256:a367697aaff241cbcbf2d734c0ae62a38cc014e211bfd9b6cad96c180259c212",
+    "supersedes": ["mem_aaaaaaaa1", "mem_aaaaaaaa1"],
+    "digest": "sha256:319b1c77453bbfa2effeb67ef9e5f2b714b36a1c6e222a83b90cca14311a936f"
+  }
+}

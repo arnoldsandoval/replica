@@ -1,0 +1,53 @@
+.hub-connection-approval {
+  display: grid;
+  gap: var(--base-size-16);
+  margin-block: 1rem 0;
+}
+
+.hub-connection-approval p {
+  margin: 0;
+}
+
+.hub-connection-approval-actions {
+  display: inline-flex;
+  align-items: stretch;
+  justify-self: start;
+  gap: 0;
+  border: 1px solid var(--brand-button-primary-bgColor-rest);
+  border-radius: var(--base-size-6);
+}
+
+.hub-connection-approval-actions > :is(a, button) {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hub-connection-approval-actions > a {
+  border-start-start-radius: calc(var(--base-size-6) - 1px);
+  border-end-start-radius: calc(var(--base-size-6) - 1px);
+  overflow-wrap: anywhere;
+}
+
+.hub-connection-approval-actions > .hub-connection-approval-copy {
+  --hub-approval-separator: var(--brand-button-primary-borderColor-active);
+  --brand-button-secondary-bgColor-rest: var(--brand-button-primary-bgColor-rest);
+  --brand-button-secondary-bgColor-hover: var(--brand-button-primary-bgColor-hover);
+  --brand-button-secondary-bgColor-active: var(--brand-button-primary-bgColor-active);
+  --brand-button-secondary-fgColor-rest: var(--brand-button-primary-fgColor-rest);
+  --brand-button-secondary-borderColor-rest: var(--hub-approval-separator);
+  --brand-button-secondary-borderColor-hover: var(--hub-approval-separator);
+  --brand-button-secondary-borderColor-active: var(--hub-approval-separator);
+  width: var(--brand-control-medium-size);
+  min-width: var(--brand-control-medium-size);
+  height: auto;
+  border-inline-start: 1px solid var(--hub-approval-separator);
+  border-start-end-radius: calc(var(--base-size-6) - 1px);
+  border-end-end-radius: calc(var(--base-size-6) - 1px);
+}
+
+.hub-connection-approval-actions > :focus-visible {
+  position: relative;
+  z-index: 1;
+}

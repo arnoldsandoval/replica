@@ -1,0 +1,24 @@
+.copilot-app-continuation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-size-20);
+  color: var(--brand-color-text-default);
+}
+
+.copilot-app-continuation__message {
+  margin: 0;
+}
+
+.copilot-app-continuation__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--base-size-8);
+}
+
+.copilot-app-continuation__copy-error {
+  margin: 0;
+  color: var(--hub-fg-danger);
+  font-size: 0.875rem;
+}

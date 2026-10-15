@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "replica.event/v1",
+  "id": "ev_fd0f0f14cf5b72a4c696cb8d",
+  "episodeId": "ep_e7b4ecb49d4ee02d0ea5d872",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "type": "status_change",
+  "at": "2026-10-04T09:00:00.000000Z",
+  "actor": {
+    "kind": "human",
+    "id": "github:ben-manager",
+    "role": "reviewer"
+  },
+  "payload": {
+    "subject": {
+      "kind": "thread",
+      "id": 107
+    },
+    "status": "resolved",
+    "at": "2026-10-04T09:00:00.000000Z",
+    "by": {
+      "kind": "human",
+      "id": "github:ben-manager",
+      "role": "reviewer"
+    }
+  },
+  "payloadDigest": "sha256:09639f2d6287d8a297de970bb3008b94e89a31e9176dfe6a8c8f5d8ae103fca1",
+  "digest": "sha256:7887856a9230b6a5cf52207370e96eca7a2397024dad560edefdf4219d34876b"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "replica",
+  "owner": { "name": "GitHub" },
+  "metadata": { "description": "Replica prototype preview and publishing tools" },
+  "plugins": [
+    {
+      "name": "replica-prototype",
+      "description": "Preview ordinary prototypes and collaborate through Replica Hub.",
+      "source": "./.github/extensions/replica-prototype"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "providerManifest",
+  "reason": "A provider implements replica.memory-provider.",
+  "expect": "must be equal to constant",
+  "record": {
+    "schemaVersion": "replica.provider/v1",
+    "id": "in-memory",
+    "name": "In-process memory",
+    "version": "0.0.0",
+    "contract": {
+      "name": "acme.store",
+      "versions": [1]
+    },
+    "capabilities": [
+      "observation.append",
+      "observation.query",
+      "memory.store",
+      "memory.query",
+      "memory.lifecycle",
+      "grant.store",
+      "audit.store"
+    ],
+    "storage": {
+      "kind": "memory",
+      "location": "/path/to/prototype/.replica/learning"
+    },
+    "externalCalls": [],
+    "dataRetention": "Records are lost when the process exits."
+  }
+}

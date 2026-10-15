@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>field-notes</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      .field-page {
+        --forest: #233b30;
+        --cream: #f1eddf;
+        --orange: #d57e52;
+        background: var(--cream);
+        color: var(--forest);
+        font-family: "Trebuchet MS", sans-serif;
+      }
+      .field-page * {
+        box-sizing: border-box;
+      }
+      .field-page a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .field-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 82px;
+        padding: 0 5%;
+        border-bottom: 1px solid #233b3040;
+        font-size: 0.67rem;
+        font-weight: bold;
+        letter-spacing: 0.16em;
+      }
+      .field-nav .field-mark {
+        font:
+          bold 1.4rem Georgia,
+          serif;
+        letter-spacing: -0.04em;
+      }
+      .field-mark span {
+        font-size: 1.8rem;
+        vertical-align: middle;
+        color: var(--orange);
+        margin-right: 6px;
+      }
+      .field-nav a:last-child span {
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+      .field-hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .field-hero-copy {
+        padding: 75px 7% 100px 10%;
+      }
+      .field-coordinate,
+      .field-kicker,
+      .field-section-heading,
+      .field-hero-bottom,
+      .field-landscape-caption {
+        font-size: 0.67rem;
+        font-weight: bold;
+        letter-spacing: 0.16em;
+      }
+      .field-hero h1 {
+        font:
+          normal clamp(4.5rem, 7.5vw, 8.8rem)/0.99 Georgia,
+          serif;
+        letter-spacing: -0.075em;
+        margin: 70px 0 32px;
+      }
+      .field-hero h1 em,
+      .field-manifesto h2 em,
+      .field-routes h2 em,
+      .field-log h2 em,
+      .field-end h2 em {
+        color: var(--orange);
+        font-weight: normal;
+      }
+      .field-hero-copy p {
+        max-width: 360px;
+        font:
+          1.16rem/1.55 Georgia,
+          serif;
+        margin-bottom: 42px;
+      }
+      .field-button {
+        background: var(--forest);
+        color: var(--cream) !important;
+        display: inline-flex;
+        justify-content: space-between;
+        gap: 38px;
+        padding: 19px 22px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        letter-spacing: 0.11em;
+      }
+      .field-button span {
+        font-size: 1rem;
+      }
+      .field-landscape {
+        background: #d3c3a1;
+        min-height: 710px;
+        overflow: hidden;
+        position: relative;
+      }
+      .field-sun {
+        width: 51%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #eab789;
+        position: absolute;
+        top: 15%;
+        left: 24%;
+        box-shadow:
+          0 0 0 28px #e6b58730,
+          0 0 0 70px #e6b58727;
+      }
+      .field-hill {
+        position: absolute;
+        width: 160%;
+        height: 52%;
+        left: -27%;
+        border-radius: 50% 50% 0 0;
+      }
+      .field-hill-back {
+        background: #829685;
+        bottom: -10%;
+        transform: rotate(-14deg);
+      }
+      .field-hill-front {
+        background: #385a48;
+        bottom: -28%;
+        transform: rotate(12deg);
+      }
+      .field-tree {
+        position: absolute;
+        color: #294937;
+        font-size: 15rem;
+        line-height: 1;
+      }
+      .field-tree-one {
+        bottom: 8%;
+        right: 5%;
+        transform: rotate(10deg);
+      }
+      .field-tree-two {
+        bottom: 1%;
+        right: 28%;
+        font-size: 9rem;
+      }
+      .field-landscape-caption {
+        position: absolute;
+        bottom: 26px;
+        left: 7%;
+        color: #fff7e8;
+      }
+      .field-hero-bottom {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: space-between;
+        padding: 19px 5%;
+        background: #e2dccb;
+      }
+      .field-manifesto {
+        padding: 115px 5% 150px;
+      }
+      .field-manifesto-content {
+        display: grid;
+        grid-template-columns: 1.5fr 0.55fr;
+        gap: 9%;
+        align-items: end;
+        margin-top: 52px;
+      }
+      .field-manifesto h2 {
+        font:
+          normal clamp(3.7rem, 6vw, 7rem)/1.08 Georgia,
+          serif;
+        letter-spacing: -0.06em;
+        margin: 0;
+      }
+      .field-manifesto p {
+        font:
+          1.1rem/1.6 Georgia,
+          serif;
+        margin: 0 0 20px;
+      }
+      .field-routes {
+        padding: 82px 5% 130px;
+        background: #dce2d3;
+      }
+      .field-section-heading {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #233b3070;
+        padding-top: 18px;
+      }
+      .field-routes h2 {
+        font:
+          normal clamp(3.8rem, 7vw, 8rem) Georgia,
+          serif;
+        letter-spacing: -0.07em;
+        margin: 60px 0 65px;
+      }
+      .field-route-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .field-route-art {
+        height: 350px;
+        position: relative;
+        overflow: hidden;
+        background: #a7b39f;
+      }
+      .field-route-art span {
+        position: absolute;
+        z-index: 2;
+        top: 18px;
+        left: 18px;
+        border: 1px solid currentColor;
+        border-radius: 50%;
+        width: 39px;
+        height: 39px;
+        display: grid;
+        place-items: center;
+        font:
+          1.1rem Georgia,
+          serif;
+      }
+      .field-route-orbit {
+        width: 98%;
+        height: 75%;
+        border: 2px solid #f1eddfba;
+        border-radius: 50%;
+        position: absolute;
+        top: 30%;
+        left: 15%;
+        transform: rotate(-40deg);
+        box-shadow:
+          0 28px 0 0 #547364,
+          0 56px 0 0 #395747,
+          0 84px 0 0 #294638;
+      }
+      .field-route-art-ridge {
+        background: #c8b18c;
+      }
+      .field-route-art-ridge .field-route-orbit {
+        transform: rotate(15deg);
+      }
+      .field-route-art-fern {
+        background: #819787;
+      }
+      .field-route-art-fern .field-route-orbit {
+        border-radius: 35%;
+        transform: rotate(50deg);
+      }
+      .field-route-art-water {
+        background: #adc2b6;
+      }
+      .field-route-art-water .field-route-orbit {
+        transform: rotate(-60deg);
+        box-shadow:
+          0 28px 0 #759a93,
+          0 56px 0 #527f7c,
+          0 84px 0 #345d59;
+      }
+      .field-route-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.65rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+        margin-top: 22px;
+      }
+      .field-route h3 {
+        font:
+          normal clamp(1.8rem, 2.7vw, 3rem) Georgia,
+          serif;
+        letter-spacing: -0.04em;
+        margin: 22px 0 12px;
+      }
+      .field-route p {
+        font:
+          1rem/1.5 Georgia,
+          serif;
+        max-width: 270px;
+        margin: 0;
+      }
+      .field-log {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 680px;
+        background: #e7dac4;
+      }
+      .field-log-illustration {
+        background: #b7ad8d;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+      .field-log-leaf {
+        font:
+          32rem Georgia,
+          serif;
+        color: #354f39;
+        line-height: 1;
+        transform: rotate(-18deg);
+      }
+      .field-log-illustration > span:last-child {
+        font-size: 0.62rem;
+        font-weight: bold;
+        line-height: 1.5;
+        letter-spacing: 0.16em;
+        text-align: center;
+        position: absolute;
+        bottom: 34px;
+      }
+      .field-log-copy {
+        padding: 80px 10% 65px;
+        display: flex;
+        flex-direction: column;
+      }
+      .field-log h2 {
+        font:
+          normal clamp(3.5rem, 5vw, 6rem)/1.05 Georgia,
+          serif;
+        letter-spacing: -0.06em;
+        margin: auto 0 34px;
+      }
+      .field-log-copy p {
+        max-width: 420px;
+        font:
+          1.16rem/1.6 Georgia,
+          serif;
+        margin: 0 0 85px;
+      }
+      .field-log-rule {
+        border-top: 1px solid #233b3060;
+        padding-top: 16px;
+        display: flex;
+        gap: 25px;
+        justify-content: space-between;
+        font-size: 0.62rem;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+      }
+      .field-end {
+        padding: 145px 5% 160px;
+        text-align: center;
+        background: var(--forest);
+        color: var(--cream);
+      }
+      .field-end > span {
+        font-size: 0.7rem;
+        font-weight: bold;
+        letter-spacing: 0.16em;
+      }
+      .field-end h2 {
+        font:
+          normal clamp(4.5rem, 8vw, 9rem)/1 Georgia,
+          serif;
+        letter-spacing: -0.065em;
+        margin: 65px 0 22px;
+      }
+      .field-end p {
+        font:
+          1.2rem Georgia,
+          serif;
+        margin-bottom: 70px;
+      }
+      .field-end a {
+        font-size: 0.68rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+        border-bottom: 1px solid;
+        padding-bottom: 9px;
+      }
+      .field-footer {
+        padding: 32px 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.63rem;
+        font-weight: bold;
+        letter-spacing: 0.12em;
+      }
+      .field-footer strong {
+        font:
+          bold 1.3rem Georgia,
+          serif;
+        letter-spacing: -0.04em;
+      }
+      @media (max-width: 750px) {
+        .field-nav {
+          height: 70px;
+          padding: 0 6%;
+        }
+        .field-nav > span {
+          display: none;
+        }
+        .field-hero {
+          display: block;
+        }
+        .field-hero-copy {
+          padding: 65px 6% 75px;
+        }
+        .field-hero h1 {
+          font-size: clamp(4.5rem, 15vw, 7rem);
+          margin: 65px 0 30px;
+        }
+        .field-landscape {
+          min-height: 500px;
+        }
+        .field-hero-bottom {
+          padding: 20px 6%;
+          font-size: 0.55rem;
+        }
+        .field-manifesto {
+          padding: 100px 6%;
+        }
+        .field-manifesto-content {
+          display: block;
+        }
+        .field-manifesto h2 {
+          font-size: 3.6rem;
+          margin-bottom: 45px;
+        }
+        .field-routes {
+          padding: 70px 6% 105px;
+        }
+        .field-section-heading {
+          font-size: 0.56rem;
+        }
+        .field-routes h2 {
+          font-size: 3.7rem;
+          margin: 55px 0;
+        }
+        .field-route-grid {
+          display: block;
+        }
+        .field-route {
+          margin-bottom: 65px;
+        }
+        .field-route:last-child {
+          margin-bottom: 0;
+        }
+        .field-route-art {
+          height: 320px;
+        }
+        .field-route h3 {
+          font-size: 2.6rem;
+        }
+        .field-log {
+          display: block;
+        }
+        .field-log-illustration {
+          min-height: 450px;
+        }
+        .field-log-leaf {
+          font-size: 25rem;
+        }
+        .field-log-copy {
+          min-height: 530px;
+          padding: 65px 6%;
+        }
+        .field-log h2 {
+          font-size: 3.6rem;
+          margin: 60px 0 30px;
+        }
+        .field-log-copy p {
+          margin-bottom: 50px;
+        }
+        .field-end {
+          padding: 120px 6%;
+        }
+        .field-end h2 {
+          font-size: 4.8rem;
+        }
+        .field-footer {
+          padding: 35px 6%;
+          gap: 25px;
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="field-page" id="top">
+      <header class="field-nav">
+        <a class="field-mark" href="#top"><span aria-hidden="true">✳</span> FIELDWORK</a
+        ><span>AN ATLAS OF SMALL ADVENTURES</span
+        ><a href="#routes">THE ROUTES <span aria-hidden="true">↗</span></a>
+      </header>
+      <main>
+        <section class="field-hero">
+          <div class="field-hero-copy">
+            <div class="field-coordinate">VOL. 04 · 54° 02′ N / 02° 48′ W</div>
+            <h1>Go where<br />the <em>day</em><br />takes you.</h1>
+            <p>
+              Hand-drawn routes, quiet places, and good reasons to take the long way round. The
+              outdoors is closer than you think.
+            </p>
+            <a href="#routes" class="field-button"
+              >FIND YOUR NEXT WALK <span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <div
+            class="field-landscape"
+            aria-label="Illustration of a sun setting behind green hills"
+            role="img"
+          >
+            <div class="field-sun"></div>
+            <div class="field-hill field-hill-back"></div>
+            <div class="field-hill field-hill-front"></div>
+            <div class="field-tree field-tree-one">✳</div>
+            <div class="field-tree field-tree-two">✳</div>
+            <span class="field-landscape-caption">A PLACE TO GET LOST, A PLACE TO BE FOUND</span>
+          </div>
+          <div class="field-hero-bottom">
+            <span>EST. 2026 / ALWAYS OUTSIDE</span><span>KEEP GOING ↓</span>
+          </div>
+        </section>
+        <section class="field-manifesto">
+          <span class="field-kicker">A NOTE FOR THE WANDERER / 001</span>
+          <div class="field-manifesto-content">
+            <h2>You don&#x27;t have to<br />go <em>far</em> to feel far away.</h2>
+            <div>
+              <p>
+                Take the turning you usually pass. Stop when the light changes. Pick a path because
+                its name sounds lovely.
+              </p>
+              <p>
+                Fieldwork collects the places that remind us to look up. No summit to conquer. No
+                miles to make up. Just a little space to breathe.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="field-routes" id="routes">
+          <div class="field-section-heading">
+            <span>OUR FIELD GUIDE / 002</span><span>THREE WALKS TO START WITH</span>
+          </div>
+          <h2>Choose a <em>direction.</em></h2>
+          <div class="field-route-grid">
+            <article class="field-route">
+              <div class="field-route-art field-route-art-ridge" aria-hidden="true">
+                <span>01</span>
+                <div class="field-route-orbit"></div>
+              </div>
+              <div class="field-route-meta"><span>NORTH COAST</span><span>8.4 KM</span></div>
+              <h3>The ridge path</h3>
+              <p>A route for noticing the things you usually walk right past.</p>
+            </article>
+            <article class="field-route">
+              <div class="field-route-art field-route-art-fern" aria-hidden="true">
+                <span>02</span>
+                <div class="field-route-orbit"></div>
+              </div>
+              <div class="field-route-meta"><span>OLD GROWTH</span><span>4.2 KM</span></div>
+              <h3>Fern &amp; fallen light</h3>
+              <p>A route for noticing the things you usually walk right past.</p>
+            </article>
+            <article class="field-route">
+              <div class="field-route-art field-route-art-water" aria-hidden="true">
+                <span>03</span>
+                <div class="field-route-orbit"></div>
+              </div>
+              <div class="field-route-meta"><span>LOWLANDS</span><span>11 KM</span></div>
+              <h3>A way to the water</h3>
+              <p>A route for noticing the things you usually walk right past.</p>
+            </article>
+          </div>
+        </section>
+        <section class="field-log">
+          <div class="field-log-illustration" aria-hidden="true">
+            <span class="field-log-leaf">❧</span
+            ><span>SPECIMEN NO. 07<br />FOUND ALONG THE WAY</span>
+          </div>
+          <div class="field-log-copy">
+            <span class="field-kicker">FROM THE TRAIL JOURNAL / 003</span>
+            <h2>For the things<br />we almost <em>missed.</em></h2>
+            <p>
+              Some journeys are measured in moments, not miles. A tiny fern in a stone wall. The way
+              the rain leaves everything shining. We write them down so we don&#x27;t forget.
+            </p>
+            <div class="field-log-rule">
+              <span>OBSERVATION NO. 17</span><span>THE BEST PART WASN&#x27;T ON THE MAP.</span>
+            </div>
+          </div>
+        </section>
+        <section class="field-end">
+          <span>THE END OF THE PATH IS JUST THE BEGINNING</span>
+          <h2>See you <em>out there.</em></h2>
+          <p>Pack light. Bring your curiosity.</p>
+          <a href="#top">BACK TO THE BEGINNING ↑</a>
+        </section>
+      </main>
+      <footer class="field-footer">
+        <strong>✳ FIELDWORK</strong><span>A SMALL ATLAS FOR BIG DAYS</span
+        ><span>© 2026 FIELDWORK</span>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+scripts:
+  - name: Startup
+    command: node scripts/setup-replica-plugin.mjs && npm ci
+    triggers:
+      - session.create
+  - name: Dev
+    command: npm run dev
+  - name: Preview
+    command: npm run preview
+
+server_ready_pattern: '(?i)Local:\s+(https?://\S+)'
+auto_open_in_browser: true
+
+automation:
+  remote_control: false

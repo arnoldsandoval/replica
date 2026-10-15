@@ -1,0 +1,53 @@
+.mention-input {
+  position: relative;
+  width: 100%;
+}
+
+.mention-input textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  font: inherit;
+  resize: vertical;
+}
+
+.mention-input textarea:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: -1px;
+}
+
+.mention-input__suggestions {
+  position: fixed;
+  z-index: 100;
+  max-height: 14rem;
+  overflow-y: auto;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  padding: 0.25rem;
+}
+
+.mention-input__suggestions ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mention-input__suggestions button {
+  width: 100%;
+  padding: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.mention-input__suggestions [aria-selected="true"] {
+  background: var(--hub-canvas-subtle);
+}

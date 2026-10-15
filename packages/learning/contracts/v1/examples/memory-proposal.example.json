@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "replica.memory-proposal/v1",
+  "kind": "rule",
+  "content": "Show a visible label above every form field; never use placeholder text as the only label.",
+  "themeKey": "visible-form-labels",
+  "appliesTo": [
+    {
+      "kind": "skill",
+      "ref": ".agents/skills/create-prototype/SKILL.md"
+    }
+  ],
+  "evidence": [
+    {
+      "episodeId": "ep_0674c585aa647cf9cbf49835",
+      "eventIds": ["ev_671ad9674d5da327f0be5405"],
+      "source": {
+        "kind": "hub_review_comments",
+        "hubOrigin": "https://replica.example.com",
+        "repository": "acme/checkout-prototypes",
+        "repositoryId": 42,
+        "prototypeId": 13,
+        "branch": "onboarding-v2",
+        "buildNumber": 5,
+        "threadId": 104,
+        "commentId": 104
+      },
+      "observedAt": "2026-10-02T14:00:00.000000Z",
+      "author": {
+        "kind": "human",
+        "id": "github:cy-engineer"
+      }
+    },
+    {
+      "episodeId": "ep_1f2f1501c88bf130701e2e2d",
+      "eventIds": ["ev_fdf4e1e66d09106435be7bca"],
+      "source": {
+        "kind": "hub_review_comments",
+        "hubOrigin": "https://replica.example.com",
+        "repository": "acme/checkout-prototypes",
+        "repositoryId": 42,
+        "prototypeId": 12,
+        "branch": "account-settings",
+        "buildNumber": 2,
+        "threadId": 103,
+        "commentId": 103
+      },
+      "observedAt": "2026-10-01T09:00:00.000000Z",
+      "author": {
+        "kind": "human",
+        "id": "github:ben-manager"
+      }
+    },
+    {
+      "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+      "eventIds": ["ev_948d0185093cdda91c22f15a"],
+      "source": {
+        "kind": "hub_review_comments",
+        "hubOrigin": "https://replica.example.com",
+        "repository": "acme/checkout-prototypes",
+        "repositoryId": 42,
+        "prototypeId": 11,
+        "branch": "checkout-redesign",
+        "buildNumber": 3,
+        "threadId": 101,
+        "commentId": 102
+      },
+      "observedAt": "2026-09-30T11:00:00.000000Z",
+      "author": {
+        "kind": "human",
+        "id": "github:ben-manager"
+      }
+    },
+    {
+      "episodeId": "ep_de190b9a6dc64fbad2f7d662",
+      "eventIds": ["ev_a10a4cb43fbc2fd53d6d3c55"],
+      "source": {
+        "kind": "hub_review_comments",
+        "hubOrigin": "https://replica.example.com",
+        "repository": "acme/checkout-prototypes",
+        "repositoryId": 42,
+        "prototypeId": 11,
+        "branch": "checkout-redesign",
+        "buildNumber": 3,
+        "threadId": 101,
+        "commentId": 101
+      },
+      "observedAt": "2026-09-30T10:00:00.000000Z",
+      "author": {
+        "kind": "human",
+        "id": "github:ana-designer"
+      }
+    }
+  ],
+  "support": {
+    "distinctEpisodes": 3,
+    "distinctPrototypes": 3,
+    "distinctReviewers": 3,
+    "distinctBuilds": 3
+  },
+  "rationale": {
+    "recurrence": "Reported in 3 threads on 3 prototypes by 3 reviewers, across 3 Builds.",
+    "expectedBenefit": "Prototypes built with this learning should stop drawing comments about visible-form-labels.",
+    "falsification": "Revisit it if new Builds that follow it still draw comments about visible-form-labels, or if reviewers push back on it."
+  },
+  "lifecycle": {
+    "action": "new"
+  },
+  "consolidator": {
+    "id": "recurrence",
+    "version": "0.0.0"
+  }
+}

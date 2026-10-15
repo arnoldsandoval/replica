@@ -1,0 +1,22 @@
+.canvas-publish-settings__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hub-space-16);
+  margin-top: var(--hub-space-12);
+}
+
+.canvas-publish-settings__option > label {
+  min-width: 0;
+}
+
+.canvas-publish-settings__toggle:has([aria-disabled="true"]) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.canvas-publish-settings__error {
+  display: grid;
+  gap: var(--hub-space-12);
+  margin-top: var(--hub-space-12);
+}

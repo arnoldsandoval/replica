@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "replica.grant-withdrawal/v1",
+  "id": "withdrawal_a00b742386440265d8a4792e",
+  "grantId": "grant_48803813d3bd224333fe1b5a",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "purposes": ["instruction"],
+  "withdrawnBy": {
+    "kind": "human",
+    "id": "github:ana-designer",
+    "asserted": true
+  },
+  "withdrawnAt": "2026-10-09T14:00:00.000000Z",
+  "reason": "Example of ending a purpose.",
+  "digest": "sha256:18ec67a308042044b9a15f660199f3cc1c2347f8daa5e04eb82dd634bd994ec8"
+}

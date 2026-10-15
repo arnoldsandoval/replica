@@ -1,0 +1,38 @@
+.hub-empty-state {
+  display: flex;
+  width: 100%;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--base-size-80) var(--base-size-24);
+  color: var(--hub-fg-default);
+  text-align: center;
+}
+
+.hub-empty-state__visual {
+  display: grid;
+  width: var(--base-size-48);
+  height: var(--base-size-48);
+  margin-block-end: var(--base-size-24);
+  place-items: center;
+  color: var(--hub-fg-muted);
+}
+
+.hub-empty-state__visual svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hub-empty-state__heading {
+  margin: 0;
+}
+
+.hub-empty-state__description {
+  max-width: 52ch;
+  margin: var(--base-size-8) 0 0;
+}
+
+.hub-empty-state__action {
+  margin-block-start: var(--base-size-24);
+}

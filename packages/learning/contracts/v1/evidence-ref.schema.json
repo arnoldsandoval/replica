@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/evidence-ref.schema.json",
+  "title": "Replica evidence reference v1",
+  "description": "Points from a learning back to the exact events that support it, and pins them to their source.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["episodeId", "eventIds"],
+  "properties": {
+    "episodeId": { "$ref": "common.schema.json#/$defs/id" },
+    "eventIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": { "$ref": "common.schema.json#/$defs/id" }
+    },
+    "source": { "$ref": "common.schema.json#/$defs/source" },
+    "observedAt": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "author": { "$ref": "common.schema.json#/$defs/actor" },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 20,
+      "items": { "$ref": "common.schema.json#/$defs/artifactRef" }
+    }
+  }
+}

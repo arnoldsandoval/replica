@@ -1,0 +1,22 @@
+.setup {
+  background: var(--hub-canvas-muted);
+  display: grid;
+  min-height: 100vh;
+  padding: 1.5rem;
+  place-items: center;
+  color: var(--hub-fg-default);
+}
+
+.setup__card {
+  width: min(100%, 34rem);
+  padding: 1rem;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+}
+
+.setup__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

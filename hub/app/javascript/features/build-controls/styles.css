@@ -1,0 +1,15 @@
+.build-controls-floating-toolbar {
+  position: absolute;
+  z-index: 41;
+  top: var(--hub-space-8);
+  right: var(--hub-space-8);
+  padding: var(--hub-space-4);
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+}
+
+.review-shell__viewport:has(.canvas-controls-panel[data-dragging="true"]) .review-shell__frame,
+.shared-build__viewport:has(.canvas-controls-panel[data-dragging="true"]) .shared-build__frame {
+  pointer-events: none;
+}

@@ -1,0 +1,9 @@
+.publication-demo {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  height: 100vh;
+}
+
+.publication-demo-canvas {
+  min-height: 0;
+}

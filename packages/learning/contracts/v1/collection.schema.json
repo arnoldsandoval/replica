@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/collection.schema.json",
+  "title": "Replica evidence collection v1",
+  "description": "One import of source evidence for a time window. complete is true only when every page and reply continuation was present. A window that no complete collection covers is reported as incomplete, never as empty.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "source",
+    "scope",
+    "snapshotId",
+    "snapshotDigest",
+    "capturedAt",
+    "filters",
+    "complete",
+    "problems",
+    "counts",
+    "importedAt",
+    "importedBy",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "replica.collection/v1" },
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "source": { "$ref": "common.schema.json#/$defs/source" },
+    "scope": { "$ref": "common.schema.json#/$defs/scope" },
+    "snapshotId": { "type": "string", "pattern": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$" },
+    "snapshotDigest": {
+      "description": "The digest of the snapshot's normalized contents. Each scope stores one collection per snapshotId, and importing the snapshot again matches this digest.",
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "reviewerIdentity": {
+      "description": "Once a Hub source opts into stable identities, login-only evidence from that source serves review only.",
+      "const": "stable-user-id"
+    },
+    "capturedAt": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolution", "read", "from", "to"],
+      "properties": {
+        "resolution": { "enum": ["all", "unresolved", "resolved"] },
+        "read": { "enum": ["all", "unread", "read"] },
+        "from": {
+          "anyOf": [{ "$ref": "common.schema.json#/$defs/timestamp" }, { "type": "null" }]
+        },
+        "to": { "anyOf": [{ "$ref": "common.schema.json#/$defs/timestamp" }, { "type": "null" }] }
+      }
+    },
+    "complete": { "type": "boolean" },
+    "problems": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": { "type": "string", "minLength": 1, "maxLength": 2000 }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["threads", "messages", "episodes", "events"],
+      "properties": {
+        "threads": { "$ref": "common.schema.json#/$defs/count" },
+        "messages": { "$ref": "common.schema.json#/$defs/count" },
+        "episodes": { "$ref": "common.schema.json#/$defs/count" },
+        "events": { "$ref": "common.schema.json#/$defs/count" }
+      }
+    },
+    "importedAt": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "importedBy": { "$ref": "common.schema.json#/$defs/actor" },
+    "digest": { "$ref": "common.schema.json#/$defs/digest" }
+  }
+}

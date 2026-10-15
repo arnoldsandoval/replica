@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "replica.consent-grant/v1",
+  "id": "grant_48803813d3bd224333fe1b5a",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "purposes": ["review", "instruction"],
+  "sources": ["hub_review_comments"],
+  "grantedBy": {
+    "kind": "human",
+    "id": "github:ana-designer",
+    "asserted": true
+  },
+  "grantedAt": "2026-10-09T12:00:00.000000Z",
+  "basis": "The design team agreed on 2026-10-09 that Hub review comments may be reviewed and turned into reviewed guidance.",
+  "digest": "sha256:069485a8e18320cf8b0508ae2010a4f18eb75fa213e5fadf7f449d83a14e6a6c"
+}

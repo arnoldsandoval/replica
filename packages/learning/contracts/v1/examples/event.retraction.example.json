@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "replica.event/v1",
+  "id": "ev_d6e44114bd7e68439a33d013",
+  "episodeId": "ep_e7b4ecb49d4ee02d0ea5d872",
+  "scope": {
+    "host": "github.com",
+    "repository": "acme/checkout-prototypes"
+  },
+  "type": "retraction",
+  "at": "2026-10-07T09:00:00.000000Z",
+  "parentEventId": "ev_4b51c718949eac8155a59d75",
+  "actor": {
+    "kind": "system",
+    "id": "system:hub_review_comments"
+  },
+  "payload": {
+    "target": {
+      "eventId": "ev_4b51c718949eac8155a59d75"
+    },
+    "reason": "deleted_at_source",
+    "at": "2026-10-07T09:00:00.000000Z"
+  },
+  "payloadDigest": "sha256:0f8613687653e227ea9055f25e0940a54a80eef6e2ecd34bf66cac9f30b67194",
+  "digest": "sha256:c3f84b8589d2d6b287fce20c08a99983670aa2429ee2fded9c7cd44949c09c8b"
+}

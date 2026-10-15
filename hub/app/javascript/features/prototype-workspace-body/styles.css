@@ -1,0 +1,11 @@
+.prototype-workspace__body {
+  width: min(100%, 68rem);
+  padding: var(--hub-space-32) var(--hub-space-24);
+  margin: 0 auto;
+}
+
+@container (max-width: 48rem) {
+  .prototype-workspace__body {
+    padding: var(--hub-space-24) var(--hub-space-16);
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "consentGrant",
+  "reason": "A grant permits at least one purpose.",
+  "expect": "must NOT have fewer than 1 items",
+  "record": {
+    "schemaVersion": "replica.consent-grant/v1",
+    "id": "grant_48803813d3bd224333fe1b5a",
+    "scope": {
+      "host": "github.com",
+      "repository": "acme/checkout-prototypes"
+    },
+    "purposes": [],
+    "sources": ["hub_review_comments"],
+    "grantedBy": {
+      "kind": "human",
+      "id": "github:ana-designer",
+      "asserted": true
+    },
+    "grantedAt": "2026-10-09T12:00:00.000000Z",
+    "basis": "The design team agreed on 2026-10-09 that Hub review comments may be reviewed and turned into reviewed guidance.",
+    "digest": "sha256:ff3eb913ec423480bdbb8145da53a6eb470f453c5b8ca2314c3108fd11e14a4f"
+  }
+}

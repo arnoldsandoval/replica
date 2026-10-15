@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>signal-room</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      .signal-page {
+        --night: #101d22;
+        --line: #70878a55;
+        --light: #ecebdc;
+        --lime: #d3ed93;
+        --orange: #f0a36f;
+        background: var(--night);
+        color: var(--light);
+        font-family: "Trebuchet MS", sans-serif;
+      }
+      .signal-page * {
+        box-sizing: border-box;
+      }
+      .signal-page a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .signal-nav {
+        height: 78px;
+        padding: 0 4.5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        font-weight: bold;
+      }
+      .signal-logo {
+        font-size: 0.9rem;
+        letter-spacing: 0.02em !important;
+      }
+      .signal-logo-symbol {
+        color: var(--lime);
+        font-size: 1.8rem;
+        vertical-align: middle;
+        margin-right: 9px;
+      }
+      .signal-nav-link {
+        color: var(--lime) !important;
+      }
+      .signal-live-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--lime);
+        border-radius: 50%;
+        box-shadow: 0 0 13px var(--lime);
+        margin-right: 9px;
+      }
+      .signal-hero {
+        min-height: 740px;
+        padding: 28px 4.5%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        background: radial-gradient(circle at 82% 46%, #2e4543 0, #192a2c 22%, var(--night) 60%);
+      }
+      .signal-topline,
+      .signal-hero-bottom,
+      .signal-section-title {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.65rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+      }
+      .signal-headline {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 50px;
+      }
+      .signal-eyebrow {
+        color: var(--lime);
+        font-size: 0.69rem;
+        font-weight: bold;
+        letter-spacing: 0.18em;
+      }
+      .signal-hero h1 {
+        font:
+          normal clamp(5rem, 10vw, 11rem)/0.94 Georgia,
+          serif;
+        letter-spacing: -0.075em;
+        margin: 50px 0 0;
+      }
+      .signal-hero h1 em,
+      .signal-stations h2 em,
+      .signal-dispatch h2 em,
+      .signal-end h2 em {
+        color: var(--lime);
+        font-weight: normal;
+      }
+      .signal-headline p {
+        font:
+          1.25rem/1.5 Georgia,
+          serif;
+        max-width: 290px;
+        margin: 0 0 14px;
+      }
+      .signal-hero-bottom {
+        padding: 19px 0 0;
+        border-top: 1px solid var(--line);
+      }
+      .signal-overview,
+      .signal-stations {
+        padding: 85px 4.5% 135px;
+      }
+      .signal-section-title {
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+        color: var(--lime);
+      }
+      .signal-metrics {
+        margin-top: 60px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border: 1px solid var(--line);
+      }
+      .signal-metric {
+        min-height: 250px;
+        padding: 25px 8%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .signal-metric + .signal-metric {
+        border-left: 1px solid var(--line);
+      }
+      .signal-metric > span {
+        font-size: 0.63rem;
+        letter-spacing: 0.14em;
+        font-weight: bold;
+      }
+      .signal-metric > span:last-child {
+        color: var(--lime);
+      }
+      .signal-metric strong {
+        font:
+          normal clamp(5rem, 7vw, 8rem)/1 Georgia,
+          serif;
+        letter-spacing: -0.065em;
+      }
+      .signal-metric small {
+        font:
+          0.78rem "Trebuchet MS",
+          sans-serif;
+        letter-spacing: 0;
+        margin-left: 10px;
+      }
+      .signal-chart {
+        border: 1px solid var(--line);
+        border-top: 0;
+        padding: 35px 3% 30px;
+      }
+      .signal-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 30px;
+      }
+      .signal-chart-header span {
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+      }
+      .signal-chart h2 {
+        font:
+          normal clamp(2.4rem, 4vw, 4.5rem) Georgia,
+          serif;
+        letter-spacing: -0.045em;
+        margin: 16px 0 0;
+      }
+      .signal-bars {
+        height: 290px;
+        display: flex;
+        align-items: end;
+        gap: 0.45%;
+        margin-top: 70px;
+        border-bottom: 1px solid var(--line);
+        background: repeating-linear-gradient(
+          to top,
+          transparent 0,
+          transparent 24%,
+          #70878a25 24.25%
+        );
+      }
+      .signal-bar {
+        width: 3.75%;
+        min-height: 5px;
+        background: #85a786;
+        position: relative;
+      }
+      .signal-bar:nth-child(3n) {
+        background: var(--lime);
+      }
+      .signal-bar span {
+        display: none;
+      }
+      .signal-chart-axis {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 14px;
+        font-size: 0.61rem;
+        letter-spacing: 0.1em;
+        color: #a6b4ac;
+      }
+      .signal-stations {
+        background: #19292b;
+      }
+      .signal-stations-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin: 70px 0 75px;
+        gap: 30px;
+      }
+      .signal-stations h2 {
+        font:
+          normal clamp(4.5rem, 7.7vw, 8rem)/1 Georgia,
+          serif;
+        letter-spacing: -0.07em;
+        margin: 0;
+      }
+      .signal-stations-heading p {
+        font:
+          1.2rem/1.5 Georgia,
+          serif;
+        max-width: 265px;
+      }
+      .signal-station {
+        min-height: 128px;
+        border-top: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: 100px 1fr 160px 125px;
+        gap: 18px;
+        align-items: center;
+      }
+      .signal-station:last-child {
+        border-bottom: 1px solid var(--line);
+      }
+      .signal-station-id,
+      .signal-station > span:last-child,
+      .signal-station > div span {
+        font-size: 0.64rem;
+        letter-spacing: 0.12em;
+        font-weight: bold;
+      }
+      .signal-station h3 {
+        font:
+          normal clamp(2rem, 3vw, 3.5rem) Georgia,
+          serif;
+        letter-spacing: -0.04em;
+        margin: 0 0 8px;
+      }
+      .signal-station > strong {
+        font:
+          normal 2.1rem Georgia,
+          serif;
+      }
+      .signal-nominal {
+        color: var(--lime);
+      }
+      .signal-watch {
+        color: var(--orange);
+      }
+      .signal-dispatch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 670px;
+      }
+      .signal-dispatch-art {
+        overflow: hidden;
+        position: relative;
+        background: #d2dbb2;
+        color: var(--night);
+        display: grid;
+        place-items: center;
+      }
+      .signal-dispatch-orbit {
+        width: 57%;
+        aspect-ratio: 1;
+        border: 2px solid #657a67;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        box-shadow:
+          0 0 0 45px #d2dbb2,
+          0 0 0 47px #657a67,
+          0 0 0 90px #d2dbb2,
+          0 0 0 92px #657a67,
+          0 0 0 135px #d2dbb2,
+          0 0 0 137px #657a67;
+      }
+      .signal-dispatch-core {
+        font-size: 8rem;
+        color: #2e544d;
+      }
+      .signal-dispatch-art > span {
+        position: absolute;
+        bottom: 36px;
+        left: 7%;
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        font-weight: bold;
+      }
+      .signal-dispatch-copy {
+        padding: 75px 9%;
+        display: flex;
+        flex-direction: column;
+      }
+      .signal-dispatch-copy > span {
+        color: var(--lime);
+        font-size: 0.67rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+      }
+      .signal-dispatch h2 {
+        font:
+          normal clamp(3.5rem, 5vw, 6rem)/1.04 Georgia,
+          serif;
+        letter-spacing: -0.055em;
+        margin: auto 0 30px;
+      }
+      .signal-dispatch p {
+        font:
+          1.16rem/1.55 Georgia,
+          serif;
+        max-width: 440px;
+        margin: 0 0 65px;
+      }
+      .signal-dispatch-rule {
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.63rem;
+        font-weight: bold;
+        letter-spacing: 0.13em;
+      }
+      .signal-dispatch-rule span {
+        color: var(--lime);
+        font-size: 1.1rem;
+      }
+      .signal-end {
+        padding: 140px 5% 155px;
+        text-align: center;
+        background: #263d3a;
+      }
+      .signal-end > span,
+      .signal-end a {
+        font-size: 0.65rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+      }
+      .signal-end h2 {
+        font:
+          normal clamp(5rem, 9vw, 10rem) Georgia,
+          serif;
+        letter-spacing: -0.07em;
+        margin: 65px 0;
+      }
+      .signal-end a {
+        border-bottom: 1px solid;
+        padding-bottom: 9px;
+      }
+      .signal-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 120px;
+        padding: 30px 4.5%;
+        font-size: 0.64rem;
+        letter-spacing: 0.1em;
+      }
+      .signal-footer strong {
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+      }
+      @media (max-width: 750px) {
+        .signal-nav {
+          padding: 0 6%;
+        }
+        .signal-nav > span {
+          display: none;
+        }
+        .signal-nav-link {
+          font-size: 0.52rem;
+        }
+        .signal-hero {
+          padding: 27px 6%;
+          min-height: 750px;
+        }
+        .signal-topline,
+        .signal-hero-bottom {
+          font-size: 0.54rem;
+        }
+        .signal-topline span:last-child,
+        .signal-hero-bottom span:last-child {
+          display: none;
+        }
+        .signal-headline {
+          display: block;
+        }
+        .signal-hero h1 {
+          font-size: clamp(4.5rem, 16vw, 7.5rem);
+          margin: 35px 0 45px;
+        }
+        .signal-headline p {
+          font-size: 1.14rem;
+          max-width: 315px;
+        }
+        .signal-overview,
+        .signal-stations {
+          padding: 70px 6% 100px;
+        }
+        .signal-section-title {
+          font-size: 0.55rem;
+        }
+        .signal-metrics {
+          display: block;
+          margin-top: 50px;
+        }
+        .signal-metric {
+          min-height: 200px;
+        }
+        .signal-metric + .signal-metric {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+        .signal-metric strong {
+          font-size: 5.8rem;
+        }
+        .signal-chart {
+          padding: 30px 5%;
+        }
+        .signal-chart-header {
+          display: block;
+        }
+        .signal-chart-header > span {
+          display: block;
+          margin-top: 17px;
+          font-size: 0.55rem;
+        }
+        .signal-chart h2 {
+          font-size: 2.7rem;
+        }
+        .signal-bars {
+          height: 220px;
+          margin-top: 50px;
+        }
+        .signal-stations-heading {
+          display: block;
+          margin: 60px 0;
+        }
+        .signal-stations h2 {
+          font-size: 3.6rem;
+        }
+        .signal-stations-heading p {
+          margin-top: 35px;
+        }
+        .signal-station {
+          min-height: 125px;
+          grid-template-columns: 55px 1fr 75px;
+          gap: 8px;
+        }
+        .signal-station > span:last-child {
+          grid-column: 2 / 4;
+          grid-row: 2;
+          align-self: start;
+          margin-top: -15px;
+        }
+        .signal-station h3 {
+          font-size: 1.8rem;
+        }
+        .signal-station > strong {
+          font-size: 1.55rem;
+          text-align: right;
+        }
+        .signal-dispatch {
+          display: block;
+        }
+        .signal-dispatch-art {
+          min-height: 470px;
+        }
+        .signal-dispatch-core {
+          font-size: 5rem;
+        }
+        .signal-dispatch-copy {
+          min-height: 550px;
+          padding: 65px 6%;
+        }
+        .signal-dispatch h2 {
+          font-size: 3.7rem;
+          margin: 65px 0 30px;
+        }
+        .signal-dispatch p {
+          margin-bottom: 55px;
+        }
+        .signal-end {
+          padding: 110px 6% 120px;
+        }
+        .signal-end h2 {
+          font-size: 5rem;
+        }
+        .signal-footer {
+          padding: 35px 6%;
+          gap: 25px;
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="signal-page" id="top">
+      <header class="signal-nav">
+        <a class="signal-logo" href="#top"
+          ><span class="signal-logo-symbol">◉</span> SIGNAL / ROOM</a
+        ><span>LIVE FIELD CONDITIONS</span
+        ><a href="#stations" class="signal-nav-link"
+          ><span class="signal-live-dot"></span> ALL SYSTEMS ONLINE ↗</a
+        >
+      </header>
+      <main>
+        <section class="signal-hero">
+          <div class="signal-topline">
+            <span>ENVIRONMENTAL OBSERVATORY / 2026</span><span>ISSUE 004 — THE OPEN AIR</span>
+          </div>
+          <div class="signal-headline">
+            <div>
+              <div class="signal-eyebrow">
+                <span class="signal-live-dot"></span> TRANSMITTING FROM THE FIELD
+              </div>
+              <h1>The world,<br /><em>in real time.</em></h1>
+            </div>
+            <p>
+              There is a story in every change of weather. Follow the measurements. Find the moments
+              that matter.
+            </p>
+          </div>
+          <div class="signal-hero-bottom">
+            <span>04 ACTIVE STATIONS</span><span>SCROLL TO EXPLORE ↓</span
+            ><span>UPDATED CONTINUOUSLY*</span>
+          </div>
+        </section>
+        <section class="signal-overview" aria-label="Observatory overview">
+          <div class="signal-section-title">
+            <span>01 / CURRENT CONDITIONS</span><span>REGIONAL OVERVIEW</span>
+          </div>
+          <div class="signal-metrics">
+            <div class="signal-metric">
+              <span>MEAN TEMPERATURE</span><strong>15.5<small>°C</small></strong
+              ><span>↗ +1.2° FROM YESTERDAY</span>
+            </div>
+            <div class="signal-metric">
+              <span>WIND SPEED</span><strong>08<small>KM/H</small></strong
+              ><span>↘ -3 KM/H FROM YESTERDAY</span>
+            </div>
+            <div class="signal-metric">
+              <span>AIR QUALITY</span><strong>42<small>AQI</small></strong
+              ><span>● GOOD CONDITIONS</span>
+            </div>
+          </div>
+          <div class="signal-chart">
+            <div class="signal-chart-header">
+              <div>
+                <span>READING / 001</span>
+                <h2>A day in motion.</h2>
+              </div>
+              <span>TEMPERATURE VARIATION · LAST 24 HOURS</span>
+            </div>
+            <div class="signal-bars" aria-label="Illustrative hourly temperature readings">
+              <div class="signal-bar" style="height: 28%"><span>00:00</span></div>
+              <div class="signal-bar" style="height: 37%"><span>01:00</span></div>
+              <div class="signal-bar" style="height: 33%"><span>02:00</span></div>
+              <div class="signal-bar" style="height: 49%"><span>03:00</span></div>
+              <div class="signal-bar" style="height: 41%"><span>04:00</span></div>
+              <div class="signal-bar" style="height: 53%"><span>05:00</span></div>
+              <div class="signal-bar" style="height: 61%"><span>06:00</span></div>
+              <div class="signal-bar" style="height: 52%"><span>07:00</span></div>
+              <div class="signal-bar" style="height: 68%"><span>08:00</span></div>
+              <div class="signal-bar" style="height: 59%"><span>09:00</span></div>
+              <div class="signal-bar" style="height: 75%"><span>10:00</span></div>
+              <div class="signal-bar" style="height: 71%"><span>11:00</span></div>
+              <div class="signal-bar" style="height: 64%"><span>12:00</span></div>
+              <div class="signal-bar" style="height: 84%"><span>13:00</span></div>
+              <div class="signal-bar" style="height: 78%"><span>14:00</span></div>
+              <div class="signal-bar" style="height: 90%"><span>15:00</span></div>
+              <div class="signal-bar" style="height: 81%"><span>16:00</span></div>
+              <div class="signal-bar" style="height: 72%"><span>17:00</span></div>
+              <div class="signal-bar" style="height: 85%"><span>18:00</span></div>
+              <div class="signal-bar" style="height: 76%"><span>19:00</span></div>
+              <div class="signal-bar" style="height: 69%"><span>20:00</span></div>
+              <div class="signal-bar" style="height: 77%"><span>21:00</span></div>
+              <div class="signal-bar" style="height: 66%"><span>22:00</span></div>
+              <div class="signal-bar" style="height: 74%"><span>23:00</span></div>
+            </div>
+            <div class="signal-chart-axis">
+              <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span
+              ><span>23:00</span>
+            </div>
+          </div>
+        </section>
+        <section class="signal-stations" id="stations">
+          <div class="signal-section-title">
+            <span>02 / THE NETWORK</span><span>4 STATIONS IN THE FIELD</span>
+          </div>
+          <div class="signal-stations-heading">
+            <h2>Everywhere<br /><em>at once.</em></h2>
+            <p>Four listening posts. One living picture of the places around us.</p>
+          </div>
+          <div class="signal-station-list">
+            <div class="signal-station">
+              <span class="signal-station-id">ST–01</span>
+              <div>
+                <h3>North pier</h3>
+                <span>COASTAL ARRAY</span>
+              </div>
+              <strong>18.4°</strong><span class="signal-nominal">● NOMINAL</span>
+            </div>
+            <div class="signal-station">
+              <span class="signal-station-id">ST–02</span>
+              <div>
+                <h3>High meadow</h3>
+                <span>UPLAND ARRAY</span>
+              </div>
+              <strong>12.8°</strong><span class="signal-nominal">● NOMINAL</span>
+            </div>
+            <div class="signal-station">
+              <span class="signal-station-id">ST–03</span>
+              <div>
+                <h3>East basin</h3>
+                <span>WATERSHED</span>
+              </div>
+              <strong>16.1°</strong><span class="signal-watch">● WATCH</span>
+            </div>
+            <div class="signal-station">
+              <span class="signal-station-id">ST–04</span>
+              <div>
+                <h3>Outer point</h3>
+                <span>COASTAL ARRAY</span>
+              </div>
+              <strong>14.7°</strong><span class="signal-nominal">● NOMINAL</span>
+            </div>
+          </div>
+        </section>
+        <section class="signal-dispatch">
+          <div class="signal-dispatch-art" aria-hidden="true">
+            <div class="signal-dispatch-orbit"><div class="signal-dispatch-core">◉</div></div>
+            <span>LISTEN CLOSELY / LOOK FURTHER</span>
+          </div>
+          <div class="signal-dispatch-copy">
+            <span>03 / A NOTE FROM THE FIELD</span>
+            <h2>Data is a way<br />of <em>paying attention.</em></h2>
+            <p>
+              Behind every number is a place changing in its own time. This is a small reminder to
+              notice what the world is telling us.
+            </p>
+            <div class="signal-dispatch-rule">OBSERVATION IS AN ACT OF CARE <span>↗</span></div>
+          </div>
+        </section>
+        <section class="signal-end">
+          <span>END OF TRANSMISSION / FOR NOW</span>
+          <h2>Stay <em>tuned.</em></h2>
+          <a href="#top">RETURN TO THE TOP ↑</a>
+        </section>
+      </main>
+      <footer class="signal-footer">
+        <strong>◉ SIGNAL / ROOM</strong><span>*ILLUSTRATIVE DATA FOR THIS LOCAL DEMO</span
+        ><span>© 2026</span>
+      </footer>
+    </div>
+  </body>
+</html>

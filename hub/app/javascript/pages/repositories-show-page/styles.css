@@ -1,0 +1,124 @@
+.repository-detail {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.repository-detail__toolbar {
+  display: flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.repository-detail__count {
+  color: var(--hub-fg-muted);
+}
+
+.repository-detail__body {
+  display: flex;
+  width: 100%;
+  padding: var(--base-size-24);
+  flex: 1;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.repository-detail__prototypes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 26.1875rem), 1fr));
+  column-gap: 1.25rem;
+  row-gap: 1.5325rem;
+}
+
+.repository-detail__recent-branches {
+  display: grid;
+  gap: var(--hub-space-8);
+}
+
+.repository-detail__branch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hub-space-8);
+}
+
+.repository-detail__empty {
+  flex: 1;
+}
+
+.repository-detail__empty .hub-empty-state__description {
+  max-width: 68ch;
+}
+
+.repository-detail__manage-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125em;
+  translate: 0 calc(-1 * var(--base-size-2));
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.repository-detail__empty .hub-empty-state__visual {
+  width: var(--base-size-96);
+  height: var(--base-size-96);
+}
+
+.repository-detail__list {
+  width: 100%;
+  max-width: 1366px;
+  margin-inline: auto;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.repository-detail__list th {
+  padding: 0.75rem 1rem;
+  color: var(--hub-fg-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.repository-detail__list th:first-child {
+  width: 55%;
+}
+
+.repository-detail__list th:nth-child(2) {
+  width: 25%;
+}
+
+@container (max-width: 48rem) {
+  .repository-detail__list thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .repository-detail__list tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .repository-detail__list td:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .repository-detail__list td:not(:first-child) {
+    padding-top: 0;
+  }
+}
+
+@container (max-width: 48rem) {
+  .repository-detail__body {
+    padding: var(--base-size-16);
+  }
+
+  .repository-detail__toolbar {
+    justify-content: flex-end;
+  }
+}

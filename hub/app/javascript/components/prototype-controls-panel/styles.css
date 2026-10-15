@@ -1,0 +1,132 @@
+.canvas-controls-layer {
+  position: absolute;
+  z-index: 40;
+  inset: var(--canvas-preview-top, 0) 0 0;
+  pointer-events: none;
+}
+
+.canvas-controls-panel {
+  --brand-text-size-100: 0.875rem;
+  --brand-control-small-size: 1.75rem;
+
+  position: absolute;
+  top: var(--hub-space-16);
+  left: var(--hub-space-16);
+  display: flex;
+  flex-direction: column;
+  width: min(18rem, calc(100% - var(--hub-space-16) * 2));
+  max-height: calc(100% - var(--hub-space-16) * 2);
+  overflow: hidden;
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  border: var(--brand-borderWidth-thin) solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  box-shadow: var(--hub-shadow-floating);
+  pointer-events: auto;
+  font-size: var(--brand-text-size-100);
+}
+
+.canvas-controls-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--hub-space-4);
+  padding: var(--hub-space-8);
+}
+
+.canvas-controls-grab {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.canvas-controls-panel[data-dragging="true"] .canvas-controls-grab {
+  cursor: grabbing;
+}
+
+.canvas-shell:has(.canvas-controls-panel[data-dragging="true"]) .prototype-frame {
+  pointer-events: none;
+}
+
+.canvas-controls-header .canvas-controls-title {
+  flex: 1;
+  min-width: 0;
+  justify-content: space-between;
+  padding-inline: var(--hub-space-8);
+  text-align: left;
+}
+
+.canvas-controls-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-top: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+}
+
+.canvas-controls-body[hidden] {
+  display: none;
+}
+
+.canvas-controls-content {
+  --controls-group-heading-bleed: var(--hub-space-8);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--hub-space-8);
+  min-height: 0;
+  min-width: 0;
+  padding: var(--hub-space-8);
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.canvas-controls-content [role="alert"] {
+  color: var(--hub-fg-danger);
+}
+
+.canvas-controls-content:has(
+  > .controls-fields:first-child > .controls-scope:first-child > .controls-group:first-child
+) {
+  padding-top: 0;
+}
+
+.canvas-controls-footer {
+  display: grid;
+  flex: none;
+  gap: var(--hub-space-8);
+  padding: var(--hub-space-8);
+  background: var(--hub-canvas-subtle);
+  border-top: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+}
+
+.canvas-controls-footer button:not(:disabled):not(:focus-visible) {
+  box-shadow: var(--hub-shadow-control-raised);
+}
+
+.canvas-controls-diagnostics {
+  overflow-wrap: anywhere;
+  color: var(--hub-fg-muted);
+  font-size: var(--brand-text-size-100);
+}
+
+.canvas-controls-diagnostics summary {
+  cursor: pointer;
+  padding: var(--hub-space-8);
+}
+
+.canvas-controls-diagnostics h4 {
+  font-size: var(--brand-text-size-100);
+}
+
+.canvas-controls-diagnostics summary:focus-visible {
+  outline: var(--hub-border-width-thick) solid var(--hub-focus);
+  outline-offset: var(--hub-space-4);
+}
+
+.canvas-controls-diagnostics p {
+  margin-top: var(--hub-space-8);
+  white-space: pre-wrap;
+}

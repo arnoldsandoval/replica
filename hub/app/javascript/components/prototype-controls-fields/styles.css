@@ -1,0 +1,434 @@
+.controls-fields {
+  /* Brand has no small form inputs; scope its sizing tokens to prototype controls. */
+  --brand-text-size-100: 0.875rem;
+  --brand-control-medium-size: 1.75rem;
+  --brand-control-small-size: 1.75rem;
+  --brand-control-medium-paddingBlock-normal: var(--hub-space-4);
+  --brand-control-medium-paddingInline-condensed: var(--hub-space-8);
+  --controls-selection-shadow: var(--hub-shadow-selection);
+  font-size: var(--brand-text-size-100);
+}
+
+.controls-fields,
+.controls-scope {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: var(--hub-space-8);
+  color: var(--hub-fg-default);
+}
+
+.controls-options,
+.controls-action-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: var(--hub-space-4);
+}
+
+.controls-field {
+  --brand-control-color-border-default: var(--hub-border-muted);
+
+  min-width: 0;
+  max-width: 100%;
+  gap: var(--hub-space-4);
+}
+
+.controls-fields .controls-action-button {
+  --brand-text-size-100: var(--hub-text-size-small);
+}
+
+.controls-fields .controls-action-button:not(:disabled) {
+  --brand-button-secondary-bgColor-rest: var(--hub-canvas-muted);
+  --brand-button-secondary-fgColor-rest: var(--brand-control-color-fg-default);
+  --brand-button-secondary-borderColor-rest: var(--brand-control-color-border-default);
+}
+
+.controls-field-heading,
+.controls-fields .controls-field--select {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--hub-space-4);
+}
+
+.controls-field-heading {
+  width: 100%;
+}
+
+.controls-field-heading > span:has(> input) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.controls-field > span:has(> :is(input, textarea)),
+.controls-slider-row > span:has(> input) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.controls-fields .controls-field-label,
+.controls-fields .controls-choice-group-label,
+.controls-fields .controls-choice-group-label > span {
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--hub-fg-muted);
+}
+
+.controls-fields .controls-field-label {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.controls-fields .controls-number-input {
+  min-width: 0;
+  max-width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+.controls-slider-row {
+  display: flex;
+  align-items: center;
+  gap: var(--hub-space-8);
+  width: 100%;
+  min-width: 0;
+}
+
+.controls-slider-row > .controls-native-slider {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+}
+
+.controls-slider-row > span {
+  flex: none;
+  max-width: 100%;
+}
+
+.controls-number-input--slider {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.controls-number-input--slider::-webkit-inner-spin-button,
+.controls-number-input--slider::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.controls-field--select > span:has(> select) {
+  width: max-content;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.controls-fields .controls-select-input {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.controls-fields
+  :is(input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), textarea, select):not(
+    :disabled
+  ) {
+  background-color: var(--hub-canvas-muted);
+}
+
+.controls-fields
+  :is(.controls-select-input, .controls-action-button):not(:disabled):not(:focus-visible) {
+  box-shadow: var(--hub-shadow-control-field);
+}
+
+.controls-field-validation {
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.controls-fields .controls-choice-row {
+  align-items: center;
+  column-gap: var(--hub-space-8);
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.controls-choice-row > span:has(> .controls-choice-mark) {
+  display: flex;
+  align-items: center;
+}
+
+.controls-fields .controls-choice-label {
+  display: flex;
+  align-items: center;
+  min-height: var(--hub-space-24);
+  top: 0;
+  line-height: 1.5;
+  font-size: var(--hub-text-size-small);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.controls-fields .controls-choice-group-label {
+  margin-block-end: var(--hub-space-4);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.controls-fields .controls-choice-mark {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.controls-fields .controls-choice-mark > svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.controls-fields .controls-choice-mark--radio::before {
+  width: 1.5rem;
+  height: 1.5rem;
+  inset: -0.25rem;
+}
+
+.controls-fields .controls-choice-mark--radio > span {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.controls-scope-divider {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+}
+
+.controls-group {
+  --controls-group-heading-inset: var(--hub-space-8);
+  --controls-group-heading-bottom-inset: var(--hub-space-8);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--hub-space-8);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.controls-group > legend {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+}
+
+.controls-scope > .controls-scope-divider + .controls-group {
+  /* Consume the scope grid gap so hover starts immediately below its divider. */
+  margin-top: calc(-1 * var(--controls-group-heading-inset));
+}
+
+.controls-scope > :is(.controls-field, .controls-group) + .controls-group > legend {
+  border-top: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+}
+
+.controls-scope > .controls-group + .controls-field {
+  padding-top: var(--hub-space-8);
+  border-top: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+}
+
+.controls-scope-divider,
+.controls-scope > :is(.controls-field, .controls-group) + .controls-group > legend,
+.controls-scope > .controls-group + .controls-field {
+  /* Paint through panel padding without widening the scrollable layout. */
+  border-image-source: linear-gradient(var(--hub-border-muted), var(--hub-border-muted));
+  border-image-slice: 1;
+  border-image-outset: 0 var(--controls-group-heading-bleed, 0px);
+}
+
+.controls-group-toggle:is(button) {
+  width: calc(100% + var(--controls-group-heading-bleed, 0px) * 2);
+  min-width: 0;
+  margin-left: calc(-1 * var(--controls-group-heading-bleed, 0px));
+  /* Fill the next grid gap (or panel bottom padding) without overlapping its boundary. */
+  margin-bottom: calc(-1 * var(--controls-group-heading-bottom-inset));
+  justify-content: space-between;
+  padding-left: var(--controls-group-heading-bleed, 0px);
+  padding-right: var(--controls-group-heading-bleed, 0px);
+  padding-block: 0;
+  padding-top: var(--controls-group-heading-inset);
+  padding-bottom: var(--controls-group-heading-bottom-inset);
+  border-radius: 0;
+  min-height: calc(
+    var(--hub-space-24) + var(--controls-group-heading-inset) +
+      var(--controls-group-heading-bottom-inset)
+  );
+  text-align: left;
+  text-transform: none;
+  color: var(--hub-fg-default);
+}
+
+.controls-group-toggle .controls-group-label {
+  font-size: var(--hub-text-size-small);
+  color: var(--hub-fg-default);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.controls-group-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: var(--hub-space-8);
+  padding-top: calc(var(--hub-space-4) + var(--controls-group-heading-bottom-inset));
+}
+
+.controls-group-body[hidden] {
+  display: none;
+}
+
+.controls-native-slider {
+  --controls-slider-thumb-size: 1rem;
+  --controls-slider-track-size: 0.375rem;
+  --controls-slider-fill: var(--hub-accent);
+  --controls-slider-track-background: linear-gradient(
+    to right,
+    var(--controls-slider-fill) var(--controls-slider-progress),
+    var(--hub-border-muted) var(--controls-slider-progress)
+  );
+
+  appearance: none;
+  width: 100%;
+  min-height: var(--brand-control-small-size);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.controls-native-slider::-webkit-slider-runnable-track {
+  height: var(--controls-slider-track-size);
+  border-radius: var(--controls-slider-track-size);
+  background: var(--controls-slider-track-background);
+}
+
+.controls-native-slider::-webkit-slider-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: var(--controls-slider-thumb-size);
+  height: var(--controls-slider-thumb-size);
+  margin-top: calc((var(--controls-slider-track-size) - var(--controls-slider-thumb-size)) / 2);
+  border: var(--brand-borderWidth-thin) solid var(--hub-border-default);
+  border-radius: 50%;
+  background: var(--hub-canvas-default);
+  box-shadow: var(--controls-selection-shadow);
+}
+
+.controls-native-slider::-moz-range-track {
+  height: var(--controls-slider-track-size);
+  border: 0;
+  border-radius: var(--controls-slider-track-size);
+  background: var(--controls-slider-track-background);
+}
+
+.controls-native-slider::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--controls-slider-thumb-size);
+  height: var(--controls-slider-thumb-size);
+  border: var(--brand-borderWidth-thin) solid var(--hub-border-default);
+  border-radius: 50%;
+  background: var(--hub-canvas-default);
+  box-shadow: var(--controls-selection-shadow);
+}
+
+.controls-native-slider:disabled {
+  --controls-slider-fill: var(--hub-fg-muted);
+
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .controls-native-slider::-webkit-slider-runnable-track {
+    background: CanvasText;
+  }
+
+  .controls-native-slider::-moz-range-track {
+    background: CanvasText;
+  }
+}
+
+.controls-native-color {
+  width: var(--brand-control-small-size);
+  height: var(--brand-control-small-size);
+  padding: var(--hub-space-4);
+  background: var(--hub-canvas-muted);
+  border: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+  border-radius: var(--hub-radius-medium);
+  cursor: pointer;
+}
+
+.controls-native-color:disabled {
+  background: var(--hub-canvas-muted);
+  cursor: not-allowed;
+}
+
+.controls-segments {
+  --brand-text-size-100: var(--hub-text-size-small);
+  --controls-segment-inset: 0.125rem;
+
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  padding: var(--controls-segment-inset);
+  border: var(--brand-borderWidth-thin) solid var(--hub-border-muted);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-muted);
+}
+
+.controls-segment {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  flex: 1 1 0;
+  min-height: calc(
+    var(--brand-control-medium-size) -
+      (var(--brand-borderWidth-thin) + var(--controls-segment-inset)) * 2
+  );
+  padding-inline: var(--hub-space-8);
+  border: var(--brand-borderWidth-thin) solid transparent;
+  border-radius: max(
+    0px,
+    calc(var(--hub-radius-medium) - var(--brand-borderWidth-thin) - var(--controls-segment-inset))
+  );
+  cursor: pointer;
+  color: var(--hub-fg-muted);
+}
+
+.controls-segment > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.controls-segment:has(input:checked) {
+  background: var(--hub-canvas-default);
+  border-color: var(--hub-border-muted);
+  box-shadow: var(--controls-selection-shadow);
+  color: var(--hub-fg-default);
+}
+
+.controls-segment:has(input:disabled) {
+  color: var(--hub-fg-muted);
+  cursor: not-allowed;
+}
+
+.controls-fields:focus-visible,
+.controls-native-slider:focus-visible,
+.controls-native-color:focus-visible,
+.controls-segment:has(input:focus-visible) {
+  outline: var(--hub-border-width-thick) solid var(--hub-focus);
+  outline-offset: var(--hub-space-4);
+}

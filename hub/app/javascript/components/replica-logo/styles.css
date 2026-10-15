@@ -1,0 +1,49 @@
+.replica-logo {
+  --replica-logo-size: 2rem;
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: calc(var(--replica-logo-size) / 4);
+  width: max-content;
+  color: var(--hub-fg-default);
+  vertical-align: middle;
+}
+
+.replica-logo[data-size="small"] {
+  --replica-logo-size: 1.5rem;
+}
+
+.replica-logo[data-size="large"] {
+  --replica-logo-size: 3rem;
+}
+
+.replica-logo__mark {
+  display: block;
+  flex: none;
+  width: var(--replica-logo-size);
+  height: var(--replica-logo-size);
+  background-color: currentColor;
+  mask: url("./replica-mark.svg") center / contain no-repeat;
+}
+
+.replica-logo__wordmark {
+  font-family: var(--brand-body-fontFamily);
+  font-size: calc(var(--replica-logo-size) * 0.75);
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "ital" 0,
+    "opsz" 0,
+    "wdth" 100;
+  line-height: normal;
+  letter-spacing: normal;
+  white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  .replica-logo__mark {
+    background-color: CanvasText;
+    forced-color-adjust: none;
+  }
+}

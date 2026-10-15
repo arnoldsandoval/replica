@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/memory-record.schema.json",
+  "title": "Replica memory record v1",
+  "description": "One version of an explicit learning. Every lifecycle change appends a new version with the next version number and previousDigest. contentDigest identifies the learning itself: scope, kind, content, targets, lifecycle, evidence, and validity dates; an approval is valid only while accepted.contentDigest equals it. reviewDigest covers everything a reviewer is shown, adding contradictions, support, confidence, rationale, and the proposer; accepting or rejecting requires the reviewDigest the person reviewed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "scope",
+    "kind",
+    "state",
+    "content",
+    "evidence",
+    "contentDigest",
+    "reviewDigest",
+    "proposal",
+    "provenance",
+    "createdAt",
+    "updatedAt",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "replica.memory/v1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "previousDigest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "scope": {
+      "$ref": "common.schema.json#/$defs/scope"
+    },
+    "kind": {
+      "$ref": "common.schema.json#/$defs/memoryKind"
+    },
+    "state": {
+      "enum": ["proposed", "accepted", "rejected", "retired"]
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "themeKey": {
+      "$ref": "common.schema.json#/$defs/slug"
+    },
+    "appliesTo": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "common.schema.json#/$defs/trace"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "$ref": "evidence-ref.schema.json"
+      }
+    },
+    "contradictions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "$ref": "evidence-ref.schema.json"
+      }
+    },
+    "support": {
+      "$ref": "#/$defs/support"
+    },
+    "confidence": {
+      "description": "Optional metadata from the proposer. Never a measure of truth.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "validFrom": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "validUntil": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "supersedes": {
+      "description": "Learnings this accepted learning replaces. Acceptance sets it from the reviewed lifecycle targets, and a later step may only add to it. No ID repeats. A proposed or rejected learning never carries it. Replaced learnings keep their own state; readers derive which replacement wins.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "contentDigest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "reviewDigest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consolidator",
+        "rationale",
+        "lifecycle",
+        "proposedAt",
+        "proposedBy",
+        "proposalDigest"
+      ],
+      "properties": {
+        "consolidator": {
+          "$ref": "memory-proposal.schema.json#/$defs/consolidator"
+        },
+        "rationale": {
+          "$ref": "memory-proposal.schema.json#/$defs/rationale"
+        },
+        "lifecycle": {
+          "$ref": "memory-proposal.schema.json#/$defs/lifecycle"
+        },
+        "proposedAt": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "proposedBy": {
+          "$ref": "common.schema.json#/$defs/actor"
+        },
+        "proposalDigest": {
+          "$ref": "common.schema.json#/$defs/digest"
+        }
+      }
+    },
+    "accepted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["by", "at", "contentDigest", "reviewedDigest", "edited"],
+      "properties": {
+        "by": {
+          "$ref": "common.schema.json#/$defs/humanActor"
+        },
+        "at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "contentDigest": {
+          "$ref": "common.schema.json#/$defs/digest"
+        },
+        "reviewedDigest": {
+          "$ref": "common.schema.json#/$defs/digest"
+        },
+        "edited": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "rejected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["by", "at", "reviewedDigest", "reason"],
+      "properties": {
+        "by": {
+          "$ref": "common.schema.json#/$defs/humanActor"
+        },
+        "at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "reviewedDigest": {
+          "$ref": "common.schema.json#/$defs/digest"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "retired": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "reason"],
+      "properties": {
+        "by": {
+          "$ref": "common.schema.json#/$defs/humanActor"
+        },
+        "at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "provenance": {
+      "$ref": "common.schema.json#/$defs/provenance"
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "version": {
+            "const": 1
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["previousDigest"]
+        }
+      },
+      "else": {
+        "required": ["previousDigest"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "proposed"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": ["accepted"]
+            },
+            {
+              "required": ["rejected"]
+            },
+            {
+              "required": ["retired"]
+            },
+            {
+              "required": ["supersedes"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "accepted"
+          }
+        }
+      },
+      "then": {
+        "required": ["accepted"],
+        "not": {
+          "anyOf": [
+            {
+              "required": ["rejected"]
+            },
+            {
+              "required": ["retired"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "rejected"
+          }
+        }
+      },
+      "then": {
+        "required": ["rejected"],
+        "not": {
+          "anyOf": [
+            {
+              "required": ["accepted"]
+            },
+            {
+              "required": ["retired"]
+            },
+            {
+              "required": ["supersedes"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "retired"
+          }
+        }
+      },
+      "then": {
+        "required": ["accepted", "retired"],
+        "not": {
+          "required": ["rejected"]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "support": {
+      "description": "Distinct sources behind a learning. Count distinct episodes, prototypes, Builds, and reviewers, never raw comments.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["distinctEpisodes", "distinctPrototypes", "distinctReviewers", "distinctBuilds"],
+      "properties": {
+        "distinctEpisodes": {
+          "$ref": "common.schema.json#/$defs/count"
+        },
+        "distinctPrototypes": {
+          "$ref": "common.schema.json#/$defs/count"
+        },
+        "distinctReviewers": {
+          "$ref": "common.schema.json#/$defs/count"
+        },
+        "distinctBuilds": {
+          "$ref": "common.schema.json#/$defs/count"
+        }
+      }
+    }
+  }
+}

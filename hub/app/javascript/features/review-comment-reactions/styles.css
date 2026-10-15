@@ -1,0 +1,85 @@
+.review-comment-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hub-space-4);
+  align-items: center;
+}
+
+.review-comment-reactions > button {
+  min-height: 1.625rem;
+  height: 1.625rem;
+  padding-inline: 0.375rem;
+  gap: 0.25rem;
+  border-color: var(--hub-border-muted);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+}
+
+.review-comment-reactions > button > span:first-child {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.review-comment-reactions > button .hub-counter {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.review-comment-reactions > button.review-comment-reaction--selected {
+  background: var(--hub-accent-subtle);
+  border-color: color-mix(in srgb, var(--hub-accent) 40%, var(--hub-border-muted));
+  color: var(--hub-fg-default);
+}
+
+.review-comment-reactions__picker-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.review-comment-reactions__error {
+  color: var(--hub-fg-danger);
+}
+
+.review-comment-reactions__tooltip[popover][role="tooltip"] {
+  white-space: nowrap;
+}
+.review-comment-reactions__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.review-comment-reactions__menu-trigger {
+  width: var(--brand-control-small-size);
+  min-width: var(--brand-control-small-size);
+  height: var(--brand-control-small-size);
+  min-height: var(--brand-control-small-size);
+  padding: 0;
+  gap: 0;
+  border-color: transparent;
+  background: transparent;
+}
+
+.review-comment-reactions__menu-trigger > [data-testid="Button-trailing-visual"],
+.review-comment-reactions__menu-trigger > span:nth-child(2) {
+  display: none;
+}
+
+.review-comment-reactions:has(.review-comment-reactions__menu-trigger[aria-expanded="true"])
+  > [role="tooltip"],
+.review-comment-reactions__tooltip.review-comment-reactions__tooltip--suppressed[popover][role="tooltip"] {
+  /* Primer restores trigger focus after selection, which would reopen its tooltip. */
+  display: none;
+}
+
+.review-comment-reactions__layout [role="menu"] {
+  max-height: min(460px, calc(100dvh - 2rem));
+}
+
+.review-comment-reactions__layout [role="menu"] li {
+  column-gap: var(--brand-control-medium-gap);
+}

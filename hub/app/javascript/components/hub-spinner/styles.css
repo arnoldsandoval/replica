@@ -1,0 +1,27 @@
+.hub-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  vertical-align: middle;
+  border: 2px solid color-mix(in srgb, currentColor 23%, transparent);
+  border-block-start-color: currentColor;
+  border-radius: 50%;
+}
+
+.hub-spinner--small {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hub-spinner {
+    animation: hub-spinner-turn 750ms linear infinite;
+  }
+}
+
+@keyframes hub-spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}

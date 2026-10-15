@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>welcome</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      .welcome-page {
+        --ink: #192a26;
+        --paper: #f5f1e7;
+        --orange: #ec6544;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Trebuchet MS", sans-serif;
+      }
+      .welcome-page * {
+        box-sizing: border-box;
+      }
+      .welcome-page a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .welcome-nav {
+        height: 82px;
+        padding: 0 4.5%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #192a2635;
+      }
+      .welcome-wordmark {
+        font-family: Georgia, serif;
+        font-weight: bold;
+        font-size: 2rem;
+        letter-spacing: -0.09em;
+      }
+      .welcome-wordmark span {
+        font-family: sans-serif;
+        font-size: 0.45em;
+        vertical-align: top;
+        letter-spacing: 0;
+        margin-left: 5px;
+      }
+      .welcome-nav-note {
+        font-family: Georgia, serif;
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+      .welcome-nav-link {
+        font-size: 0.72rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        border-bottom: 1px solid;
+        padding-bottom: 5px;
+      }
+      .welcome-nav-link span {
+        margin-left: 10px;
+        font-size: 1rem;
+      }
+      .welcome-hero {
+        background: var(--orange);
+        padding: 32px 4.5% 48px;
+        min-height: 710px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+      }
+      .welcome-hero-top,
+      .welcome-section-label {
+        font-size: 0.68rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+        display: flex;
+        justify-content: space-between;
+      }
+      .welcome-star {
+        margin: 0 8px;
+        font-size: 1rem;
+      }
+      .welcome-hero h1 {
+        font-family: Georgia, serif;
+        font-weight: normal;
+        font-size: clamp(5.5rem, 11.5vw, 12rem);
+        letter-spacing: -0.075em;
+        line-height: 0.89;
+        margin: 54px 0 22px;
+      }
+      .welcome-hero h1 em {
+        color: var(--paper);
+        font-weight: normal;
+      }
+      .welcome-hero-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+      }
+      .welcome-hero-bottom p {
+        max-width: 380px;
+        font-family: Georgia, serif;
+        font-size: 1.45rem;
+        line-height: 1.35;
+        margin: 0;
+      }
+      .welcome-seal {
+        width: 130px;
+        height: 130px;
+        border: 1.5px solid var(--ink);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-15deg);
+      }
+      .welcome-seal > span {
+        font:
+          italic 5rem Georgia,
+          serif;
+        letter-spacing: -0.12em;
+      }
+      .welcome-seal small {
+        font-size: 0.48rem;
+        font-weight: bold;
+        letter-spacing: 0.08em;
+        line-height: 1.3;
+        margin-left: 10px;
+      }
+      .welcome-intro {
+        padding: 80px 4.5% 130px;
+      }
+      .welcome-section-label {
+        border-top: 1px solid #192a2655;
+        padding-top: 18px;
+      }
+      .welcome-intro-body {
+        display: grid;
+        grid-template-columns: 1.5fr 0.7fr;
+        gap: 8%;
+        margin-top: 68px;
+      }
+      .welcome-intro h2,
+      .welcome-contents h2 {
+        font:
+          normal clamp(3.5rem, 6.8vw, 7.5rem)/1.04 Georgia,
+          serif;
+        letter-spacing: -0.065em;
+        margin: 0;
+      }
+      .welcome-intro h2 i,
+      .welcome-contents h2 i {
+        color: var(--orange);
+        font-weight: normal;
+      }
+      .welcome-intro-body > div {
+        padding-top: 14px;
+        max-width: 340px;
+      }
+      .welcome-intro p {
+        font-family: Georgia, serif;
+        font-size: 1.16rem;
+        line-height: 1.55;
+        margin: 0 0 24px;
+      }
+      .welcome-text-link {
+        display: inline-block;
+        border-bottom: 1px solid;
+        font-size: 0.72rem;
+        font-weight: bold;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+        margin-top: 20px;
+        padding-bottom: 8px;
+      }
+      .welcome-text-link span {
+        margin-left: 28px;
+      }
+      .welcome-feature {
+        min-height: 650px;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        background: #263d37;
+        color: var(--paper);
+      }
+      .welcome-feature-art {
+        min-height: 650px;
+        background: #e8af7b;
+        position: relative;
+        overflow: hidden;
+      }
+      .welcome-sun {
+        position: absolute;
+        width: 58%;
+        aspect-ratio: 1;
+        background: #f8dbad;
+        border-radius: 50%;
+        top: 11%;
+        left: 21%;
+        box-shadow:
+          0 0 0 30px #eabe9250,
+          0 0 0 70px #eabe9230;
+      }
+      .welcome-horizon {
+        position: absolute;
+        width: 135%;
+        height: 52%;
+        left: -15%;
+        bottom: -14%;
+        background: #ae6d57;
+        border-radius: 50% 50% 0 0;
+        transform: rotate(-11deg);
+        box-shadow: 0 -30px 0 #c88966;
+      }
+      .welcome-feature-art > span {
+        position: absolute;
+        left: 8%;
+        bottom: 7%;
+        color: #fff4df;
+        font-size: 0.66rem;
+        letter-spacing: 0.25em;
+        font-weight: bold;
+      }
+      .welcome-feature-copy {
+        padding: 15% 10%;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+      .welcome-eyebrow,
+      .welcome-feature-credit {
+        font-size: 0.67rem;
+        font-weight: bold;
+        letter-spacing: 0.15em;
+      }
+      .welcome-feature-copy h2 {
+        font:
+          normal clamp(4rem, 6vw, 7rem)/0.98 Georgia,
+          serif;
+        letter-spacing: -0.065em;
+        margin: auto 0 30px;
+      }
+      .welcome-feature-copy h2 i {
+        color: #f1ad83;
+      }
+      .welcome-feature-copy p {
+        font:
+          1.25rem/1.5 Georgia,
+          serif;
+        max-width: 410px;
+        margin: 0 0 50px;
+      }
+      .welcome-feature-credit {
+        opacity: 0.65;
+      }
+      .welcome-contents {
+        padding: 80px 4.5% 140px;
+      }
+      .welcome-contents h2 {
+        margin: 80px 0 65px;
+      }
+      .welcome-story {
+        border-top: 1px solid #192a2660;
+        min-height: 116px;
+        display: grid;
+        grid-template-columns: 60px 1fr 200px 35px;
+        gap: 20px;
+        align-items: center;
+      }
+      .welcome-story:last-child {
+        border-bottom: 1px solid #192a2660;
+      }
+      .welcome-story-number,
+      .welcome-story-meta {
+        font-size: 0.69rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .welcome-story h3 {
+        font:
+          normal clamp(1.8rem, 3vw, 3.2rem) Georgia,
+          serif;
+        letter-spacing: -0.04em;
+        margin: 0;
+      }
+      .welcome-story-arrow {
+        font-size: 1.4rem;
+        text-align: right;
+        color: var(--orange);
+      }
+      .welcome-closing {
+        background: #e5dfd0;
+        padding: 105px 4.5% 125px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .welcome-closing > span {
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        font-weight: bold;
+      }
+      .welcome-closing h2 {
+        font:
+          normal clamp(5rem, 10vw, 11rem)/0.93 Georgia,
+          serif;
+        letter-spacing: -0.075em;
+        margin: 60px 0 35px;
+        position: relative;
+        z-index: 1;
+      }
+      .welcome-closing h2 i {
+        color: var(--orange);
+      }
+      .welcome-closing p {
+        font:
+          1.15rem Georgia,
+          serif;
+        position: relative;
+        z-index: 1;
+      }
+      .welcome-closing-mark {
+        font-size: 38rem;
+        position: absolute;
+        color: #d3cbbb;
+        top: 8%;
+        left: -10%;
+        line-height: 1;
+      }
+      .welcome-footer {
+        min-height: 120px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 4.5%;
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        font-weight: bold;
+      }
+      .welcome-footer > span:first-child {
+        font:
+          bold 1.8rem Georgia,
+          serif;
+        letter-spacing: -0.08em;
+      }
+      @media (max-width: 700px) {
+        .welcome-nav {
+          height: 70px;
+          padding: 0 6%;
+        }
+        .welcome-nav-note {
+          display: none;
+        }
+        .welcome-nav-link {
+          font-size: 0.59rem;
+        }
+        .welcome-hero {
+          min-height: 680px;
+          padding: 28px 6% 32px;
+        }
+        .welcome-hero-top span:last-child {
+          display: none;
+        }
+        .welcome-hero h1 {
+          font-size: clamp(4.3rem, 18vw, 7rem);
+          margin: 110px 0 50px;
+        }
+        .welcome-hero-bottom p {
+          max-width: 230px;
+          font-size: 1.1rem;
+        }
+        .welcome-seal {
+          width: 88px;
+          height: 88px;
+          flex-shrink: 0;
+        }
+        .welcome-seal > span {
+          font-size: 3.2rem;
+        }
+        .welcome-seal small {
+          font-size: 0.34rem;
+          margin-left: 4px;
+        }
+        .welcome-intro {
+          padding: 65px 6% 90px;
+        }
+        .welcome-section-label {
+          font-size: 0.55rem;
+        }
+        .welcome-intro-body {
+          display: block;
+          margin-top: 65px;
+        }
+        .welcome-intro h2,
+        .welcome-contents h2 {
+          font-size: 3.6rem;
+        }
+        .welcome-intro-body > div {
+          padding-top: 50px;
+        }
+        .welcome-feature {
+          display: block;
+        }
+        .welcome-feature-art {
+          min-height: 420px;
+        }
+        .welcome-feature-copy {
+          min-height: 520px;
+          padding: 50px 6%;
+        }
+        .welcome-feature-copy h2 {
+          font-size: 4.5rem;
+          margin: 60px 0 30px;
+        }
+        .welcome-feature-copy p {
+          font-size: 1.12rem;
+          margin-bottom: 35px;
+        }
+        .welcome-contents {
+          padding: 65px 6% 100px;
+        }
+        .welcome-contents h2 {
+          margin: 70px 0 50px;
+        }
+        .welcome-story {
+          grid-template-columns: 35px 1fr 25px;
+          gap: 8px;
+          min-height: 100px;
+        }
+        .welcome-story h3 {
+          font-size: 1.7rem;
+        }
+        .welcome-story-meta {
+          grid-column: 2;
+          grid-row: 2;
+          margin-top: -22px;
+          font-size: 0.57rem;
+        }
+        .welcome-story-arrow {
+          grid-column: 3;
+          grid-row: 1 / 3;
+        }
+        .welcome-closing {
+          padding: 100px 6%;
+        }
+        .welcome-closing h2 {
+          font-size: 4.7rem;
+        }
+        .welcome-closing-mark {
+          font-size: 26rem;
+          left: -50%;
+        }
+        .welcome-footer {
+          gap: 30px;
+          flex-wrap: wrap;
+          padding: 40px 6%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="welcome-page">
+      <header class="welcome-nav">
+        <a class="welcome-wordmark" href="#top">elsewhere<span>®</span></a
+        ><span class="welcome-nav-note">An independent journal for curious people.</span
+        ><a class="welcome-nav-link" href="#stories"
+          >Explore the issue <span aria-hidden="true">↗</span></a
+        >
+      </header>
+      <main id="top">
+        <section class="welcome-hero" aria-labelledby="welcome-title">
+          <div class="welcome-hero-top">
+            <span>ISSUE NO. 001 <span class="welcome-star">✳</span> SEPTEMBER 2026</span
+            ><span>PRINTED IN THE IMAGINATION</span>
+          </div>
+          <h1 id="welcome-title">Make room<br />for <em>wonder.</em></h1>
+          <div class="welcome-hero-bottom">
+            <p>
+              A small publication about the big feeling of being somewhere new. Come in. Stay
+              awhile.
+            </p>
+            <div class="welcome-seal" aria-hidden="true">
+              <span>e.</span><small>KEEP<br />LOOKING</small>
+            </div>
+          </div>
+        </section>
+        <section class="welcome-intro" id="stories">
+          <div class="welcome-section-label">
+            <span>01 / A NOTE FROM US</span><span>↓ SCROLL TO READ</span>
+          </div>
+          <div class="welcome-intro-body">
+            <h2>Good things happen<br />when we <i>look closer.</i></h2>
+            <div>
+              <p>
+                There is a particular magic in the everyday. The light at four in the afternoon. A
+                stranger who remembers your name. The sound of a city waking up.
+              </p>
+              <p>
+                Elsewhere is a home for those details. Each issue is a collection of voices, places,
+                and ideas worth slowing down for.
+              </p>
+              <a href="#contents" class="welcome-text-link"
+                >Inside this issue <span aria-hidden="true">↗</span></a
+              >
+            </div>
+          </div>
+        </section>
+        <section class="welcome-feature" aria-labelledby="welcome-feature-title">
+          <div class="welcome-feature-art" aria-hidden="true">
+            <div class="welcome-sun"></div>
+            <div class="welcome-horizon"></div>
+            <span>THE LONG WAY HOME</span>
+          </div>
+          <div class="welcome-feature-copy">
+            <span class="welcome-eyebrow">FEATURE STORY / 001</span>
+            <h2 id="welcome-feature-title">The long way<br /><i>home.</i></h2>
+            <p>
+              What if the scenic route is the point? An invitation to wander, get lost, and find
+              something better than what you were looking for.
+            </p>
+            <span class="welcome-feature-credit">WORDS BY MARA ELLIS · 10 MIN READ</span>
+          </div>
+        </section>
+        <section class="welcome-contents" id="contents">
+          <div class="welcome-section-label">
+            <span>02 / THE CONTENTS</span><span>FOUR WAYS TO BEGIN AGAIN</span>
+          </div>
+          <h2>In this <i>issue.</i></h2>
+          <div class="welcome-story-list">
+            <div class="welcome-story">
+              <span class="welcome-story-number">01</span>
+              <h3>The art of starting over</h3>
+              <span class="welcome-story-meta">Essay / 8 min read</span
+              ><span class="welcome-story-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="welcome-story">
+              <span class="welcome-story-number">02</span>
+              <h3>A room of our own</h3>
+              <span class="welcome-story-meta">Conversation / 12 min read</span
+              ><span class="welcome-story-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="welcome-story">
+              <span class="welcome-story-number">03</span>
+              <h3>Things worth keeping</h3>
+              <span class="welcome-story-meta">Field notes / 6 min read</span
+              ><span class="welcome-story-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="welcome-story">
+              <span class="welcome-story-number">04</span>
+              <h3>Tomorrow is a place</h3>
+              <span class="welcome-story-meta">Photo story / 9 min read</span
+              ><span class="welcome-story-arrow" aria-hidden="true">↗</span>
+            </div>
+          </div>
+        </section>
+        <section class="welcome-closing">
+          <span>UNTIL NEXT TIME</span>
+          <h2>Stay a little<br /><i>curious.</i></h2>
+          <p>The world is much bigger when you pay attention.</p>
+          <div class="welcome-closing-mark" aria-hidden="true">✳</div>
+        </section>
+      </main>
+      <footer class="welcome-footer">
+        <span>elsewhere®</span><span>MADE FOR THE IN-BETWEEN MOMENTS</span
+        ><a href="#top">BACK TO TOP ↑</a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,128 @@
+.home {
+  display: grid;
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr);
+  color: var(--hub-fg-default);
+  background: var(--hub-canvas-default);
+}
+
+.home__content {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 100svh;
+  padding-inline: clamp(1.5rem, 4cqi, 4rem);
+  flex-direction: column;
+}
+
+.home__header,
+.home__body,
+.home__footer {
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.home__header {
+  padding-block: 2rem;
+}
+
+.home__body {
+  display: flex;
+  padding-block: 2.5rem 3.5rem;
+  flex: 1;
+  align-items: center;
+}
+
+.home__composition {
+  width: 100%;
+  min-width: 0;
+}
+
+.home .home__hero {
+  width: 100%;
+  padding: 0;
+}
+
+.home .home__hero > div {
+  padding: 0;
+}
+
+.home .home__eyebrow {
+  display: flex;
+  margin-block: 0 1.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--hub-fg-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home .home__heading {
+  max-width: 17ch;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.home .home__description {
+  max-width: 32rem;
+  margin-block-start: 1.5rem;
+  color: var(--hub-fg-muted);
+  font-size: 1.125rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.home .home__actions {
+  margin-block-start: 2rem;
+}
+
+.home__alert {
+  width: 100%;
+  max-width: 36rem;
+  margin-block-start: 1.5rem;
+  text-align: start;
+}
+
+.home__art {
+  min-width: 0;
+  min-height: 24rem;
+}
+
+.home__footer {
+  padding-block: 1.5rem 2rem;
+}
+
+.home .home__footer-note {
+  margin: 0;
+  color: var(--hub-fg-muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+@container (min-width: 63.25rem) {
+  .home__content {
+    width: 50%;
+    padding-inline: 4rem;
+  }
+
+  .home__header {
+    padding-block: 6.25rem 2rem;
+  }
+
+  .home__body {
+    padding-block: 0 6.25rem;
+  }
+
+  .home__art {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    min-height: 100svh;
+  }
+}

@@ -1,0 +1,19 @@
+.inbox-prototype__notice {
+  padding: 0.625rem 1.5rem;
+  border-bottom: 1px solid var(--hub-border-muted);
+  color: var(--hub-fg-muted);
+  font-size: 0.75rem;
+}
+
+.inbox-prototype__page {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: clamp(1rem, 3vw, 2.5rem);
+}
+
+.inbox-prototype__gallery {
+  display: grid;
+  padding: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem;
+}

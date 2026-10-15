@@ -1,0 +1,86 @@
+.review-page.review-page--minimized .review-page__comments {
+  grid-area: auto;
+  position: absolute;
+  z-index: 45;
+  inset: var(--hub-space-12) var(--hub-space-12) var(--hub-space-12) auto;
+  width: min(20rem, calc(100% - var(--hub-space-24)));
+  margin: 0;
+  padding: var(--hub-space-12);
+  border: 1px solid var(--hub-border-muted);
+  border-radius: var(--hub-radius-large);
+  background: var(--hub-canvas-default);
+  box-shadow: var(--hub-shadow-floating);
+}
+
+.review-page--comments-open {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+  column-gap: 1rem;
+}
+
+.review-page__comments {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(1rem);
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 240ms cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 240ms;
+}
+
+.review-page--comments-open .review-page__comments {
+  overflow: visible;
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.review-shell__notice {
+  width: min(calc(100% - var(--hub-space-16)), 32rem);
+  position: absolute;
+  z-index: 35;
+  top: var(--hub-space-8);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.review-thread-conversation-layer {
+  position: absolute;
+  z-index: 40;
+  inset: 0;
+  pointer-events: none;
+}
+
+.review-thread-conversation-layer > * {
+  pointer-events: auto;
+}
+
+@container (max-width: 48rem) {
+  .review-page--comments-open {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .review-page__comments {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .review-page--comments-open .review-page__comments {
+    margin-top: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-page__comments {
+    transition: none;
+  }
+
+  .review-page__comments {
+    transform: none;
+  }
+}

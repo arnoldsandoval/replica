@@ -1,0 +1,31 @@
+.review-comment-control__trigger {
+  width: var(--brand-control-small-size);
+  min-width: var(--brand-control-small-size);
+  height: var(--brand-control-small-size);
+  min-height: var(--brand-control-small-size);
+  padding: 0;
+  gap: 0;
+}
+
+.review-shell__comment-actions .review-comment-control__trigger {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.review-comment-control__trigger > [data-testid="Button-trailing-visual"],
+.review-comment-control__trigger > span:nth-child(2) {
+  display: none;
+}
+
+.review-comment-control__trigger ~ div [role="menu"] {
+  max-height: min(460px, var(--review-comment-control-menu-height, 460px));
+}
+
+.review-comment-control__menu-item {
+  column-gap: var(--brand-control-medium-gap);
+}
+
+div:has(> [data-testid="ActionMenu"] .review-comment-control__trigger[aria-expanded="true"])
+  + [role="tooltip"] {
+  display: none;
+}

@@ -1,0 +1,10 @@
+.hub-admin-confirmation-page__form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hub-admin-confirmation-page__confirmation {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}

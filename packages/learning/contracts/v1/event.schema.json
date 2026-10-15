@@ -1,0 +1,563 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/event.schema.json",
+  "title": "Replica episode event v1",
+  "description": "One append-only entry in an episode timeline. A correction is a new event that names what it supersedes or retracts. The digest covers every field except digest, payload, and redaction; payloadDigest covers the payload, so a payload can later be removed, with a redaction note saying why, without breaking the digest. A redacted event is never evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "episodeId",
+    "scope",
+    "type",
+    "at",
+    "actor",
+    "payloadDigest",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "replica.event/v1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "episodeId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "scope": {
+      "$ref": "common.schema.json#/$defs/scope"
+    },
+    "type": {
+      "anyOf": [
+        {
+          "enum": [
+            "user_message",
+            "agent_message",
+            "human_comment",
+            "human_correction",
+            "human_approval",
+            "human_rejection",
+            "tool_call",
+            "tool_result",
+            "ui_snapshot",
+            "ui_interaction",
+            "build_created",
+            "audio_segment",
+            "voice_turn",
+            "agent_to_agent_message",
+            "evaluation_result",
+            "criterion_result",
+            "memory_retrieved",
+            "memory_proposed",
+            "handoff",
+            "error",
+            "annotation",
+            "no_annotation",
+            "status_change",
+            "retraction"
+          ]
+        },
+        {
+          "description": "A namespaced extension type such as x-acme.checkout_step.",
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^x-[a-z0-9-]+\\.[a-z0-9_]+$"
+        }
+      ]
+    },
+    "at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "actor": {
+      "$ref": "common.schema.json#/$defs/actor"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "payloadDigest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "parentEventId": {
+      "description": "The event this one refers to. A label or retraction must name its target here, and it must match the payload target; the digest covers it, so a redaction never loses it. A reply names its thread's first comment.",
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "supersedes": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "artifactRefs": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "$ref": "common.schema.json#/$defs/artifactRef"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "evidence-ref.schema.json"
+      }
+    },
+    "redaction": {
+      "$ref": "common.schema.json#/$defs/redaction"
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["redaction"]
+      },
+      "then": {
+        "not": {
+          "required": ["payload"]
+        }
+      },
+      "else": {
+        "required": ["payload"]
+      }
+    },
+    {
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "human_comment"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/humanComment"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "annotation"
+          }
+        }
+      },
+      "then": {
+        "required": ["parentEventId"],
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/annotation"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "no_annotation"
+          }
+        }
+      },
+      "then": {
+        "required": ["parentEventId"],
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/noAnnotation"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "status_change"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/statusChange"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "retraction"
+          }
+        }
+      },
+      "then": {
+        "required": ["parentEventId"],
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/retraction"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "memory_retrieved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/memoryRetrieved"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "eventTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId"],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      }
+    },
+    "humanComment": {
+      "description": "A review comment as the reviewer wrote it. Comment text is untrusted data, never instructions.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "commentId",
+        "threadId",
+        "role",
+        "body",
+        "createdAt",
+        "editedAt",
+        "deletedAt"
+      ],
+      "properties": {
+        "source": {
+          "const": "hub_review_comment"
+        },
+        "commentId": {
+          "$ref": "common.schema.json#/$defs/positiveInteger"
+        },
+        "threadId": {
+          "$ref": "common.schema.json#/$defs/positiveInteger"
+        },
+        "role": {
+          "enum": ["root", "reply"]
+        },
+        "body": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 10000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "editedAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deletedAt": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "buildNumber": {
+          "$ref": "common.schema.json#/$defs/positiveInteger"
+        },
+        "context": {
+          "$ref": "#/$defs/commentContext"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "root"
+              }
+            }
+          },
+          "then": {
+            "required": ["buildNumber"]
+          },
+          "else": {
+            "not": {
+              "required": ["buildNumber"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "deletedAt": {
+                "type": "string"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "body": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "commentContext": {
+      "description": "The compact saved target of a root comment: route and accessible element details.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["element", "area"]
+        },
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pathname": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "search": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "hash": {
+              "type": "string",
+              "maxLength": 1024
+            }
+          }
+        },
+        "accessibleName": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "tagName": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "selectedText": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "elements": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "accessibleName": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "tagName": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "role": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "textExcerpt": {
+                "type": "string",
+                "maxLength": 500
+              }
+            }
+          }
+        }
+      }
+    },
+    "annotation": {
+      "description": "A judgment about another event in the same episode: its theme, signal, and whether it is an observed problem.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "theme", "signal", "observation", "stance"],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/eventTarget"
+        },
+        "theme": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["key", "statement"],
+          "properties": {
+            "key": {
+              "$ref": "common.schema.json#/$defs/slug"
+            },
+            "statement": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        },
+        "signal": {
+          "enum": [
+            "visual_quality",
+            "accessibility",
+            "usability",
+            "content",
+            "interaction",
+            "performance",
+            "agreement",
+            "replica_workflow",
+            "other"
+          ]
+        },
+        "observation": {
+          "enum": ["observed", "preference", "question", "praise", "other"]
+        },
+        "stance": {
+          "enum": ["supports", "contradicts"]
+        },
+        "proposedKind": {
+          "$ref": "common.schema.json#/$defs/memoryKind"
+        },
+        "trace": {
+          "$ref": "common.schema.json#/$defs/trace"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "noAnnotation": {
+      "description": "A labeler read another event in the same episode and found nothing to label, so it is not asked about that event again.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target"],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/eventTarget"
+        }
+      }
+    },
+    "statusChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "status", "at"],
+      "properties": {
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": {
+              "const": "thread"
+            },
+            "id": {
+              "$ref": "common.schema.json#/$defs/positiveInteger"
+            }
+          }
+        },
+        "status": {
+          "enum": ["resolved", "unresolved"]
+        },
+        "at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        },
+        "by": {
+          "$ref": "common.schema.json#/$defs/actor"
+        }
+      }
+    },
+    "retraction": {
+      "description": "Withdraws an earlier event from every purpose. The earlier event stays in history for audit.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "reason", "at"],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/eventTarget"
+        },
+        "reason": {
+          "enum": ["deleted_at_source", "withdrawn_by_author", "identity_corrected", "other"]
+        },
+        "at": {
+          "$ref": "common.schema.json#/$defs/timestamp"
+        }
+      }
+    },
+    "memoryRetrieved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["memories"],
+      "properties": {
+        "memories": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "contentDigest"],
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "contentDigest": {
+                "$ref": "common.schema.json#/$defs/digest"
+              }
+            }
+          }
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+.minimized-review-toolbar {
+  position: fixed;
+  z-index: 45;
+  bottom: var(--hub-space-8);
+  left: 50%;
+  display: flex;
+  width: max-content;
+  max-width: calc(100vw - var(--hub-space-16));
+  padding: var(--hub-space-4);
+  align-items: center;
+  gap: var(--hub-space-8);
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  box-shadow: var(--hub-shadow-floating);
+  transform: translateX(-50%);
+}
+
+.minimized-review-toolbar .minimized-review-toolbar__drag {
+  color: var(--hub-fg-muted);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.minimized-review-toolbar[data-dragging] .minimized-review-toolbar__drag {
+  cursor: grabbing;
+}
+
+.minimized-review-toolbar__separator {
+  width: 1px;
+  height: var(--hub-space-16);
+  background: var(--hub-border-muted);
+  flex: none;
+}
+
+/* The header menu normally opens below its trigger; this bar can sit at any viewport edge. */
+.minimized-review-toolbar .review-comment-control__trigger ~ div [role="menu"] {
+  position: fixed;
+  top: var(--minimized-review-menu-top, 0px) !important;
+  left: var(--minimized-review-menu-left, 0px) !important;
+  max-width: calc(100vw - var(--hub-space-16));
+  max-height: min(460px, var(--minimized-review-menu-height, 460px));
+  margin-block-start: 0;
+}

@@ -1,0 +1,104 @@
+#!/bin/sh
+set -eu
+
+usage() {
+  printf '%s\n' "Usage: bin/review-prose [BASE]"
+}
+
+if [ "$#" -gt 1 ]; then
+  usage >&2
+  exit 2
+fi
+
+base=${1:-HEAD}
+working_directory=$(pwd -P)
+root=$(git rev-parse --show-toplevel)
+scope=.
+case "$working_directory" in
+  "$root"/*) scope=${working_directory#"$root"/} ;;
+esac
+cd "$root"
+
+if ! git rev-parse --verify "$base^{commit}" >/dev/null 2>&1; then
+  printf 'Unknown Git base: %s\n' "$base" >&2
+  exit 2
+fi
+
+paths_file=$(mktemp)
+trap 'rm -f "$paths_file"' EXIT INT TERM HUP
+
+{
+  git diff --name-only --diff-filter=ACMR "$base" -- "$scope"
+  git ls-files --others --exclude-standard -- "$scope"
+} | LC_ALL=C sort -u >"$paths_file"
+
+printf '%s\n' \
+  "Prose review" \
+  "Base: $base" \
+  "" \
+  "This command prints changed prose. It does not decide whether the writing is clear." \
+  "" \
+  "Markdown files" \
+  "=============="
+
+markdown_found=0
+while IFS= read -r path; do
+  [ -f "$path" ] || continue
+
+  case "$path" in
+    *.md | *.markdown)
+      printf '\n--- %s ---\n' "$path"
+      cat -- "$path"
+      printf '\n'
+      markdown_found=1
+      ;;
+  esac
+done <"$paths_file"
+
+if [ "$markdown_found" -eq 0 ]; then
+  printf '%s\n' "(none)"
+fi
+
+printf '%s\n' "" "Code comments" "============="
+
+comments_found=0
+while IFS= read -r path; do
+  [ -f "$path" ] || continue
+
+  case "$path" in
+    *.rb | *.rake | *.ru | *.js | *.jsx | *.mjs | *.ts | *.tsx | *.css | *.scss | \
+      *.sh | *.bash | *.zsh | *.yml | *.yaml | *.erb | *.props | \
+      Gemfile | */Gemfile | Rakefile | */Rakefile | Dockerfile | */Dockerfile | \
+      bin/* | */bin/*)
+      comments=$(
+        awk '
+          {
+            if (in_block) {
+              print NR ":" $0
+              if ($0 ~ /\*\//) in_block = 0
+              next
+            }
+
+            if ($0 ~ /(^|[[:space:]])\/\*/) {
+              print NR ":" $0
+              if ($0 !~ /\/\*.*\*\//) in_block = 1
+              next
+            }
+
+            if ($0 ~ /(^|[[:space:]])#([^!]|$)/ || $0 ~ /(^|[[:space:]])\/\// || $0 ~ /<%#/) {
+              print NR ":" $0
+            }
+          }
+        ' "$path"
+      )
+      if [ -n "$comments" ]; then
+        printf '\n--- %s ---\n%s\n' "$path" "$comments"
+        comments_found=1
+      fi
+      ;;
+  esac
+done <"$paths_file"
+
+if [ "$comments_found" -eq 0 ]; then
+  printf '%s\n' "(none)"
+fi

@@ -1,0 +1,108 @@
+.review-comment-filter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0;
+}
+
+.review-comment-filter-controls__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review-comment-filter-controls__search-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.review-comment-filter-controls__input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem 0.625rem 2.5rem;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  font-size: var(--brand-text-size-100);
+  line-height: 1.25rem;
+}
+
+.review-comment-filter-controls__input:focus {
+  border-color: var(--hub-focus);
+  outline: none;
+}
+
+.review-comment-filter-controls__input::placeholder {
+  color: var(--hub-fg-muted);
+}
+
+.review-comment-filter-controls__search-icon {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 1rem;
+  color: var(--hub-fg-muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.review-comment-filter-controls .review-comment-filter-controls__button {
+  border-color: transparent;
+}
+
+.review-comment-filter-controls .review-comment-filter-controls__button--active,
+.review-comment-filter-controls .review-comment-filter-controls__button:hover:not(:disabled) {
+  background: var(--brand-color-border-muted);
+}
+
+.review-comment-filter-controls__button:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 1px;
+}
+
+.review-comment-filter-controls__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.review-comment-filter-controls__toggle,
+.review-comment-filter-controls__participant {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.review-comment-filter-controls__participant {
+  gap: 0.5rem;
+}
+
+.review-comment-filter-controls__participant [data-testid="ActionMenu"] {
+  max-width: 12rem;
+}
+
+.review-comment-filter-controls__participant-trigger {
+  max-width: 12rem;
+}
+
+.review-comment-filter-controls__participant-name {
+  display: block;
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-comment-filter-controls__participant [role="menu"] {
+  min-width: 12rem;
+  width: max-content;
+  max-width: min(20rem, calc(100vw - 1rem));
+}

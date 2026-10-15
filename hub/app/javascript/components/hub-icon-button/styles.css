@@ -1,0 +1,19 @@
+.hub-icon-button:is(button, a) {
+  width: var(--brand-control-small-size);
+  min-width: var(--brand-control-small-size);
+  height: var(--brand-control-small-size);
+  min-height: var(--brand-control-small-size);
+  padding: 0;
+  gap: 0;
+  flex: none;
+}
+
+.hub-icon-button.hub-icon-button--danger:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--hub-fg-danger);
+}
+
+.hub-icon-button.hub-icon-button--invisible:is(button, a) {
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+}

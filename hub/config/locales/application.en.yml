@@ -1,0 +1,4 @@
+en:
+  application:
+    name: Replica Hub
+    description: A self-hosted workspace for prototype builds and reviews.

@@ -1,0 +1,92 @@
+.review-workspace-layer {
+  display: contents;
+}
+
+.review-workspace-layer[data-minimized="true"] .repository-navigation,
+.review-workspace-layer[data-minimized="true"] .review-shell__header,
+.review-page--minimized .review-branch-composer {
+  display: none;
+}
+
+.review-workspace-layer[data-minimized="true"] .repository-workspace__content {
+  inset: 0;
+  transition: none;
+}
+
+.review-page.review-page--minimized {
+  position: relative;
+  padding: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  transition: none;
+}
+
+.review-shell__preview {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border: 1px solid var(--hub-border-muted);
+  border-radius: 0.75rem;
+  /* Keep preview layers below menus and popovers. */
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
+.review-shell__address-bar {
+  display: flex;
+  min-width: 0;
+  padding: var(--hub-space-8) var(--hub-space-12);
+  align-items: center;
+  gap: 1px;
+  border-bottom: 1px solid var(--hub-border-muted);
+  border-radius: 0.75rem 0.75rem 0 0;
+  background: var(--hub-canvas-muted);
+}
+
+.review-shell__address-bar .hub-icon-button {
+  --brand-button-subtle-borderColor-hover: transparent;
+  --brand-button-subtle-borderColor-active: transparent;
+
+  border-color: transparent;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.review-shell__open-preview {
+  flex: none;
+}
+
+.review-shell__viewport {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  position: relative;
+}
+
+.review-shell__frame {
+  background: var(--hub-canvas-default);
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.review-shell__preview--minimized {
+  border: 0;
+  border-radius: 0;
+}
+
+.review-shell__preview--minimized .review-shell__address-bar {
+  display: none;
+}
+
+.review-shell__preview--minimized .review-shell__frame {
+  border-radius: 0;
+}

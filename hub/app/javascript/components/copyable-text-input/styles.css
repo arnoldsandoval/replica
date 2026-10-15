@@ -1,0 +1,97 @@
+.copyable-text-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.copyable-text-input__control {
+  position: relative;
+  min-width: 0;
+}
+
+.copyable-text-input__input {
+  min-width: 0;
+  padding-inline-end: calc(var(--brand-control-small-size) + var(--hub-space-12));
+  text-overflow: ellipsis;
+}
+
+.copyable-text-input:not(.copyable-text-input--compact) .copyable-text-input__input {
+  padding-inline-end: var(--hub-space-12);
+  text-overflow: clip;
+}
+
+.copyable-text-input .copyable-text-input__button {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: var(--hub-space-4);
+  transform: translateY(-50%);
+}
+
+.copyable-text-input:not(.copyable-text-input--compact) .copyable-text-input__button:is(button) {
+  --brand-button-subtle-bgColor-hover: color-mix(
+    in srgb,
+    var(--hub-fg-default) 12%,
+    var(--hub-canvas-default)
+  );
+  --brand-button-subtle-bgColor-active: color-mix(
+    in srgb,
+    var(--hub-fg-default) 18%,
+    var(--hub-canvas-default)
+  );
+
+  width: calc(var(--brand-control-medium-size) - var(--hub-space-8));
+  min-width: 0;
+  height: calc(var(--brand-control-medium-size) - var(--hub-space-8));
+  min-height: 0;
+  border-color: transparent;
+  background-color: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+}
+
+.copyable-text-input:not(.copyable-text-input--compact) .copyable-text-input__button::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 100%;
+  width: 1rem;
+  background: linear-gradient(to right, transparent, var(--hub-canvas-default));
+  content: "";
+  pointer-events: none;
+}
+
+.copyable-text-input__button:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: -2px;
+}
+
+.copyable-text-input__error {
+  display: block;
+  margin-block-start: var(--hub-space-8);
+  color: var(--hub-fg-danger);
+}
+
+.copyable-text-input--compact .copyable-text-input__control {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.copyable-text-input--compact .copyable-text-input__input {
+  min-width: 0;
+  height: var(--brand-control-small-size);
+  padding: 0 var(--hub-space-12);
+  flex: 1;
+  border: 1px solid var(--hub-border-default);
+  border-radius: var(--hub-radius-medium);
+  background: var(--hub-canvas-default);
+  color: var(--hub-fg-default);
+  font-size: var(--brand-text-size-100);
+}
+
+.copyable-text-input--compact .copyable-text-input__input:focus-visible {
+  outline: 2px solid var(--hub-focus);
+  outline-offset: 1px;
+}
+
+.copyable-text-input--compact .copyable-text-input__button {
+  position: static;
+  transform: none;
+}

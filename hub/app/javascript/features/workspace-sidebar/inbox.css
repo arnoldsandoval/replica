@@ -1,0 +1,23 @@
+.repository-navigation__notifications {
+  position: relative;
+}
+
+.repository-navigation__unread {
+  position: absolute;
+  top: 0.5rem;
+  left: 1.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--hub-fg-success);
+}
+
+.repository-navigation__inbox-preview {
+  position: fixed;
+  z-index: 40;
+  width: min(28rem, calc(100vw - 4.5rem));
+}
+
+.repository-navigation__inbox-preview .conversation-inbox[data-mode="preview"] {
+  max-height: inherit;
+}

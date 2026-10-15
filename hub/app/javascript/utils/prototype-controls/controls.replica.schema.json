@@ -1,0 +1,360 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/github/replica/controls.replica.schema.json",
+  "title": "Replica static controls v1",
+  "oneOf": [{ "$ref": "#/$defs/publicDeclaration" }, { "$ref": "#/$defs/document" }],
+  "$defs": {
+    "publicDeclaration": {
+      "allOf": [
+        { "$ref": "#/$defs/declaration" },
+        {
+          "type": "object",
+          "properties": {
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["binding"],
+                "properties": { "binding": {} }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "sets"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "const": 1 },
+        "sets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": { "$ref": "#/$defs/publicDeclaration" }
+        }
+      }
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "scope", "controls"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "const": 1 },
+        "scope": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "role": { "enum": ["shared", "page"] },
+        "container": { "$ref": "#/$defs/selector" },
+        "panel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width"],
+          "properties": {
+            "width": { "type": "integer", "minimum": 160, "maximum": 4096 }
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "label": { "$ref": "#/$defs/label" },
+              "when": { "$ref": "#/$defs/condition" }
+            }
+          }
+        },
+        "controls": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/boolean" },
+              { "$ref": "#/$defs/number" },
+              { "$ref": "#/$defs/slider" },
+              { "$ref": "#/$defs/choice" },
+              { "$ref": "#/$defs/checkboxGroup" },
+              { "$ref": "#/$defs/text" },
+              { "$ref": "#/$defs/color" },
+              { "$ref": "#/$defs/button" }
+            ]
+          }
+        }
+      }
+    },
+    "id": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$" },
+    "label": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "selector": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "method": {
+      "type": "string",
+      "pattern": "^(?!constructor$|prototype$|__proto__$)[a-zA-Z_$][a-zA-Z0-9_$]*$",
+      "maxLength": 64
+    },
+    "binding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "selector"],
+          "properties": {
+            "type": { "enum": ["field", "button"] },
+            "selector": { "$ref": "#/$defs/selector" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "selector", "property"],
+          "properties": {
+            "type": { "const": "style" },
+            "selector": { "$ref": "#/$defs/selector" },
+            "property": {
+              "type": "string",
+              "pattern": "^(--[a-zA-Z0-9_-]+|[a-z][a-z-]*)$",
+              "maxLength": 100
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "key", "mode"],
+          "properties": {
+            "type": { "const": "query" },
+            "key": { "type": "string", "minLength": 1, "maxLength": 200 },
+            "mode": { "enum": ["in-place", "navigate"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "mode"],
+          "properties": {
+            "type": { "const": "hash" },
+            "mode": { "enum": ["in-place", "navigate"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "object"],
+          "properties": {
+            "type": { "const": "api" },
+            "object": {
+              "type": "string",
+              "pattern": "^[a-zA-Z_$][a-zA-Z0-9_$]*(\\.[a-zA-Z_$][a-zA-Z0-9_$]*)*$",
+              "maxLength": 200
+            },
+            "read": { "$ref": "#/$defs/method" },
+            "write": { "$ref": "#/$defs/method" },
+            "action": { "$ref": "#/$defs/method" },
+            "subscribe": { "$ref": "#/$defs/method" },
+            "pollMs": { "type": "integer", "minimum": 100, "maximum": 60000 }
+          }
+        }
+      ]
+    },
+    "scalar": { "type": ["string", "number", "boolean"] },
+    "options": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["control", "equals"],
+          "properties": {
+            "control": { "$ref": "#/$defs/id" },
+            "equals": { "$ref": "#/$defs/scalar" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["control", "in"],
+          "properties": {
+            "control": { "$ref": "#/$defs/id" },
+            "in": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/scalar" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["control", "includes"],
+          "properties": {
+            "control": { "$ref": "#/$defs/id" },
+            "includes": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["all"],
+          "properties": {
+            "all": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": { "$ref": "#/$defs/condition" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["any"],
+          "properties": {
+            "any": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": { "$ref": "#/$defs/condition" }
+            }
+          }
+        }
+      ]
+    },
+    "boolean": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "const": "boolean" },
+        "default": { "type": "boolean" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "number": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default", "min", "max"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "const": "number" },
+        "default": { "type": "number" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "step": { "type": "number", "exclusiveMinimum": 0 },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "slider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default", "min", "max"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "const": "slider" },
+        "default": { "type": "number" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "step": { "type": "number", "exclusiveMinimum": 0 },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default", "options"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "enum": ["select", "radio", "segmented"] },
+        "default": { "type": "string" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "options": { "$ref": "#/$defs/options" },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "checkboxGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default", "options"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "const": "checkboxGroup" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "default": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "options": { "$ref": "#/$defs/options" },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "enum": ["text", "textarea"] },
+        "default": { "type": "string" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "minLength": { "type": "integer", "minimum": 0 },
+        "maxLength": { "type": "integer", "minimum": 0 },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "color": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type", "default"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "const": "color" },
+        "default": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "button": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "type": { "const": "button" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "group": { "$ref": "#/$defs/id" },
+        "when": { "$ref": "#/$defs/condition" }
+      }
+    }
+  }
+}

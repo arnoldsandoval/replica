@@ -1,0 +1,15 @@
+.sharing-settings-page__control,
+.sharing-settings-page__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.sharing-settings-page__form {
+  justify-items: start;
+}
+
+.sharing-settings-page__confirmation {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+}

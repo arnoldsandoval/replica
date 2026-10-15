@@ -1,0 +1,23 @@
+.share-control-settings {
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hub-space-12);
+}
+
+.share-control-settings__hint {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hub-space-8);
+}
+
+.share-control-settings__description {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--hub-fg-muted);
+}
+
+.hub-alert.share-control-settings__warning {
+  background: var(--hub-attention-subtle);
+}

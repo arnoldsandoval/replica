@@ -1,0 +1,31 @@
+.canvas-dialog {
+  box-sizing: border-box;
+  width: min(32rem, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  padding: 1.25rem;
+  color: var(--hub-fg-default);
+  background: var(--hub-canvas-default);
+  border: 1px solid var(--hub-border-default);
+  border-radius: 0.75rem;
+  box-shadow: var(--hub-shadow-floating);
+}
+
+.canvas-dialog::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
+
+.canvas-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.canvas-dialog-header h2 {
+  margin: 0;
+}
+
+.canvas-dialog > p {
+  margin: 0.75rem 0;
+}

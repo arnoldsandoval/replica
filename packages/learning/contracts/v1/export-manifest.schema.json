@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/export-manifest.schema.json",
+  "title": "Replica export manifest v1",
+  "description": "Describes one export for one purpose: what left the store, where it went, and what was held back and why. Hosts keep the manifest so a later withdrawal can find copies that already left.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "purpose",
+    "scope",
+    "createdAt",
+    "createdBy",
+    "provider",
+    "destination",
+    "counts",
+    "excluded",
+    "records",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "replica.export/v1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "purpose": {
+      "$ref": "common.schema.json#/$defs/purpose"
+    },
+    "scope": {
+      "$ref": "common.schema.json#/$defs/scope"
+    },
+    "createdAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "createdBy": {
+      "$ref": "common.schema.json#/$defs/humanActor"
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/slug"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "destination": {
+      "description": "Where the export was written, such as a file path. Never a credential.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "contents": {
+      "description": "What the export copied. all: grants, episodes with their events, and learnings. learnings: accepted learnings and the grants that permit their evidence, with no episodes or events. Absent means all.",
+      "enum": ["all", "learnings"]
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["episodes", "events", "memories", "grants"],
+      "properties": {
+        "episodes": {
+          "$ref": "common.schema.json#/$defs/count"
+        },
+        "events": {
+          "$ref": "common.schema.json#/$defs/count"
+        },
+        "memories": {
+          "$ref": "common.schema.json#/$defs/count"
+        },
+        "grants": {
+          "$ref": "common.schema.json#/$defs/count"
+        }
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reason", "count"],
+        "properties": {
+          "reason": {
+            "$ref": "common.schema.json#/$defs/slug"
+          },
+          "count": {
+            "$ref": "common.schema.json#/$defs/count"
+          }
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 1000000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "id", "digest"],
+        "properties": {
+          "kind": {
+            "enum": ["episode", "event", "memory", "grant"]
+          },
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "digest": {
+            "$ref": "common.schema.json#/$defs/digest"
+          }
+        }
+      }
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    }
+  }
+}

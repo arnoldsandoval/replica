@@ -1,0 +1,84 @@
+.repository-navigation {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  display: flex;
+  width: var(--hub-repository-sidebar-width);
+  overflow: visible;
+  border-right: var(--brand-borderWidth-thin) solid var(--brand-color-border-muted);
+  background: var(--brand-color-canvas-muted);
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: var(--brand-body-fontFamily);
+  -webkit-font-smoothing: antialiased;
+  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.repository-navigation[data-collapsed="true"] {
+  width: var(--hub-repository-sidebar-collapsed-width);
+}
+
+.repository-navigation__sections {
+  display: flex;
+  min-height: 0;
+  overflow-y: auto;
+  flex: 1;
+  flex-direction: column;
+}
+
+.repository-navigation[data-collapsed="true"] .repository-navigation__sections {
+  scrollbar-width: none;
+}
+
+.repository-navigation__primary {
+  display: flex;
+  flex-direction: column;
+}
+
+.repository-navigation__secondary {
+  margin-top: auto;
+  padding: var(--hub-repository-sidebar-inset);
+  border-top: var(--brand-borderWidth-thin) solid var(--brand-color-border-muted);
+}
+
+.repository-navigation__links {
+  padding: 0 var(--hub-repository-sidebar-inset);
+}
+
+.repository-navigation__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: var(--base-size-2);
+  list-style: none;
+}
+
+.repository-navigation__account {
+  display: flex;
+  padding: var(--hub-repository-account-padding-top) var(--hub-repository-sidebar-inset)
+    var(--hub-repository-sidebar-inset);
+  border-top: var(--brand-borderWidth-thin) solid var(--brand-color-border-muted);
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--base-size-4);
+}
+
+.repository-navigation > .repository-selector {
+  width: calc(100% - var(--hub-repository-sidebar-inset) - var(--hub-repository-sidebar-inset));
+  margin: var(--hub-repository-sidebar-inset);
+  flex-shrink: 0;
+}
+
+@container (max-width: 48rem) {
+  .repository-navigation[data-collapsed="false"] {
+    width: min(var(--hub-repository-sidebar-width), 100vw);
+    box-shadow: var(--brand-SubNav-shadow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .repository-navigation {
+    transition: none;
+  }
+}

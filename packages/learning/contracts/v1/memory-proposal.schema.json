@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/memory-proposal.schema.json",
+  "title": "Replica memory proposal v1",
+  "description": "What a consolidator returns. It never sets an ID, a scope, or a state: the host assigns the ID, takes the scope from the caller, and stores every proposal as proposed until a person reviews it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "content",
+    "evidence",
+    "rationale",
+    "lifecycle",
+    "consolidator"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "replica.memory-proposal/v1" },
+    "kind": { "$ref": "common.schema.json#/$defs/memoryKind" },
+    "content": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "themeKey": { "$ref": "common.schema.json#/$defs/slug" },
+    "appliesTo": {
+      "type": "array",
+      "maxItems": 20,
+      "items": { "$ref": "common.schema.json#/$defs/trace" }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": { "$ref": "evidence-ref.schema.json" }
+    },
+    "contradictions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": { "$ref": "evidence-ref.schema.json" }
+    },
+    "support": { "$ref": "memory-record.schema.json#/$defs/support" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rationale": { "$ref": "#/$defs/rationale" },
+    "lifecycle": { "$ref": "#/$defs/lifecycle" },
+    "consolidator": { "$ref": "#/$defs/consolidator" },
+    "validFrom": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "validUntil": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "expiresAt": { "$ref": "common.schema.json#/$defs/timestamp" }
+  },
+  "$defs": {
+    "consolidator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/slug" },
+        "version": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "rationale": {
+      "description": "Why the learning recurs, what contradicts it, what it should improve, and how we would know it is wrong.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recurrence", "expectedBenefit", "falsification"],
+      "properties": {
+        "recurrence": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "contradictions": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "expectedBenefit": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "falsification": { "type": "string", "minLength": 1, "maxLength": 2000 }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action"],
+      "properties": {
+        "action": { "enum": ["new", "merge", "supersede", "retire"] },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": { "$ref": "common.schema.json#/$defs/id" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "action": { "const": "new" } } },
+          "then": { "not": { "required": ["targets"] } },
+          "else": { "required": ["targets"] }
+        }
+      ]
+    }
+  }
+}

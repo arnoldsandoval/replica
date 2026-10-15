@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/github/replica/learning/v1/consent-grant.schema.json",
+  "title": "Replica consent grant v1",
+  "description": "Permission to use evidence from named sources, in one scope, for named purposes. A host decides at read time whether a record may be used for a purpose: some active grant in the record's scope must name the purpose and the record's source, and cover the evidence's original time. Reading feedback, publishing it, and training on it are separate purposes. A grant is never edited; a withdrawal record ends a purpose.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "scope",
+    "purposes",
+    "sources",
+    "grantedBy",
+    "grantedAt",
+    "basis",
+    "digest"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "replica.consent-grant/v1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "scope": {
+      "$ref": "common.schema.json#/$defs/scope"
+    },
+    "purposes": {
+      "$ref": "common.schema.json#/$defs/purposes"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "common.schema.json#/$defs/sourceKind"
+      }
+    },
+    "grantedBy": {
+      "$ref": "common.schema.json#/$defs/humanActor"
+    },
+    "grantedAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "evidenceFrom": {
+      "description": "Covers only evidence whose original time is at or after this time. Omit to cover earlier evidence too.",
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "evidenceUntil": {
+      "description": "Covers only evidence whose original time is before this time. Omit for no upper bound.",
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "basis": {
+      "description": "Why this use is allowed, such as a team agreement or a study consent form.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "digest": {
+      "$ref": "common.schema.json#/$defs/digest"
+    }
+  }
+}

@@ -41,7 +41,7 @@ If the repository is missing or access is denied, ask its maintainer to check yo
 
 The Replica prototype canvas shows your local preview beside the Copilot conversation and adds publishing, sharing, commenting, and prototype controls.
 
-Ask your agent to install the plugin and provide the follwoing commands ot teh agent:
+Ask your agent to install the plugin and provide the following commands to the agent:
 
 ```sh
 copilot plugin marketplace add github/replica
